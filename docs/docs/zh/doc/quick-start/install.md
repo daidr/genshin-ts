@@ -5,6 +5,8 @@
 npm create genshin-ts@latest
 ```
 
+> 如果执行命令遇到 Windows 执行策略禁止运行脚本，请将所有命令中的 `npm` 改为 `npm.cmd` 执行。
+
 genshin-ts 内置 TypeScript 插件以获得更高级的TypeScript支持增强；即使不启用也不影响功能与开发流程，但推荐启用。说明见：
 `https://gsts.moe/zh/doc/quick-start/install.html#typescript-plugin`
 

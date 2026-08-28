@@ -30,6 +30,8 @@ https://github.com/user-attachments/assets/0f2ec8af-c753-4c54-940c-8147ec856635
 npm create genshin-ts@latest
 ```
 
+> If the Windows execution policy prevents scripts from running, replace `npm` with `npm.cmd` in all commands.
+
 genshin-ts includes a TypeScript plugin for more advanced TypeScript support enhancements. It is optional (disabling it does not affect functionality and developer experience), but recommended. See:
 [https://gsts.moe/doc/quick-start/install.html#typescript-plugin](https://gsts.moe/doc/quick-start/install.html#typescript-plugin)
 
