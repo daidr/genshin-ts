@@ -292,6 +292,20 @@ assert.ok(batch.timings.parseGilMs >= 0)
 assert.ok(batch.timings.indexNodeGraphsMs >= 0)
 assert.ok(batch.timings.totalMs >= batch.timings.parseGilMs)
 
+// Injection's two-pass encoding must match protobufjs's original writer, including signals.
+const encodedPayload = batch.bytes.subarray(20, -4)
+const encodedFields = parsePayload(encodedPayload)
+for (const matches of buildNodeGraphFieldIndex(
+  encodedPayload,
+  encodedFields.nodeGraphBlobFields
+).values()) {
+  for (const { field } of matches) {
+    const bytes = encodedPayload.subarray(field.dataStart, field.dataEnd)
+    const decoded = proto.nodeGraphMessage.decode(bytes)
+    assert.deepEqual(Buffer.from(bytes), proto.nodeGraphMessage.encode(decoded).finish())
+  }
+}
+
 const injectedA = decodeGraph(batch.bytes, targetA) as {
   nodes?: Array<{
     genericId?: { nodeId?: number }
@@ -368,6 +382,34 @@ assert.equal(
   `_GSTS_batch_${'B'.repeat(180)}`
 )
 
+const prevalidatedPartial = injector.injectManyBytes({
+  gilBytes,
+  items: [
+    { giaBytes: giaA, targetId: targetA, prevalidateTarget: true },
+    { giaBytes: missingGia, targetId: missingTarget, prevalidateTarget: true },
+    { giaBytes: unsafeGia, targetId: unsafeTarget, prevalidateTarget: true },
+    { giaBytes: mismatchedClientGia, targetId: targetB, prevalidateTarget: true },
+    { giaBytes: giaB, targetId: targetB, prevalidateTarget: true }
+  ]
+})
+assert.deepEqual(Buffer.from(prevalidatedPartial.bytes), Buffer.from(partial.bytes))
+assert.deepEqual(
+  prevalidatedPartial.items.map((item) => item.status),
+  partial.items.map((item) => item.status)
+)
+assert.equal(prevalidatedPartial.items[1].timings.decodeGiaMs, 0)
+assert.equal(prevalidatedPartial.items[2].timings.decodeGiaMs, 0)
+assert.equal(prevalidatedPartial.items[1].status, 'skipped')
+assert.equal(prevalidatedPartial.items[2].status, 'skipped')
+assert.equal(
+  prevalidatedPartial.items[1].status === 'skipped' && prevalidatedPartial.items[1].reason,
+  'target-not-found'
+)
+assert.equal(
+  prevalidatedPartial.items[2].status === 'skipped' && prevalidatedPartial.items[2].reason,
+  'unsafe-target'
+)
+
 const invalidGia = Buffer.concat([Buffer.alloc(20), Buffer.from([0xff]), Buffer.alloc(4)])
 const failedBatch = injector.injectManyBytes({
   gilBytes,
@@ -397,7 +439,10 @@ const firstDuplicate = makeGiaBytes(targetA, '_GSTS_duplicate_first')
 const lastDuplicate = makeGiaBytes(targetA, '_GSTS_duplicate_last')
 const duplicateBatch = injector.injectManyBytes({
   gilBytes,
-  items: [{ giaBytes: firstDuplicate }, { giaBytes: lastDuplicate }]
+  items: [
+    { giaBytes: firstDuplicate, targetId: targetA, prevalidateTarget: true },
+    { giaBytes: lastDuplicate, targetId: targetA, prevalidateTarget: true }
+  ]
 })
 const firstSequential = injector.injectBytes({ gilBytes, giaBytes: firstDuplicate }).bytes
 const lastSequential = injector.injectBytes({
@@ -540,6 +585,53 @@ try {
   assert.doesNotMatch(skippedCli.stdout, /"cause":/)
   assert.deepEqual(fs.readFileSync(configuredGilPath), beforeSkippedBytes)
   assert.equal(fs.statSync(configuredGilPath).mtimeMs, beforeSkippedMtime)
+
+  const unchangedArgs = [
+    '--import',
+    'tsx',
+    path.resolve('src/cli/gsts.ts'),
+    '--config',
+    configPath,
+    '--lang',
+    'en-US',
+    path.join(giaDir, 'a.gia')
+  ]
+  const firstWrite = spawnSync(process.execPath, unchangedArgs, {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    windowsHide: true,
+    env: cliEnv
+  })
+  assert.equal(firstWrite.status, 0, firstWrite.stderr)
+  const injectedBytes = fs.readFileSync(configuredGilPath)
+  const fixedTime = new Date('2020-01-01T00:00:00Z')
+  fs.utimesSync(configuredGilPath, fixedTime, fixedTime)
+  const identicalWrite = spawnSync(process.execPath, unchangedArgs, {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    windowsHide: true,
+    env: cliEnv
+  })
+  assert.equal(identicalWrite.status, 0, identicalWrite.stderr)
+  assert.deepEqual(fs.readFileSync(configuredGilPath), injectedBytes)
+  assert.equal(fs.statSync(configuredGilPath).mtimeMs, fixedTime.getTime())
+
+  injector.injectFile({ gilPath: configuredGilPath, giaPath: path.join(giaDir, 'a.gia') })
+  assert.equal(fs.statSync(configuredGilPath).mtimeMs, fixedTime.getTime())
+  const alternateOutput = path.join(benchmarkDir, 'alternate.gil')
+  injector.injectFile({
+    gilPath: configuredGilPath,
+    giaPath: path.join(giaDir, 'a.gia'),
+    outPath: alternateOutput
+  })
+  assert.deepEqual(fs.readFileSync(alternateOutput), injectedBytes)
+  fs.utimesSync(alternateOutput, fixedTime, fixedTime)
+  injector.injectFile({
+    gilPath: configuredGilPath,
+    giaPath: path.join(giaDir, 'a.gia'),
+    outPath: alternateOutput
+  })
+  assert.equal(fs.statSync(alternateOutput).mtimeMs, fixedTime.getTime())
 
   const invalidGiaPath = path.join(giaDir, 'invalid.gia')
   fs.writeFileSync(invalidGiaPath, invalidGia)

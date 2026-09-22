@@ -59,6 +59,8 @@ export type InjectGilResult = {
 export type InjectGilBatchItem = {
   giaBytes: Uint8Array
   targetId?: number
+  /** The caller obtained targetId from trusted GIA generation metadata, so target safety may be checked before decoding GIA. */
+  prevalidateTarget?: boolean
 }
 
 export type InjectGilBatchItemTimings = {

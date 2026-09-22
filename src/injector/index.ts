@@ -3,6 +3,7 @@ import path from 'node:path'
 import { performance } from 'node:perf_hooks'
 
 import { detectLang, initCliI18n } from '../i18n/index.js'
+import { encodeProtobufLowMemory } from '../shared/protobuf_encode.js'
 import { applyReplacements, buildFile, parseMessage, readUint32BE } from './binary.js'
 import {
   collectFolderIndexes,
@@ -220,6 +221,20 @@ export function createInjector(options?: { protoPath?: string; lang?: string }):
       return resolveGraphTypeForTypeValue(entryField.entry.typeValue, folderIndexes, graphTypeMap)
     }
 
+    const getSafeTargetState = (targetId: number): TargetState => {
+      const targetState = getTargetState(targetId)
+      if (!input.skipNonEmptyCheck && !isNodeGraphEmptyForInjection(targetState.obj)) {
+        const targetName = (targetState.obj as { name?: unknown }).name
+        if (typeof targetName !== 'string' || !targetName.startsWith('_GSTS')) {
+          throw skippedInjectionError(
+            'unsafe-target',
+            `[error] target NodeGraph not empty and name not _GSTS*: ${String(targetName)}`
+          )
+        }
+      }
+      return targetState
+    }
+
     const prepareStart = performance.now()
     const itemResults: InjectGilBatchResult['items'] = []
     for (const item of input.items) {
@@ -228,6 +243,13 @@ export function createInjector(options?: { protoPath?: string; lang?: string }):
       let targetId = item.targetId
 
       try {
+        let targetState: TargetState | undefined
+        if (item.prevalidateTarget && typeof targetId === 'number' && Number.isFinite(targetId)) {
+          const targetLookupStart = performance.now()
+          targetState = getSafeTargetState(targetId)
+          timings.validateTargetMs = performance.now() - targetLookupStart
+        }
+
         const decodeStart = performance.now()
         const newGraph = loadGiaGraph(
           item.giaBytes,
@@ -242,18 +264,11 @@ export function createInjector(options?: { protoPath?: string; lang?: string }):
           throw new Error('[error] target id is required (missing in both options and GIA)')
         }
 
-        const targetLookupStart = performance.now()
-        const targetState = getTargetState(targetId)
-        if (!input.skipNonEmptyCheck && !isNodeGraphEmptyForInjection(targetState.obj)) {
-          const targetName = (targetState.obj as { name?: unknown }).name
-          if (typeof targetName !== 'string' || !targetName.startsWith('_GSTS')) {
-            throw skippedInjectionError(
-              'unsafe-target',
-              `[error] target NodeGraph not empty and name not _GSTS*: ${String(targetName)}`
-            )
-          }
+        if (!targetState) {
+          const targetLookupStart = performance.now()
+          targetState = getSafeTargetState(targetId)
+          timings.validateTargetMs += performance.now() - targetLookupStart
         }
-        timings.validateTargetMs = performance.now() - targetLookupStart
 
         const signalGraph = newGraph as SignalPatchGraph
         if (hasSignalNodePlaceholders(signalGraph)) {
@@ -310,7 +325,7 @@ export function createInjector(options?: { protoPath?: string; lang?: string }):
         timings.validateTargetMs += performance.now() - validateStart
 
         const encodeStart = performance.now()
-        const newGraphBytes = proto.nodeGraphMessage.encode(newGraph as never).finish()
+        const newGraphBytes = encodeProtobufLowMemory(proto.nodeGraphMessage, newGraph)
         timings.encodeGraphMs = performance.now() - encodeStart
 
         replacementByField.set(targetState.field, newGraphBytes)
@@ -403,16 +418,25 @@ export function createInjector(options?: { protoPath?: string; lang?: string }):
   }
 
   function injectFile(options: InjectGilFileOptions): InjectGilFileResult {
+    const gilBytes = fs.readFileSync(options.gilPath)
     const result = injectBytes({
-      gilBytes: fs.readFileSync(options.gilPath),
+      gilBytes,
       giaBytes: fs.readFileSync(options.giaPath),
       targetId: options.targetId,
       skipNonEmptyCheck: options.skipNonEmptyCheck,
       lang: options.lang
     })
     const outPath = options.outPath ?? options.gilPath
-    fs.mkdirSync(path.dirname(outPath), { recursive: true })
-    fs.writeFileSync(outPath, result.bytes)
+    const previousBytes =
+      path.resolve(outPath) === path.resolve(options.gilPath)
+        ? gilBytes
+        : fs.existsSync(outPath)
+          ? fs.readFileSync(outPath)
+          : undefined
+    if (!previousBytes?.equals(result.bytes)) {
+      fs.mkdirSync(path.dirname(outPath), { recursive: true })
+      fs.writeFileSync(outPath, result.bytes)
+    }
     return { ...result, outPath }
   }
 
