@@ -1,5 +1,3 @@
-import z from 'zod'
-
 import type { clientEntity as ClientEntityValue } from '../definitions/client_entity_helpers.js'
 import {
   installEntityHelpers,
@@ -533,7 +531,7 @@ function makeFactories(): ServerGlobalFactories {
         if (items === undefined) {
           return new listLiteral(listType, []) as unknown as RuntimeReturnValueTypeMap[`${T}_list`]
         }
-        if (z.instanceof(listClass).safeParse(items).success) {
+        if (items instanceof listClass) {
           if ((items as unknown as listClass).getConcreteType() === listType) {
             return items as RuntimeReturnValueTypeMap[`${T}_list`]
           }
@@ -551,7 +549,7 @@ function makeFactories(): ServerGlobalFactories {
         if (items === undefined) {
           return new listLiteral(listType, []) as unknown as RuntimeReturnValueTypeMap[`${T}_list`]
         }
-        if (z.instanceof(listClass).safeParse(items).success) {
+        if (items instanceof listClass) {
           if ((items as unknown as listClass).getConcreteType() === listType) {
             return items as RuntimeReturnValueTypeMap[`${T}_list`]
           }
@@ -579,7 +577,7 @@ function makeFactories(): ServerGlobalFactories {
           // @ts-ignore allow
         ).value as RuntimeReturnValueTypeMap[`${T}_list`]
       }
-      if (z.instanceof(listClass).safeParse(items).success) {
+      if (items instanceof listClass) {
         if ((items as unknown as listClass).getConcreteType() === listType) {
           return items as RuntimeReturnValueTypeMap[`${T}_list`]
         }

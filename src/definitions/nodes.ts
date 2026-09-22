@@ -1,5 +1,3 @@
-import * as z from 'zod'
-
 import { t } from '../i18n/index.js'
 import {
   isSignalDefinition,
@@ -138,6 +136,212 @@ export type {
   StageEntity
 } from './entity_helpers.js'
 
+const invalidValue = Symbol('invalid-value')
+const invalidVec3 = Symbol('invalid-vec3')
+const intListLikelyFloatList = Symbol('int-list-likely-float-list')
+const invalidEnumListItem = Symbol('invalid-enum-list-item')
+const matchedValue = Symbol('matched-value')
+type ParseValueFailure =
+  | typeof invalidValue
+  | typeof invalidVec3
+  | typeof intListLikelyFloatList
+  | typeof invalidEnumListItem
+
+function isParseValueFailure(parsed: value | ParseValueFailure | typeof matchedValue) {
+  return (
+    parsed === invalidValue ||
+    parsed === invalidVec3 ||
+    parsed === intListLikelyFloatList ||
+    parsed === invalidEnumListItem
+  )
+}
+
+function tryParseValue(
+  v: unknown,
+  type: ValueType,
+  materialize: boolean
+): value | ParseValueFailure | typeof matchedValue {
+  if (v instanceof generic) {
+    const metadata = v.getMetadata()
+    if (metadata?.kind === 'literal') {
+      if (type === 'dict' || type.endsWith('_list')) return v
+    }
+  }
+  switch (type) {
+    case 'bool': {
+      if (v instanceof bool) return v
+      if (typeof v === 'boolean') return materialize ? new bool(v) : matchedValue
+      break
+    }
+    case 'float': {
+      if (v instanceof float) return v
+      if (typeof v === 'number' && Number.isFinite(v))
+        return materialize ? new float(v) : matchedValue
+      break
+    }
+    // 必须将int放置于float之后, 这样允许字面量传值时强制传bigint指定为int类型
+    // 否则如果希望是浮点类型, 但具体值都为整数浮点时, 会导致永远被推测为int, 而无法被解析为float
+    case 'int': {
+      if (v instanceof int) return v
+      if (typeof v === 'bigint' || (typeof v === 'number' && Number.isSafeInteger(v)))
+        return materialize ? new int(v) : matchedValue
+      break
+    }
+    case 'str': {
+      if (v instanceof str) return v
+      if (typeof v === 'string') return materialize ? new str(v) : matchedValue
+      break
+    }
+    case 'vec3': {
+      if (v instanceof vec3) return v
+      if (v instanceof list) {
+        const vec3Value = v.getVec3Value()
+        if (isFiniteVec3Tuple(vec3Value))
+          return materialize ? new vec3([...vec3Value]) : matchedValue
+        return invalidVec3
+      }
+      // Preserve the former tuple parser's snapshot semantics for mutable input arrays.
+      if (isFiniteVec3Tuple(v)) return materialize ? new vec3([...v]) : matchedValue
+      break
+    }
+    case 'guid': {
+      if (v instanceof guid) return v
+      if (typeof v === 'bigint' || (typeof v === 'number' && Number.isSafeInteger(v)))
+        return materialize ? new guid(v) : matchedValue
+      break
+    }
+    case 'entity': {
+      if (v instanceof entity) return v
+      break
+    }
+    case 'prefab_id': {
+      if (v instanceof prefabId) return v
+      if (typeof v === 'bigint' || (typeof v === 'number' && Number.isSafeInteger(v)))
+        return materialize ? new prefabId(v) : matchedValue
+      break
+    }
+    case 'config_id': {
+      if (v instanceof configId) return v
+      if (typeof v === 'bigint' || (typeof v === 'number' && Number.isSafeInteger(v)))
+        return materialize ? new configId(v) : matchedValue
+      break
+    }
+    case 'faction': {
+      if (v instanceof faction) return v
+      if (typeof v === 'bigint' || (typeof v === 'number' && Number.isSafeInteger(v)))
+        return materialize ? new faction(v) : matchedValue
+      break
+    }
+    case 'struct': {
+      if (v instanceof struct) return v
+      break
+    }
+    case 'dict': {
+      if (v instanceof dict) return v
+      break
+    }
+    case 'enum':
+    case 'enumeration': {
+      if (v instanceof enumeration) return v
+      break
+    }
+    case 'generic': {
+      if (v instanceof generic) return v
+      break
+    }
+    case 'custom_variable_snapshot': {
+      if (v instanceof customVariableSnapshot) return v
+      break
+    }
+    case 'local_variable': {
+      if (v instanceof localVariable) return v
+      break
+    }
+    case 'bool_list': {
+      if (v instanceof list && v.getConcreteType() === 'bool') return v
+      break
+    }
+    // 理论上可以通过Array.isArray → gsts.f.assemblyList处理, 避免编译器阶段包装assemblyList处理
+    // 但会引入隐式副作用, 目前暂时维持现状
+    case 'int_list': {
+      if (v instanceof list && v.getConcreteType() === 'int') return v
+      break
+    }
+    case 'float_list': {
+      if (v instanceof list && v.getConcreteType() === 'float') return v
+      break
+    }
+    case 'str_list': {
+      if (v instanceof list && v.getConcreteType() === 'str') return v
+      break
+    }
+    case 'vec3_list': {
+      if (v instanceof list) {
+        const concreteType = v.getConcreteType()
+        if (concreteType === 'vec3') {
+          return v
+        } else if (concreteType === 'float') {
+          const vec3Value = v.getVec3Value()
+          if (vec3Value) {
+            return materialize ? new vec3(vec3Value) : matchedValue
+          }
+        }
+      }
+      break
+    }
+    case 'guid_list': {
+      if (v instanceof list && v.getConcreteType() === 'guid') return v
+      break
+    }
+    case 'entity_list': {
+      if (v instanceof list && v.getConcreteType() === 'entity') return v
+      break
+    }
+    case 'prefab_id_list': {
+      if (v instanceof list && v.getConcreteType() === 'prefab_id') return v
+      break
+    }
+    case 'config_id_list': {
+      if (v instanceof list && v.getConcreteType() === 'config_id') return v
+      break
+    }
+    case 'faction_list': {
+      if (v instanceof list && v.getConcreteType() === 'faction') return v
+      break
+    }
+    case 'enum_list': {
+      if (v instanceof list && v.getConcreteType() === 'enum') return v
+      if (Array.isArray(v)) {
+        const items: enumeration[] = []
+        for (const item of v) {
+          const parsed = tryParseValue(item, 'enumeration', materialize)
+          if (isParseValueFailure(parsed)) return invalidEnumListItem
+          if (parsed !== matchedValue) items.push(parsed as enumeration)
+        }
+        return materialize ? new listLiteral('enum', items) : matchedValue
+      }
+      break
+    }
+    case 'struct_list': {
+      if (v instanceof list && v.getConcreteType() === 'struct') return v
+      break
+    }
+  }
+  if (type === 'int_list' && v instanceof list && v.getConcreteType() === 'float')
+    return intListLikelyFloatList
+  return invalidValue
+}
+
+function isFiniteVec3Tuple(v: unknown): v is [number, number, number] {
+  return (
+    Array.isArray(v) &&
+    v.length === 3 &&
+    Number.isFinite(v[0]) &&
+    Number.isFinite(v[1]) &&
+    Number.isFinite(v[2])
+  )
+}
+
 export function parseValue(v: any, type: 'bool'): bool
 export function parseValue(v: any, type: 'int'): int
 export function parseValue(v: any, type: 'float'): float
@@ -172,258 +376,14 @@ export function parseValue(v: any, type: keyof (ListableValueTypeMap & SpecialVa
 // @ts-ignore allow
 export function parseValue(v: any, type: keyof LiteralValueListTypeMap): list
 export function parseValue(v: any, type: ValueType) {
-  if (z.instanceof(generic).safeParse(v).success) {
-    const metadata = (v as value).getMetadata()
-    if (metadata?.kind === 'literal') {
-      if (type === 'dict' || type.endsWith('_list')) return v as value
-    }
+  const parsed = tryParseValue(v, type, true)
+  if (parsed === invalidVec3) throw new Error(`Invalid vec3 value: ${JSON.stringify(v)}`)
+  if (parsed === intListLikelyFloatList) {
+    throw new Error(t('err_intListLikelyFloatList', { actual: 'float_list' }))
   }
-  switch (type) {
-    case 'bool': {
-      if (z.instanceof(bool).safeParse(v).success) {
-        return v as bool
-      }
-      const result = z.boolean().safeParse(v)
-      if (result.success) {
-        return new bool(result.data)
-      }
-      break
-    }
-    case 'float': {
-      if (z.instanceof(float).safeParse(v).success) {
-        return v as float
-      }
-      const result = z.number().safeParse(v)
-      if (result.success) {
-        return new float(result.data)
-      }
-      break
-    }
-    // 必须将int放置于float之后, 这样允许字面量传值时强制传bigint指定为int类型
-    // 否则如果希望是浮点类型, 但具体值都为整数浮点时, 会导致永远被推测为int, 而无法被解析为float
-    case 'int': {
-      if (z.instanceof(int).safeParse(v).success) {
-        return v as int
-      }
-      const result = z.union([z.int(), z.bigint()]).safeParse(v)
-      if (result.success) {
-        return new int(result.data)
-      }
-      break
-    }
-    case 'str': {
-      if (z.instanceof(str).safeParse(v).success) {
-        return v as str
-      }
-      const result = z.string().safeParse(v)
-      if (result.success) {
-        return new str(result.data)
-      }
-      break
-    }
-    case 'vec3': {
-      if (z.instanceof(vec3).safeParse(v).success) {
-        return v as vec3
-      }
-      const tuple3 = z.tuple([z.number(), z.number(), z.number()])
-      if (z.instanceof(list).safeParse(v).success) {
-        const vec3Value = (v as list).getVec3Value()
-        const result = tuple3.safeParse(vec3Value)
-        if (result.success) return new vec3(result.data)
-        throw new Error(`Invalid vec3 value: ${JSON.stringify(v)}`)
-      }
-      const result = tuple3.safeParse(v)
-      if (result.success) {
-        return new vec3(result.data)
-      }
-      break
-    }
-    case 'guid': {
-      if (z.instanceof(guid).safeParse(v).success) {
-        return v as guid
-      }
-      const result = z.union([z.int(), z.bigint()]).safeParse(v)
-      if (result.success) {
-        return new guid(result.data)
-      }
-      break
-    }
-    case 'entity': {
-      if (z.instanceof(entity).safeParse(v).success) {
-        return v as entity
-      }
-      break
-    }
-    case 'prefab_id': {
-      if (z.instanceof(prefabId).safeParse(v).success) {
-        return v as prefabId
-      }
-      const result = z.union([z.int(), z.bigint()]).safeParse(v)
-      if (result.success) {
-        return new prefabId(result.data)
-      }
-      break
-    }
-    case 'config_id': {
-      if (z.instanceof(configId).safeParse(v).success) {
-        return v as configId
-      }
-      const result = z.union([z.int(), z.bigint()]).safeParse(v)
-      if (result.success) {
-        return new configId(result.data)
-      }
-      break
-    }
-    case 'faction': {
-      if (z.instanceof(faction).safeParse(v).success) {
-        return v as faction
-      }
-      const result = z.union([z.int(), z.bigint()]).safeParse(v)
-      if (result.success) {
-        return new faction(result.data)
-      }
-      break
-    }
-    case 'struct': {
-      if (z.instanceof(struct).safeParse(v).success) {
-        return v as struct
-      }
-      break
-    }
-    case 'dict': {
-      if (z.instanceof(dict).safeParse(v).success) {
-        return v as dict
-      }
-      break
-    }
-    case 'enum':
-    case 'enumeration': {
-      if (z.instanceof(enumeration).safeParse(v).success) {
-        return v as enumeration
-      }
-      break
-    }
-    case 'generic': {
-      if (z.instanceof(generic).safeParse(v).success) {
-        return v as generic
-      }
-      break
-    }
-    case 'custom_variable_snapshot': {
-      if (z.instanceof(customVariableSnapshot).safeParse(v).success) {
-        return v as customVariableSnapshot
-      }
-      break
-    }
-    case 'local_variable': {
-      if (z.instanceof(localVariable).safeParse(v).success) {
-        return v as localVariable
-      }
-      break
-    }
-    case 'bool_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'bool') {
-        return v as list<'bool'>
-      }
-      break
-    }
-    // 理论上可以通过Array.isArray → gsts.f.assemblyList处理, 避免编译器阶段包装assemblyList处理
-    // 但会引入隐式副作用, 目前暂时维持现状
-    case 'int_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'int') {
-        return v as list<'int'>
-      }
-      break
-    }
-    case 'float_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'float') {
-        return v as list<'float'>
-      }
-      break
-    }
-    case 'str_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'str') {
-        return v as list<'str'>
-      }
-      break
-    }
-    case 'vec3_list': {
-      if (z.instanceof(list).safeParse(v).success) {
-        const concreteType = (v as list).getConcreteType()
-        if (concreteType === 'vec3') {
-          return v as list<'vec3'>
-        } else if (concreteType === 'float') {
-          const vec3Value = (v as list).getVec3Value()
-          if (vec3Value) {
-            return new vec3(vec3Value)
-          }
-        }
-      }
-      break
-    }
-    case 'guid_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'guid') {
-        return v as list<'guid'>
-      }
-      break
-    }
-    case 'entity_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'entity') {
-        return v as list<'entity'>
-      }
-      break
-    }
-    case 'prefab_id_list': {
-      if (
-        z.instanceof(list).safeParse(v).success &&
-        (v as list).getConcreteType() === 'prefab_id'
-      ) {
-        return v as list<'prefab_id'>
-      }
-      break
-    }
-    case 'config_id_list': {
-      if (
-        z.instanceof(list).safeParse(v).success &&
-        (v as list).getConcreteType() === 'config_id'
-      ) {
-        return v as list<'config_id'>
-      }
-      break
-    }
-    case 'faction_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'faction') {
-        return v as list<'faction'>
-      }
-      break
-    }
-    case 'enum_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'enum') {
-        return v as list<'enum'>
-      }
-      if (Array.isArray(v)) {
-        return new listLiteral(
-          'enum',
-          v.map((item) => parseValue(item, 'enumeration') as enumeration)
-        )
-      }
-      break
-    }
-    case 'struct_list': {
-      if (z.instanceof(list).safeParse(v).success && (v as list).getConcreteType() === 'struct') {
-        return v as list<'struct'>
-      }
-      break
-    }
-  }
-  if (type === 'int_list') {
-    if (z.instanceof(list).safeParse(v).success) {
-      const concreteType = (v as list).getConcreteType()
-      if (concreteType === 'float') {
-        throw new Error(t('err_intListLikelyFloatList', { actual: 'float_list' }))
-      }
-    }
-  }
+  if (parsed === invalidEnumListItem)
+    throw new Error(t('err_invalidValueType', { type: 'enumeration' }))
+  if (parsed !== invalidValue && parsed !== matchedValue) return parsed
   throw new Error(t('err_invalidValueType', { type }))
 }
 
@@ -455,17 +415,16 @@ function getBaseValueType(
 function matchType(
   type: keyof (ListableValueTypeMap & SpecialValueTypeMap),
   ...values: readonly unknown[]
-) {
+): boolean {
   for (const v of values) {
-    if (z.instanceof(list).safeParse(v).success) {
-      if (!isListableType(type)) {
-        throw new Error(`Invalid value type: ${type}_list`)
-      }
-      parseValue(v, `${type}_list`)
-    } else {
-      parseValue(v, type)
+    let candidateType: ValueType = type
+    if (v instanceof list) {
+      if (!isListableType(type)) return false
+      candidateType = `${type}_list`
     }
+    if (isParseValueFailure(tryParseValue(v, candidateType, false))) return false
   }
+  return true
 }
 
 export function matchTypes<T extends keyof (ListableValueTypeMap & SpecialValueTypeMap)>(
@@ -473,31 +432,25 @@ export function matchTypes<T extends keyof (ListableValueTypeMap & SpecialValueT
   ...values: readonly unknown[]
 ): T {
   for (const type of types) {
-    try {
-      matchType(type, ...values)
-      return type
-    } catch {
-      // ignore
-    }
+    if (matchType(type, ...values)) return type
   }
   const formatValue = (v: unknown) => {
-    if (z.instanceof(value).safeParse(v).success) {
-      const metadata = (v as value).getMetadata()
+    if (v instanceof value) {
+      const metadata = v.getMetadata()
       if (!metadata) return JSON.stringify(v)
 
       if (metadata.kind === 'literal') {
-        if (z.instanceof(generic).safeParse(v).success) {
-          const genericValue = v as generic
-          const concreteType = genericValue.getConcreteType()
+        if (v instanceof generic) {
+          const concreteType = v.getConcreteType()
           if (!concreteType) return '<untyped placeholder>'
           if (concreteType === 'dict') {
-            const keyType = genericValue.getDictKeyType()
-            const valueType = genericValue.getDictValueType()
+            const keyType = v.getDictKeyType()
+            const valueType = v.getDictValueType()
             if (keyType && valueType) return `dict<${keyType}, ${valueType}> placeholder`
           }
           return `${concreteType} placeholder`
         }
-        return JSON.stringify((v as value).toIRLiteral())
+        return JSON.stringify(v.toIRLiteral())
       }
       return JSON.stringify({
         ...metadata,
@@ -510,10 +463,7 @@ export function matchTypes<T extends keyof (ListableValueTypeMap & SpecialValueT
     return JSON.stringify(v)
   }
   const hasUntypedPlaceholder = values.some(
-    (v) =>
-      z.instanceof(generic).safeParse(v).success &&
-      (v as generic).getMetadata()?.kind === 'literal' &&
-      !(v as generic).getConcreteType()
+    (v) => v instanceof generic && v.getMetadata()?.kind === 'literal' && !v.getConcreteType()
   )
   const hint = hasUntypedPlaceholder
     ? " Hint: use list('type', 0) or dict('k', 'v', 0) to declare a typed placeholder."
@@ -888,10 +838,7 @@ export class ServerExecutionFlowFunctions {
     )
 
     // 预处理器可能意外包裹三维向量为列表, 此处特殊处理
-    if (
-      z.instanceof(list).safeParse(input1).success &&
-      z.instanceof(list).safeParse(input2).success
-    ) {
+    if (input1 instanceof list && input2 instanceof list) {
       const concreteType1 = (input1 as unknown as list).getConcreteType()
       const concreteType2 = (input2 as unknown as list).getConcreteType()
       if (concreteType1 === 'float' && concreteType2 === 'float') {
@@ -1063,7 +1010,7 @@ export class ServerExecutionFlowFunctions {
       | 'vec3'
   >(_0to99: RuntimeParameterValueTypeMap[T][], type?: T): RuntimeReturnValueTypeMap[`${T}_list`] {
     // 支持无限嵌套, 以便预处理器处理
-    if (z.instanceof(list).safeParse(_0to99).success) {
+    if (_0to99 instanceof list) {
       return _0to99 as unknown as RuntimeReturnValueTypeMap[`${T}_list`]
     }
 
@@ -1075,7 +1022,7 @@ export class ServerExecutionFlowFunctions {
 
     if (_0to99.length > 100) throw new Error('Parameters cannot be more than 100')
 
-    const isValueTypeList = z.instanceof(list).safeParse(_0to99[0]).success
+    const isValueTypeList = _0to99[0] instanceof list
     if (isValueTypeList) {
       // 列表嵌套只可能是三维向量列表
       _0to99 = _0to99.map((item) =>
@@ -1563,7 +1510,7 @@ export class ServerExecutionFlowFunctions {
 
     const key0to49Obj = keys.map((k) => parseValue(k, keyType))
 
-    const isValueTypeList = z.instanceof(list).safeParse(values[0]).success
+    const isValueTypeList = values[0] instanceof list
     const value0to49Obj = isValueTypeList
       ? values.map((v) => parseValue(v, (valueType + '_list') as keyof LiteralValueListTypeMap))
       : values.map((v) => parseValue(v, valueType))
@@ -1647,7 +1594,7 @@ export class ServerExecutionFlowFunctions {
     )
     const targetEntityObj = parseValue(targetEntity, 'entity')
     const variableNameObj = parseValue(variableName, 'str')
-    const isVariableValueList = z.instanceof(list).safeParse(variableValue).success
+    const isVariableValueList = variableValue instanceof list
     let variableValueObj: value
     if (isVariableValueList) {
       variableValueObj = parseValue(
@@ -1756,7 +1703,7 @@ export class ServerExecutionFlowFunctions {
       variableValue
     )
     const variableNameObj = parseValue(variableName, 'str')
-    const isVariableValueList = z.instanceof(list).safeParse(variableValue).success
+    const isVariableValueList = variableValue instanceof list
     let variableValueObj: value
     if (isVariableValueList) {
       variableValueObj = parseValue(
@@ -2055,7 +2002,7 @@ export class ServerExecutionFlowFunctions {
       value
     )
     const localVariableObj = parseValue(localVariable, 'local_variable')
-    const isValueObjList = z.instanceof(list).safeParse(value).success
+    const isValueObjList = value instanceof list
     let valueObj: value
     if (isValueObjList) {
       valueObj = parseValue(value, (genericType + '_list') as keyof LiteralValueListTypeMap)
@@ -2367,7 +2314,7 @@ export class ServerExecutionFlowFunctions {
       ],
       initialValue
     )
-    const isInitialValueList = z.instanceof(list).safeParse(initialValue).success
+    const isInitialValueList = initialValue instanceof list
     let initialValueObj: value
     if (isInitialValueList) {
       initialValueObj = parseValue(
@@ -17187,10 +17134,9 @@ type MethodAllowedByMode<
 > = K extends keyof NodeTypeByMethod ? (NodeTypeByMethod[K] extends M ? K : never) : K
 
 export type ServerExecutionFlowFunctionsByMode<M extends ServerGraphMode> = {
-  [K in keyof ServerExecutionFlowFunctions as MethodAllowedByMode<
-    M,
-    K
-  >]: ServerExecutionFlowFunctions[K]
+  [
+    K in keyof ServerExecutionFlowFunctions as MethodAllowedByMode<M, K>
+  ]: ServerExecutionFlowFunctions[K]
 }
 
 // Client execution flow classes live in ./client_nodes.js (generated with
