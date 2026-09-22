@@ -17,13 +17,19 @@ import {
   type GsToIrBatchProfile
 } from '../compiler/gs_to_ir_json_transform/index.js'
 import type { GstsConfig, GstsInjectConfig } from '../compiler/gsts_config.js'
-import { mergeIrJsonFilesByGraphId } from '../compiler/ir_merge.js'
+import { mergeIrJsonFilesByGraphIdAsync } from '../compiler/ir_merge.js'
 import {
   writeGiaFromIrJsonFile,
   writeGiaFromIrJsonFiles,
   type IrToGiaBatchProfile
 } from '../compiler/ir_to_gia_pipeline.js'
-import { compileTsToGs, type TsToGsCompileProfile } from '../compiler/ts_to_gs_pipeline.js'
+import {
+  compileTsToGs,
+  createTsToGsProgramCache,
+  invalidateTsToGsProgramCache,
+  type TsToGsCompileProfile,
+  type TsToGsProgramCache
+} from '../compiler/ts_to_gs_pipeline.js'
 import { detectLang, initCliI18n, type Lang } from '../i18n/index.js'
 import { createInjector } from '../injector/index.js'
 import type { ParsedGilPayload } from '../injector/types.js'
@@ -55,8 +61,10 @@ type GlobalOptions = {
   lang?: string
 }
 
+type GiaInjectionItem = { giaPath: string; targetId?: number }
+
 type InjectManyParams = {
-  giaPaths: string[]
+  giaItems: GiaInjectionItem[]
   opts: GlobalOptions
   gilCfg: GstsInjectConfig | undefined
   useConfiguredTargetId: boolean
@@ -76,10 +84,28 @@ type InjectManyResult = {
 
 const ui = createUi()
 
-type MergeResult = { graphId: number; outJsonPath: string; sourceJsonPaths: string[] }
+type MergeResult = {
+  graphId: number
+  outJsonPath: string
+  sourceJsonPaths: string[]
+  sourceIndex: number | null
+  mergedOutput: boolean
+}
+
+type GiaGenerationTask = {
+  irPath: string
+  outFile?: string
+  opts?: { includeIndices?: number[]; preserveIndices?: boolean }
+}
 
 type RunBatchHooks = InjectionAttemptHooks & {
-  onPrepared?: (result: { giaPaths: string[]; mergeResults?: MergeResult[] }) => void
+  programCache?: TsToGsProgramCache
+  invalidatedFiles?: Iterable<string>
+  onPrepared?: (result: {
+    giaPaths: string[]
+    giaItems: GiaInjectionItem[]
+    mergeResults?: MergeResult[]
+  }) => void
 }
 
 type ParsedGilCache = {
@@ -172,11 +198,7 @@ function writeGiaFromOutJson(
 function planGiaTaskFromOutJson(
   outJson: string,
   allowGraphIds?: Set<number>
-): {
-  irPath: string
-  outFile?: string
-  opts?: { includeIndices?: number[]; preserveIndices?: boolean }
-} | null {
+): GiaGenerationTask | null {
   if (isMergedJsonFile(outJson)) return { irPath: outJson }
 
   // allowGraphIds absent => emit all docs (single-file mode)
@@ -189,6 +211,30 @@ function planGiaTaskFromOutJson(
   if (!idxs.length) return null
 
   return { irPath: outJson, opts: { includeIndices: idxs, preserveIndices: true } }
+}
+
+function planGiaTasksFromMergeResults(results: MergeResult[]): GiaGenerationTask[] {
+  const byPath = new Map<string, { mergedOutput: boolean; sourceIndices: Set<number> }>()
+  for (const result of results) {
+    const current = byPath.get(result.outJsonPath) ?? {
+      mergedOutput: result.mergedOutput,
+      sourceIndices: new Set<number>()
+    }
+    if (result.sourceIndex !== null) current.sourceIndices.add(result.sourceIndex)
+    byPath.set(result.outJsonPath, current)
+  }
+
+  return [...byPath].map(([irPath, metadata]) =>
+    metadata.mergedOutput
+      ? { irPath }
+      : {
+          irPath,
+          opts: {
+            includeIndices: [...metadata.sourceIndices].sort((a, b) => a - b),
+            preserveIndices: true
+          }
+        }
+  )
 }
 
 function roundMs(value: number): number {
@@ -210,12 +256,12 @@ function injectManyCore(params: InjectManyParams): InjectManyResult {
       ok: 0,
       skipped: 0,
       fail: 0,
-      count: params.giaPaths.length,
+      count: params.giaItems.length,
       totalMs: 0,
       wroteGil: false
     }
   }
-  if (params.giaPaths.length === 0) {
+  if (params.giaItems.length === 0) {
     return {
       ok: 0,
       skipped: 0,
@@ -238,20 +284,22 @@ function injectManyCore(params: InjectManyParams): InjectManyResult {
 
   const prepared: Array<{
     giaPath: string
+    targetId?: number
     giaBytes: Uint8Array
     readGiaMs: number
   }> = []
   const readFailures: Array<{ giaPath: string; error: string; readGiaMs: number }> = []
   let readGiaMs = 0
   let giaBytesTotal = 0
-  for (const giaPath of params.giaPaths) {
+  for (const item of params.giaItems) {
+    const { giaPath } = item
     const readStart = performance.now()
     try {
       const giaBytes = fs.readFileSync(giaPath)
       const cost = performance.now() - readStart
       readGiaMs += cost
       giaBytesTotal += giaBytes.length
-      prepared.push({ giaPath, giaBytes, readGiaMs: cost })
+      prepared.push({ giaPath, targetId: item.targetId, giaBytes, readGiaMs: cost })
     } catch (error) {
       const cost = performance.now() - readStart
       readGiaMs += cost
@@ -272,7 +320,7 @@ function injectManyCore(params: InjectManyParams): InjectManyResult {
           version: 2,
           strategy: 'batch',
           mapFile: path.basename(target.gilPath),
-          files: params.giaPaths.length,
+          files: params.giaItems.length,
           ok: 0,
           skipped: 0,
           fail: readFailures.length,
@@ -296,7 +344,7 @@ function injectManyCore(params: InjectManyParams): InjectManyResult {
       ok: 0,
       skipped: 0,
       fail: readFailures.length,
-      count: params.giaPaths.length,
+      count: params.giaItems.length,
       totalMs,
       wroteGil: false
     }
@@ -317,22 +365,29 @@ function injectManyCore(params: InjectManyParams): InjectManyResult {
   const createInjectorMs = performance.now() - createInjectorStart
   const batch = injector.injectManyBytes({
     gilBytes,
-    items: prepared.map((item) => ({
-      giaBytes: item.giaBytes,
-      targetId: params.useConfiguredTargetId ? params.gilCfg?.nodeGraphId : undefined
-    })),
+    items: prepared.map((item) => {
+      const configuredTargetId = params.useConfiguredTargetId
+        ? params.gilCfg?.nodeGraphId
+        : undefined
+      const targetId = configuredTargetId ?? item.targetId
+      return {
+        giaBytes: item.giaBytes,
+        targetId,
+        prevalidateTarget: configuredTargetId === undefined && item.targetId !== undefined
+      }
+    }),
     skipNonEmptyCheck: !!params.gilCfg.skipSafeCheck,
     lang: params.lang
   })
 
   const writeStart = performance.now()
-  const wroteGil = batch.stats.replacementCount > 0
+  const wroteGil = batch.stats.replacementCount > 0 && !gilBytes.equals(batch.bytes)
+  assertGilFileUnchanged(
+    target.gilPath,
+    afterRead,
+    '[error] target gil changed during batch injection; write aborted'
+  )
   if (wroteGil) {
-    assertGilFileUnchanged(
-      target.gilPath,
-      afterRead,
-      '[error] target gil changed during batch injection; write aborted'
-    )
     writeFileAtomic(target.gilPath, batch.bytes)
   }
   const writeGilMs = performance.now() - writeStart
@@ -408,7 +463,7 @@ function injectManyCore(params: InjectManyParams): InjectManyResult {
         version: 2,
         strategy: 'batch',
         mapFile: path.basename(target.gilPath),
-        files: params.giaPaths.length,
+        files: params.giaItems.length,
         ok,
         skipped,
         fail,
@@ -443,7 +498,7 @@ function injectManyCore(params: InjectManyParams): InjectManyResult {
     ok,
     skipped,
     fail,
-    count: params.giaPaths.length,
+    count: params.giaItems.length,
     totalMs,
     wroteGil,
     parsedGil: { gilPath: target.gilPath, parsed: batch.parsed }
@@ -469,7 +524,7 @@ function injectMany(params: InjectManyParams): InjectManyResult {
             ...(typeof params.gilCfg?.mapId === 'number'
               ? { mapFile: `${params.gilCfg.mapId}.gil` }
               : {}),
-            files: params.giaPaths.length,
+            files: params.giaItems.length,
             error: errorText(error),
             timingsMs: { total: roundMs(performance.now() - totalStart) }
           })
@@ -886,6 +941,8 @@ async function runBatch(opts: GlobalOptions, hooks?: RunBatchHooks) {
     cfgDir,
     cfg,
     profile: profiling,
+    programCache: hooks?.programCache,
+    invalidatedFiles: hooks?.invalidatedFiles,
     onWriteGs: (outFile) => ui.ok(outFile)
   })
   const compileMs = profiling ? performance.now() - compileStart : 0
@@ -902,7 +959,7 @@ async function runBatch(opts: GlobalOptions, hooks?: RunBatchHooks) {
   let generateGiaMs = 0
   let jsonFileCount = 0
 
-  const giaAll: string[] = []
+  const giaAll: GiaInjectionItem[] = []
   let parsedGil: ParsedGilCache | undefined
 
   if (entryOutFiles.length) {
@@ -911,6 +968,7 @@ async function runBatch(opts: GlobalOptions, hooks?: RunBatchHooks) {
     const emitIrStart = profiling ? performance.now() : 0
     await emitIrJsonForEntries(entryOutFiles, {
       cwd: cfgDir,
+      lang,
       moduleFiles: compileResult.moduleOutFiles,
       moduleRoot: compileResult.outDir,
       profile: profiling,
@@ -926,12 +984,14 @@ async function runBatch(opts: GlobalOptions, hooks?: RunBatchHooks) {
 
     // 合并：同 graph.id 的 IR 输出合并成一个 JSON（用于更好的 DSL 拆分/工程化）
     const mergeIrStart = profiling ? performance.now() : 0
-    const merged = mergeIrJsonFilesByGraphId({ outDirAbs, irJsonPaths: irPaths })
+    const merged = await mergeIrJsonFilesByGraphIdAsync({ outDirAbs, irJsonPaths: irPaths })
     mergeIrMs = profiling ? performance.now() - mergeIrStart : 0
     lastMergeResults = merged.map((m) => ({
       graphId: m.graphId,
       outJsonPath: m.outJsonPath,
-      sourceJsonPaths: m.sourceJsonPaths
+      sourceJsonPaths: m.sourceJsonPaths,
+      sourceIndex: m.sourceIndex ?? null,
+      mergedOutput: m.mergedOutput === true
     }))
     const uniqueJsonPaths = [...new Set(merged.map((m) => m.outJsonPath))]
     jsonFileCount = uniqueJsonPaths.length
@@ -940,24 +1000,7 @@ async function runBatch(opts: GlobalOptions, hooks?: RunBatchHooks) {
     reportJsonMs = profiling ? performance.now() - reportJsonStart : 0
 
     const planGiaStart = profiling ? performance.now() : 0
-    const outJsonToGraphIds = new Map<string, Set<number>>()
-    for (const m of merged) {
-      const s = outJsonToGraphIds.get(m.outJsonPath) ?? new Set<number>()
-      s.add(m.graphId)
-      outJsonToGraphIds.set(m.outJsonPath, s)
-    }
-
-    const tasks = uniqueJsonPaths
-      .map((p) => planGiaTaskFromOutJson(p, outJsonToGraphIds.get(p) ?? new Set<number>()))
-      .filter(
-        (
-          t
-        ): t is {
-          irPath: string
-          outFile?: string
-          opts?: { includeIndices?: number[]; preserveIndices?: boolean }
-        } => Boolean(t)
-      )
+    const tasks = planGiaTasksFromMergeResults(lastMergeResults)
     planGiaMs = profiling ? performance.now() - planGiaStart : 0
     const generateGiaStart = profiling ? performance.now() : 0
     const detailed = await writeGiaFromIrJsonFiles(tasks, {
@@ -968,12 +1011,16 @@ async function runBatch(opts: GlobalOptions, hooks?: RunBatchHooks) {
     })
     generateGiaMs = profiling ? performance.now() - generateGiaStart : 0
     // GIA 输出由 runner 实时打印，这里避免重复输出
-    giaAll.push(...detailed.map((x) => x.giaPath))
+    giaAll.push(...detailed.map((x) => ({ giaPath: x.giaPath, targetId: x.graphId })))
 
     ui.info(t('giaAllDone', { count: giaAll.length }))
   }
 
-  hooks?.onPrepared?.({ giaPaths: giaAll, mergeResults: lastMergeResults })
+  hooks?.onPrepared?.({
+    giaPaths: giaAll.map((item) => item.giaPath),
+    giaItems: giaAll,
+    mergeResults: lastMergeResults
+  })
 
   let injectMs = 0
   // 批量模式：忽略 config.inject.nodeGraphId，使用 GIA 内的 graph id 推断
@@ -982,7 +1029,7 @@ async function runBatch(opts: GlobalOptions, hooks?: RunBatchHooks) {
     const stat = runInjectionAttempt(
       () =>
         injectMany({
-          giaPaths: giaAll,
+          giaItems: giaAll,
           opts,
           gilCfg: cfg.inject,
           useConfiguredTargetId: false,
@@ -1016,7 +1063,7 @@ async function runBatch(opts: GlobalOptions, hooks?: RunBatchHooks) {
     moduleFiles: compileResult.moduleOutFiles,
     outDirAbs,
     mergeResults: lastMergeResults,
-    giaPaths: giaAll,
+    giaPaths: giaAll.map((item) => item.giaPath),
     parsedGil,
     ...(profiling
       ? {
@@ -1062,12 +1109,18 @@ async function runDev(opts: GlobalOptions) {
   const lang = detectLang(opts.lang ?? cfg.lang)
   const { t } = initCliI18n(lang)
   applyIrToGiaOptimizeEnv(cfg)
+  const programCache = createTsToGsProgramCache()
 
-  const lastInjectedGiaPaths = new Set<string>()
+  const lastInjectedGiaItems = new Map<string, GiaInjectionItem>()
+  // Invalidated outputs are not injectable, but a map save must still retry their generation.
+  const pendingGiaGraphIds = new Set<number>()
   const normalizeGiaPath = (p: string) => path.resolve(p)
-  const trackGiaPaths = (paths: string[], mode: 'add' | 'replace' = 'add') => {
-    if (mode === 'replace') lastInjectedGiaPaths.clear()
-    for (const p of paths) lastInjectedGiaPaths.add(normalizeGiaPath(p))
+  const trackGiaItems = (items: GiaInjectionItem[], mode: 'add' | 'replace' = 'add') => {
+    if (mode === 'replace') lastInjectedGiaItems.clear()
+    for (const item of items) {
+      const giaPath = normalizeGiaPath(item.giaPath)
+      lastInjectedGiaItems.set(giaPath, { giaPath, targetId: item.targetId })
+    }
   }
 
   // 注入完成后的短暂冷却：用于屏蔽“迟到”的文件变更事件（杀软/IO 抖动等）
@@ -1101,20 +1154,35 @@ async function runDev(opts: GlobalOptions) {
 
   const graphIdToSources = new Map<number, string[]>()
   const graphIdToMergedJsonPath = new Map<number, string>()
+  const graphIdToMergeResult = new Map<number, MergeResult>()
+  const sourceJsonToGraphIds = new Map<string, Set<number>>()
 
   const updateMergeCache = (results: MergeResult[] | undefined) => {
     if (!results?.length) return
     for (const r of results) {
       graphIdToSources.set(r.graphId, r.sourceJsonPaths)
       graphIdToMergedJsonPath.set(r.graphId, r.outJsonPath)
+      graphIdToMergeResult.set(r.graphId, r)
+      for (const source of r.sourceJsonPaths) {
+        const ids = sourceJsonToGraphIds.get(source) ?? new Set<number>()
+        ids.add(r.graphId)
+        sourceJsonToGraphIds.set(source, ids)
+      }
     }
   }
 
-  const safeRunBatch = async () => {
+  const safeRunBatch = async (invalidatedFiles?: Iterable<string>) => {
     try {
       const res = await runBatch(opts, {
-        onPrepared: ({ giaPaths, mergeResults }) => {
-          trackGiaPaths(giaPaths, 'replace')
+        programCache,
+        invalidatedFiles,
+        onPrepared: ({ giaItems, mergeResults }) => {
+          trackGiaItems(giaItems, 'replace')
+          pendingGiaGraphIds.clear()
+          graphIdToSources.clear()
+          graphIdToMergedJsonPath.clear()
+          graphIdToMergeResult.clear()
+          sourceJsonToGraphIds.clear()
           updateMergeCache(mergeResults)
         },
         ...injectionHooks
@@ -1257,15 +1325,11 @@ async function runDev(opts: GlobalOptions) {
     registerRuntimeSources(runtimeSources)
   }
 
-  const sourceJsonToGraphIds = new Map<string, Set<number>>()
-
   const deleteIfExists = (p: string) => {
+    if (p.toLowerCase().endsWith('.gia')) lastInjectedGiaItems.delete(normalizeGiaPath(p))
     try {
       if (fs.existsSync(p)) {
         fs.unlinkSync(p)
-        if (p.toLowerCase().endsWith('.gia')) {
-          lastInjectedGiaPaths.delete(normalizeGiaPath(p))
-        }
       }
     } catch {
       // ignore
@@ -1280,62 +1344,94 @@ async function runDev(opts: GlobalOptions) {
       queuedOutJson.set(outJson, s)
     }
     const pendingEntryGs = new Set<string>()
+    const retiredSources = new Set<string>()
 
     const processEntryOutputs = async (entryOutFiles: string[]) => {
-      if (!entryOutFiles.length) return
-
-      console.log('')
-      ui.info(t('startGia'))
-      const moduleFiles = collectActiveModuleFiles()
-      await emitIrJsonForEntries(entryOutFiles, {
-        cwd: cfgDir,
-        moduleFiles,
-        moduleRoot: outDirAbs,
-        runtimeOptions: {
-          precompileExpression: cfg.options?.optimize?.precompileExpression ?? true,
-          removeUnusedNodes: cfg.options?.optimize?.removeUnusedNodes ?? true
-        }
-      })
-
+      if (!entryOutFiles.length && !retiredSources.size) return
+      const sourceJsonPaths = entryOutFiles.map(resolveIrOutputPath)
       const graphIds = new Set<number>()
-      const sourceJsonPaths: string[] = []
-      for (const gs of entryOutFiles) {
-        const irPath = resolveIrOutputPath(gs)
-        sourceJsonPaths.push(irPath)
-        const list = readJsonAsList(irPath)
-        for (const doc of list) graphIds.add(getGraphIdFromIrDocLike(doc))
+      // Keep old memberships before replacing them, including entries that disappeared.
+      for (const source of [...sourceJsonPaths, ...retiredSources]) {
+        for (const gid of sourceJsonToGraphIds.get(source) ?? []) graphIds.add(gid)
       }
+
+      if (entryOutFiles.length) {
+        console.log('')
+        ui.info(t('startGia'))
+        const moduleFiles = collectActiveModuleFiles()
+        await emitIrJsonForEntries(entryOutFiles, {
+          cwd: cfgDir,
+          lang,
+          moduleFiles,
+          moduleRoot: outDirAbs,
+          runtimeOptions: {
+            precompileExpression: cfg.options?.optimize?.precompileExpression ?? true,
+            removeUnusedNodes: cfg.options?.optimize?.removeUnusedNodes ?? true
+          }
+        })
+      }
+
+      const nextSourceIds = new Map<string, Set<number>>()
       for (const irPath of sourceJsonPaths) {
-        sourceJsonToGraphIds.set(irPath, new Set(graphIds))
+        const ids = new Set(readJsonAsList(irPath).map(getGraphIdFromIrDocLike))
+        nextSourceIds.set(irPath, ids)
+        for (const gid of ids) graphIds.add(gid)
       }
 
-      const unionSources = new Set<string>()
+      // Include the connected source/graph group: a source can contain several graphs.
+      // Merging whole documents must not replace another graph with a subset of its sources.
+      const unionSources = new Set(sourceJsonPaths)
       for (const gid of graphIds) {
-        const sources = graphIdToSources.get(gid) ?? []
-        sources.forEach((p) => unionSources.add(p))
+        for (const source of graphIdToSources.get(gid) ?? []) {
+          if (retiredSources.has(source) || !fs.existsSync(source)) continue
+          unionSources.add(source)
+          for (const related of nextSourceIds.get(source) ??
+            sourceJsonToGraphIds.get(source) ??
+            []) {
+            graphIds.add(related)
+          }
+        }
       }
-      sourceJsonPaths.forEach((p) => unionSources.add(p))
 
-      const merged = mergeIrJsonFilesByGraphId({ outDirAbs, irJsonPaths: [...unionSources] })
+      const merged = await mergeIrJsonFilesByGraphIdAsync({
+        outDirAbs,
+        irJsonPaths: [...unionSources]
+      })
+      const nextOutputs = new Set(merged.map((m) => m.outJsonPath))
+      for (const gid of graphIds) {
+        const prevOut = graphIdToMergedJsonPath.get(gid)
+        if (prevOut && !nextOutputs.has(prevOut) && isMergedJsonFile(prevOut)) {
+          deleteIfExists(prevOut)
+        }
+        graphIdToSources.delete(gid)
+        graphIdToMergedJsonPath.delete(gid)
+        graphIdToMergeResult.delete(gid)
+      }
+      for (const source of [...unionSources, ...retiredSources]) sourceJsonToGraphIds.delete(source)
+      // Replace pending memberships too: a failed graph can later move IDs or lose all sources.
+      for (const gid of graphIds) pendingGiaGraphIds.delete(gid)
+      for (const result of merged) pendingGiaGraphIds.add(result.graphId)
+      // Retire by graph ID: single/multiple/merged outputs can use different GIA filenames.
+      for (const [giaPath, item] of lastInjectedGiaItems) {
+        if (item.targetId !== undefined && graphIds.has(item.targetId)) deleteIfExists(giaPath)
+      }
       updateMergeCache(
         merged.map((m) => ({
           graphId: m.graphId,
           outJsonPath: m.outJsonPath,
-          sourceJsonPaths: m.sourceJsonPaths
+          sourceJsonPaths: m.sourceJsonPaths,
+          sourceIndex: m.sourceIndex ?? null,
+          mergedOutput: m.mergedOutput === true
         }))
       )
-      for (const gid of graphIds) {
-        const outJson =
-          graphIdToMergedJsonPath.get(gid) ?? merged.find((m) => m.graphId === gid)?.outJsonPath
-        if (!outJson) continue
-        queueOutJson(outJson, gid)
-      }
+      for (const result of merged) queueOutJson(result.outJsonPath, result.graphId)
     }
 
     if (removed.size > 20 || changed.size > 20) {
+      const invalidatedFiles = [...removed, ...changed].map((rel) => path.resolve(compileRoot, rel))
       removed.clear()
       changed.clear()
-      const result = await safeRunBatch()
+      const result = await safeRunBatch(invalidatedFiles)
       if (result) await refreshCompilerState(result.sourceFiles)
       return
     }
@@ -1359,83 +1455,22 @@ async function runDev(opts: GlobalOptions) {
     }
 
     const changedAbs = rels.map((rel) => path.resolve(compileRoot, rel))
+    invalidateTsToGsProgramCache(programCache, [
+      ...removedRels.map((rel) => path.resolve(compileRoot, rel)),
+      ...changedAbs
+    ])
     for (const abs of changedAbs) {
       updateDepsForFile(depGraph, abs, compilerOptions)
     }
 
-    const affectedGraphIdsByRemoval = new Set<number>()
     for (const rel of removedRels) {
-      // outDir 下对应的 source IR json 路径（由 gs_to_ir_json_transform 产出）
       const gsOut = path.resolve(outDirAbs, rel.replace(/\.ts$/i, '.gs.ts'))
       const irPath = resolveIrOutputPath(gsOut)
-
-      const graphIds =
-        sourceJsonToGraphIds.get(irPath) ??
-        new Set<number>(
-          [...graphIdToSources.entries()]
-            .filter(([, srcs]) => srcs.includes(irPath))
-            .map(([gid]) => gid)
-        )
-
-      sourceJsonToGraphIds.delete(irPath)
+      retiredSources.add(irPath)
       deleteIfExists(gsOut)
       deleteIfExists(gsOut.replace(/\.gs\.ts$/i, '.gs.js'))
       deleteIfExists(gsOut.replace(/\.gs\.ts$/i, '.gs.js.map'))
       deleteIfExists(irPath)
-
-      for (const gid of graphIds) {
-        affectedGraphIdsByRemoval.add(gid)
-        const prev = graphIdToSources.get(gid) ?? []
-        const next = prev.filter((p) => p !== irPath)
-        graphIdToSources.set(gid, next)
-      }
-    }
-
-    // 对删除影响到的 graphId 做增量重建（merge/json/gia/注入）
-    // 注意：不要“按 gid 单独 merge 并 update cache”，否则会用子集 sources 覆写其它 gid 的缓存。
-    const removalPrevOutByGid = new Map<number, string | undefined>()
-    const removalToRebuild = new Set<number>()
-    const removalUnionSources = new Set<string>()
-    for (const gid of affectedGraphIdsByRemoval) {
-      const prevOut = graphIdToMergedJsonPath.get(gid)
-      removalPrevOutByGid.set(gid, prevOut)
-
-      const sources = (graphIdToSources.get(gid) ?? []).filter((p) => fs.existsSync(p))
-      if (!sources.length) {
-        if (prevOut && isMergedJsonFile(prevOut)) {
-          deleteIfExists(prevOut)
-          deleteIfExists(prevOut.replace(/\.json$/i, '.gia'))
-        }
-        graphIdToSources.delete(gid)
-        graphIdToMergedJsonPath.delete(gid)
-        continue
-      }
-      sources.forEach((p) => removalUnionSources.add(p))
-      removalToRebuild.add(gid)
-    }
-    if (removalUnionSources.size) {
-      const merged = mergeIrJsonFilesByGraphId({ outDirAbs, irJsonPaths: [...removalUnionSources] })
-      updateMergeCache(
-        merged.map((m) => ({
-          graphId: m.graphId,
-          outJsonPath: m.outJsonPath,
-          sourceJsonPaths: m.sourceJsonPaths
-        }))
-      )
-      for (const gid of removalToRebuild) {
-        const prevOut = removalPrevOutByGid.get(gid)
-        const outJson =
-          graphIdToMergedJsonPath.get(gid) ?? merged.find((m) => m.graphId === gid)?.outJsonPath
-        if (!outJson) continue
-
-        // 若之前是合并文件，但这次变成“单源文件”，可以删除旧合并文件避免堆积
-        if (prevOut && prevOut !== outJson && isMergedJsonFile(prevOut)) {
-          deleteIfExists(prevOut)
-          deleteIfExists(prevOut.replace(/\.json$/i, '.gia'))
-        }
-
-        queueOutJson(outJson, gid)
-      }
     }
 
     for (const abs of changedAbs) {
@@ -1452,32 +1487,31 @@ async function runDev(opts: GlobalOptions) {
       .map((abs) => path.relative(compileRoot, abs).replace(/\\/g, '/'))
       .filter((rel) => rel && !changedRelSet.has(rel))
 
-    if (rels.length) {
+    const compileRels = [...new Set([...rels, ...impactedEntryRels])]
+    if (compileRels.length) {
       ui.info(t('startCompile'))
       const compileResult = await compileTsToGs({
         cfgDir,
         cfg,
-        emitEntries: rels,
+        emitEntries: compileRels,
         programEntries: cfg.entries,
+        programCache,
         onWriteGs: (p) => ui.ok(p)
       })
       registerRuntimeSources(compileResult.runtimeSourceFiles)
       const { entryOutFiles } = compileResult
-      updateEntryMapping(entryOutFiles)
-      entryOutFiles.forEach((p) => pendingEntryGs.add(p))
-    }
-
-    if (impactedEntryRels.length) {
-      ui.info(t('startCompile'))
-      const compileResult = await compileTsToGs({
-        cfgDir,
-        cfg,
-        emitEntries: impactedEntryRels,
-        programEntries: cfg.entries,
-        onWriteGs: (p) => ui.ok(p)
-      })
-      registerRuntimeSources(compileResult.runtimeSourceFiles)
-      const { entryOutFiles } = compileResult
+      const currentEntries = new Set(entryOutFiles.map((p) => path.resolve(p)))
+      for (const rel of compileRels) {
+        const norm = normForMap(path.resolve(compileRoot, rel))
+        const previous = entryOutBySource.get(norm)
+        if (previous && !currentEntries.has(path.resolve(previous))) {
+          const irPath = resolveIrOutputPath(previous)
+          retiredSources.add(irPath)
+          deleteIfExists(irPath)
+          entrySources.delete(norm)
+          entryOutBySource.delete(norm)
+        }
+      }
       updateEntryMapping(entryOutFiles)
       entryOutFiles.forEach((p) => pendingEntryGs.add(p))
     }
@@ -1485,17 +1519,14 @@ async function runDev(opts: GlobalOptions) {
     await processEntryOutputs([...pendingEntryGs].filter((p) => fs.existsSync(p)))
 
     const entries = [...queuedOutJson.entries()]
-    const tasks = entries
-      .map(([outJson, gids]) => planGiaTaskFromOutJson(outJson, gids))
-      .filter(
-        (
-          t
-        ): t is {
-          irPath: string
-          outFile?: string
-          opts?: { includeIndices?: number[]; preserveIndices?: boolean }
-        } => Boolean(t)
-      )
+    const tasks = entries.flatMap(([outJson, gids]) => {
+      const metadata = [...gids]
+        .map((graphId) => graphIdToMergeResult.get(graphId))
+        .filter((result): result is MergeResult => !!result && result.outJsonPath === outJson)
+      if (metadata.length === gids.size) return planGiaTasksFromMergeResults(metadata)
+      const fallback = planGiaTaskFromOutJson(outJson, gids)
+      return fallback ? [fallback] : []
+    })
 
     let all: { irPath: string; giaPath: string; graphId: number }[] = []
     if (tasks.length) {
@@ -1511,7 +1542,8 @@ async function runDev(opts: GlobalOptions) {
       }
     }
     if (all.length) {
-      trackGiaPaths(all.map((x) => x.giaPath))
+      for (const item of all) pendingGiaGraphIds.delete(item.graphId)
+      trackGiaItems(all.map((item) => ({ giaPath: item.giaPath, targetId: item.graphId })))
     }
 
     for (const [outJson] of entries) {
@@ -1523,7 +1555,7 @@ async function runDev(opts: GlobalOptions) {
       const stat = runInjectionAttempt(
         () =>
           injectMany({
-            giaPaths: all.map((x) => x.giaPath),
+            giaItems: all.map((item) => ({ giaPath: item.giaPath, targetId: item.graphId })),
             opts,
             gilCfg: cfg.inject,
             useConfiguredTargetId: false,
@@ -1547,15 +1579,25 @@ async function runDev(opts: GlobalOptions) {
   async function runReinject() {
     if (!reinjectOnMapChange || !gilPath || !cfg.inject) return
 
-    const tracked = [...lastInjectedGiaPaths]
-    if (!tracked.length) {
+    const tracked = [...lastInjectedGiaItems.values()]
+    if (!tracked.length && !pendingGiaGraphIds.size) {
       ui.warn(t('devReinjectNoGia'))
+      if (fs.existsSync(gilPath)) {
+        maybeExtractResources({
+          cfgDir,
+          injectCfg: cfg.inject,
+          opts,
+          lang,
+          gilPath,
+          reason: 'map-change'
+        })
+      }
       return
     }
 
-    const missing = tracked.filter((p) => !fs.existsSync(p))
-    if (missing.length) {
-      ui.warn(t('devReinjectMissingGia', { count: missing.length }))
+    const missing = tracked.filter((item) => !fs.existsSync(item.giaPath))
+    if (missing.length || pendingGiaGraphIds.size) {
+      ui.warn(t('devReinjectMissingGia', { count: missing.length + pendingGiaGraphIds.size }))
       const res = await safeRunBatch()
       if (res) {
         await refreshCompilerState(res.sourceFiles)
@@ -1581,7 +1623,7 @@ async function runDev(opts: GlobalOptions) {
     const stat = runInjectionAttempt(
       () =>
         injectMany({
-          giaPaths: tracked,
+          giaItems: tracked,
           opts,
           gilCfg: cfg.inject,
           useConfiguredTargetId: false,
@@ -1893,7 +1935,7 @@ function maybeExtractResources(params: {
 }
 
 function maybeInjectGias(
-  giaPaths: string[],
+  giaItems: GiaInjectionItem[],
   opts: GlobalOptions,
   gilCfg: GstsInjectConfig | undefined,
   useConfiguredTargetId: boolean,
@@ -1904,7 +1946,7 @@ function maybeInjectGias(
 
   const { t } = initCliI18n(detectLang(resolvedLang ?? opts.lang))
   const stat = injectMany({
-    giaPaths,
+    giaItems,
     opts,
     gilCfg,
     useConfiguredTargetId,
@@ -1936,7 +1978,7 @@ async function runSingle(file: string, opts: GlobalOptions) {
 
   if (isGiaPath(abs)) {
     // 单文件模式：允许使用 config.inject.nodeGraphId 覆盖目标 id
-    maybeInjectGias([abs], opts, injectCfg, true, lang)
+    maybeInjectGias([{ giaPath: abs }], opts, injectCfg, true, lang)
     return
   }
 
@@ -1945,7 +1987,7 @@ async function runSingle(file: string, opts: GlobalOptions) {
     const out = writeGiaFromOutJson(abs, undefined, (x) => ui.ok(`${x.giaPath} (id=${x.graphId})`))
     // 单文件模式：允许使用 config.inject.nodeGraphId 覆盖目标 id
     maybeInjectGias(
-      out.map((x) => x.giaPath),
+      out.map((item) => ({ giaPath: item.giaPath, targetId: item.graphId })),
       opts,
       injectCfg,
       true,
@@ -1961,7 +2003,7 @@ async function runSingle(file: string, opts: GlobalOptions) {
     const out = writeGiaFromOutJson(abs, undefined, (x) => ui.ok(`${x.giaPath} (id=${x.graphId})`))
     // 单文件模式：允许使用 config.inject.nodeGraphId 覆盖目标 id
     maybeInjectGias(
-      out.map((x) => x.giaPath),
+      out.map((item) => ({ giaPath: item.giaPath, targetId: item.graphId })),
       opts,
       injectCfg,
       true,
@@ -2010,6 +2052,7 @@ async function runSingle(file: string, opts: GlobalOptions) {
   ui.info(t('startGia'))
   await emitIrJsonForEntries([gsFile], {
     cwd: cfgDir,
+    lang,
     moduleFiles: compileResult.moduleOutFiles,
     moduleRoot: compileResult.outDir,
     runtimeOptions: {
@@ -2023,7 +2066,7 @@ async function runSingle(file: string, opts: GlobalOptions) {
   )
   // 单文件模式：允许使用 config.inject.nodeGraphId 覆盖目标 id
   maybeInjectGias(
-    giaOut.map((x) => x.giaPath),
+    giaOut.map((item) => ({ giaPath: item.giaPath, targetId: item.graphId })),
     opts,
     injectCfg,
     true,
