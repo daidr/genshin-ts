@@ -128,7 +128,7 @@ export function extractGilArtifacts(params: {
       format: false
     })
     profile.resourcesMs = performance.now() - start
-    if (resources.status === 'ok') formatPaths.add(resources.outPath)
+    if (resources.status === 'ok' && resources.changed) formatPaths.add(resources.outPath)
   }
 
   if (extractSignals && params.signals) {
@@ -139,7 +139,7 @@ export function extractGilArtifacts(params: {
       format: false
     })
     profile.signalsMs = performance.now() - start
-    if (signals.status === 'ok') formatPaths.add(signals.outPath)
+    if (signals.status === 'ok' && signals.changed) formatPaths.add(signals.outPath)
   }
 
   if (formatPaths.size > 0) {

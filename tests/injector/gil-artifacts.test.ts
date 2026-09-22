@@ -71,6 +71,8 @@ try {
   })
   assert.equal(extracted.resources?.status, 'ok')
   assert.equal(extracted.signals?.status, 'ok')
+  assert.equal(extracted.resources?.status === 'ok' && extracted.resources.changed, true)
+  assert.equal(extracted.signals?.status === 'ok' && extracted.signals.changed, true)
   assert.equal(extracted.profile.reusedParsed, true)
   assert.equal(extracted.profile.readGilMs, 0)
   assert.equal(extracted.profile.parseGilMs, 0)
@@ -80,8 +82,60 @@ try {
   assert.equal(extracted.profile.formattedFiles, 2)
   assert.equal(extracted.profile.formatError, undefined)
   assert.ok(extracted.profile.formatMs >= 0)
-  assert.match(fs.readFileSync(resourcesPath, 'utf8'), /"Artifact Prefab": 987654/)
-  assert.match(fs.readFileSync(signalsPath, 'utf8'), /"artifact_signal"/)
+  assert.match(fs.readFileSync(resourcesPath, 'utf8'), /['"]Artifact Prefab['"]: 987654/)
+  assert.match(fs.readFileSync(signalsPath, 'utf8'), /defineSignal\(['"]artifact_signal['"]/)
+
+  const preservedTime = new Date('2001-02-03T04:05:06.000Z')
+  fs.utimesSync(resourcesPath, preservedTime, preservedTime)
+  fs.utimesSync(signalsPath, preservedTime, preservedTime)
+  const unchanged = extractGilArtifacts({
+    gilPath: path.join(tempDir, 'unused-again.gil'),
+    parsed,
+    resources: { outPath: resourcesPath, lang: 'en' },
+    signals: { outPath: signalsPath }
+  })
+  assert.equal(unchanged.resources?.status === 'ok' && unchanged.resources.changed, false)
+  assert.equal(unchanged.signals?.status === 'ok' && unchanged.signals.changed, false)
+  assert.equal(unchanged.profile.formatAttempts, 0)
+  assert.equal(unchanged.profile.formatRuns, 0)
+  assert.equal(unchanged.profile.formatRequestedFiles, 0)
+  assert.equal(unchanged.profile.formattedFiles, 0)
+  assert.equal(fs.statSync(resourcesPath).mtimeMs, preservedTime.getTime())
+  assert.equal(fs.statSync(signalsPath).mtimeMs, preservedTime.getTime())
+
+  fs.writeFileSync(
+    resourcesPath,
+    fs.readFileSync(resourcesPath, 'utf8').replace('Based on', 'Edited annotation for')
+  )
+  fs.writeFileSync(
+    signalsPath,
+    fs.readFileSync(signalsPath, 'utf8').replace('artifact_signal', 'edited_signal')
+  )
+  const regenerated = extractGilArtifacts({
+    gilPath: path.join(tempDir, 'unused-after-edit.gil'),
+    parsed,
+    resources: { outPath: resourcesPath, lang: 'en' },
+    signals: { outPath: signalsPath }
+  })
+  assert.equal(regenerated.resources?.status === 'ok' && regenerated.resources.changed, true)
+  assert.equal(regenerated.signals?.status === 'ok' && regenerated.signals.changed, true)
+  assert.equal(regenerated.profile.formatRuns, 1)
+  assert.equal(regenerated.profile.formattedFiles, 2)
+  assert.doesNotMatch(fs.readFileSync(resourcesPath, 'utf8'), /Edited annotation for/)
+  assert.doesNotMatch(fs.readFileSync(signalsPath, 'utf8'), /edited_signal/)
+
+  fs.writeFileSync(
+    signalsPath,
+    fs.readFileSync(signalsPath, 'utf8').replace('defineSignal(', 'defineSignal')
+  )
+  const repairedSyntax = extractGilArtifacts({
+    gilPath: path.join(tempDir, 'unused-after-invalid-edit.gil'),
+    parsed,
+    signals: { outPath: signalsPath }
+  })
+  assert.equal(repairedSyntax.signals?.status === 'ok' && repairedSyntax.signals.changed, true)
+  assert.equal(repairedSyntax.profile.formatRuns, 1)
+  assert.match(fs.readFileSync(signalsPath, 'utf8'), /defineSignal\(['"]artifact_signal['"]/)
 
   const missingFormat = tryFormatWithPrettier(path.join(tempDir, 'missing-format-target.ts'))
   assert.equal(missingFormat.attempted, true)

@@ -25,7 +25,7 @@ type SignalEntry = {
 }
 
 export type ExtractSignalsOutcome =
-  | { status: 'ok'; outPath: string; count: number }
+  | { status: 'ok'; outPath: string; count: number; changed: boolean }
   | { status: 'skipped-existing'; outPath: string }
   | { status: 'failed'; outPath: string; error: string }
 
@@ -219,10 +219,10 @@ export function extractSignalsFromParsedGil(params: {
     })
     const entries = parseSignalEntries(params.parsed.payload, signalFields)
 
-    writeGeneratedFile(params.outPath, buildSignalsSource(entries), {
+    const { changed } = writeGeneratedFile(params.outPath, buildSignalsSource(entries), {
       format: params.format
     })
-    return { status: 'ok', outPath: params.outPath, count: entries.length }
+    return { status: 'ok', outPath: params.outPath, count: entries.length, changed }
   } catch (e) {
     return {
       status: 'failed',

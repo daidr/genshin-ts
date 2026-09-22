@@ -1,7 +1,6 @@
 import { initCliI18n, type Lang } from '../i18n/index.js'
 import { ensureDataDirs } from './data.js'
 import { renderMarkdownToAnsi } from './markdown_render.js'
-import { fetchText } from './net.js'
 import { shouldShowNotice, splitMarkdownFrontmatter } from './notice_frontmatter.js'
 import { getSelfVersion } from './pkg.js'
 import { loadState, saveState, type CliState } from './state.js'
@@ -54,6 +53,7 @@ export async function maybeCheckRemoteMarkdown(key: CheckKey, lang: Lang) {
 
   const url = URLS[key][lang]
   ui.info(key === 'update' ? t('checkUpdate') : t('checkNotice'))
+  const { fetchText } = await import('./net.js')
   const md = await fetchText(url)
 
   const rendered = (() => {

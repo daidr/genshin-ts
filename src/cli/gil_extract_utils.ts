@@ -3,6 +3,8 @@ import fs from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 
+import ts from 'typescript'
+
 import { parseMessage, readUint32BE } from '../injector/binary.js'
 import type { LenField, ParsedGilPayload } from '../injector/types.js'
 
@@ -23,6 +25,69 @@ export type FormatWithPrettierResult = {
   attempted: boolean
   succeeded: boolean
   error?: string
+}
+
+function generatedSourcesEqual(left: string, right: string): boolean {
+  function canonicalize(source: string): string | null {
+    const sourceFile = ts.createSourceFile(
+      'generated.ts',
+      source,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TS
+    )
+    const parseDiagnostics = (
+      sourceFile as ts.SourceFile & { parseDiagnostics?: readonly ts.Diagnostic[] }
+    ).parseDiagnostics
+    if (parseDiagnostics?.length) return null
+    function visit(node: ts.Node): unknown {
+      if (ts.isPropertyAssignment(node)) {
+        const name =
+          ts.isIdentifier(node.name) ||
+          ts.isStringLiteral(node.name) ||
+          ts.isNumericLiteral(node.name)
+            ? node.name.text
+            : visit(node.name)
+        return [node.kind, name, visit(node.initializer)]
+      }
+      let value: string | undefined
+      if (
+        ts.isIdentifier(node) ||
+        ts.isStringLiteral(node) ||
+        ts.isNumericLiteral(node) ||
+        ts.isBigIntLiteral(node) ||
+        ts.isNoSubstitutionTemplateLiteral(node)
+      ) {
+        value = node.text
+      }
+      const children: unknown[] = []
+      node.forEachChild((child) => {
+        children.push(visit(child))
+      })
+      return value === undefined ? [node.kind, children] : [node.kind, value, children]
+    }
+
+    const comments: string[] = []
+    const scanner = ts.createScanner(
+      ts.ScriptTarget.Latest,
+      false,
+      ts.LanguageVariant.Standard,
+      source
+    )
+    while (true) {
+      const kind = scanner.scan()
+      if (kind === ts.SyntaxKind.EndOfFileToken) break
+      if (
+        kind === ts.SyntaxKind.SingleLineCommentTrivia ||
+        kind === ts.SyntaxKind.MultiLineCommentTrivia
+      ) {
+        comments.push(scanner.getTokenText().replace(/\s+/g, ' ').trim())
+      }
+    }
+    return JSON.stringify([visit(sourceFile), comments])
+  }
+  const leftCanonical = canonicalize(left)
+  return leftCanonical !== null && leftCanonical === canonicalize(right)
 }
 
 export function hasGeneratedHeader(text: string, header: string): boolean {
@@ -126,7 +191,12 @@ export function writeGeneratedFile(
   source: string,
   options?: { format?: boolean }
 ) {
+  if (fs.existsSync(outPath)) {
+    const existing = fs.readFileSync(outPath, 'utf8')
+    if (generatedSourcesEqual(existing, source)) return { changed: false }
+  }
   fs.mkdirSync(path.dirname(outPath), { recursive: true })
   fs.writeFileSync(outPath, source)
   if (options?.format !== false) tryFormatWithPrettier(outPath)
+  return { changed: true }
 }

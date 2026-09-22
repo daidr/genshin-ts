@@ -26,7 +26,7 @@ export type CustomPrefabEntry = {
 }
 
 export type ExtractCustomResourcesOutcome =
-  | { status: 'ok'; outPath: string; count: number }
+  | { status: 'ok'; outPath: string; count: number; changed: boolean }
   | { status: 'skipped-existing'; outPath: string }
   | { status: 'failed'; outPath: string; error: string }
 
@@ -192,8 +192,10 @@ export function extractCustomResourcesFromParsedGil(params: {
     })
     lines.push('}', '')
 
-    writeGeneratedFile(params.outPath, lines.join('\n'), { format: params.format })
-    return { status: 'ok', outPath: params.outPath, count: entries.length }
+    const { changed } = writeGeneratedFile(params.outPath, lines.join('\n'), {
+      format: params.format
+    })
+    return { status: 'ok', outPath: params.outPath, count: entries.length, changed }
   } catch (e) {
     return {
       status: 'failed',
