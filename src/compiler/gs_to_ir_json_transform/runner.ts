@@ -2,7 +2,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { pathToFileURL } from 'node:url'
+import { isMainThread, parentPort, workerData } from 'node:worker_threads'
 
+import { initCliI18n } from '../../i18n/index.js'
 import { buildAllGraphRegistriesIRDocuments } from '../../runtime/core.js'
 import { setRuntimeOptions } from '../../runtime/runtime_config.js'
 
@@ -13,14 +15,17 @@ function defaultGraphNameFromEntryFile(entryFile: string): string {
   return path.basename(entryFile, path.extname(entryFile))
 }
 
-async function main() {
+type WorkerRunnerData = {
+  kind: 'gsts-gs-to-ir'
+  entryFile: string
+  outFile: string
+  compact: boolean
+}
+
+async function main(entryFile: string, outFile: string, compact: boolean) {
+  if (!entryFile || !outFile) throw new Error('[error] entryFile and outFile are required')
   const profiling = process.env.GSTS_PIPELINE_PROFILE === '1'
   const totalStart = profiling ? performance.now() : 0
-  const [entryFile, outFile, compactFlag] = process.argv.slice(2)
-  if (!entryFile || !outFile) {
-    console.error('[error] entryFile and outFile are required')
-    process.exit(1)
-  }
 
   setRuntimeOptions({
     optimize: {
@@ -29,12 +34,15 @@ async function main() {
     }
   })
 
+  const runnerLang = process.env.GSTS_RUNNER_LANG
+  if (runnerLang === 'zh-CN' || runnerLang === 'en-US') initCliI18n(runnerLang)
+
   const entryUrl = pathToFileURL(entryFile).href
   const importStart = profiling ? performance.now() : 0
   await import(entryUrl)
   const importEntryMs = profiling ? performance.now() - importStart : 0
 
-  const space = compactFlag === '1' ? 0 : 2
+  const space = compact ? 0 : 2
   const buildStart = profiling ? performance.now() : 0
   const documents = buildAllGraphRegistriesIRDocuments({
     defaultName: defaultGraphNameFromEntryFile(entryFile)
@@ -54,9 +62,8 @@ async function main() {
   fs.mkdirSync(path.dirname(outFile), { recursive: true })
   fs.writeFileSync(outFile, json, 'utf8')
   const writeMs = profiling ? performance.now() - writeStart : 0
-  if (profiling) {
-    process.stderr.write(
-      `[gsts-profile:gs-to-ir] ${JSON.stringify({
+  const profile = profiling
+    ? {
         stats: {
           inputBytes: fs.statSync(entryFile).size,
           outputBytes: Buffer.byteLength(json),
@@ -71,13 +78,33 @@ async function main() {
           write: writeMs,
           total: performance.now() - totalStart
         }
-      })}\n`
-    )
-  }
+      }
+    : undefined
   console.log(`[ok] ${outFile}`)
+  return profile
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+const data = workerData as WorkerRunnerData | null
+const args = isMainThread
+  ? {
+      kind: 'gsts-gs-to-ir' as const,
+      entryFile: process.argv[2] ?? '',
+      outFile: process.argv[3] ?? '',
+      compact: process.argv[4] === '1'
+    }
+  : data?.kind === 'gsts-gs-to-ir'
+    ? data
+    : { kind: 'gsts-gs-to-ir', entryFile: '', outFile: '', compact: false }
+
+main(args.entryFile, args.outFile, args.compact)
+  .then((profile) => {
+    if (isMainThread) {
+      if (profile) process.stderr.write(`[gsts-profile:gs-to-ir] ${JSON.stringify(profile)}\n`)
+    } else {
+      parentPort?.postMessage({ kind: 'gsts-gs-to-ir-result', profile })
+    }
+  })
+  .catch((err) => {
+    console.error(err)
+    process.exitCode = 1
+  })

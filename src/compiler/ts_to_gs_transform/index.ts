@@ -51,8 +51,7 @@ function isGstsServerFunctionDecl(node: ts.Node): boolean {
   return false
 }
 
-function isGstsServerSymbol(sym: ts.Symbol, checker: ts.TypeChecker): boolean {
-  const target = resolveAliasedSymbol(sym, checker)
+function isGstsServerTargetSymbol(target: ts.Symbol): boolean {
   if (!isGstsServerName(target.getName())) return false
   const decls = target.getDeclarations() ?? []
   if (!decls.length) return true
@@ -68,30 +67,12 @@ function getCallSymbol(call: ts.CallExpression, checker: ts.TypeChecker): ts.Sym
   return checker.getSymbolAtLocation(callee) ?? null
 }
 
-function isGstsServerCall(call: ts.CallExpression, checker: ts.TypeChecker): boolean {
-  const sym = getCallSymbol(call, checker)
-  if (!sym) return false
-  return isGstsServerSymbol(sym, checker)
-}
-
-function getGstsClientSymbolSubType(
-  sym: ts.Symbol,
-  checker: ts.TypeChecker
-): ClientGraphSubType | undefined {
-  const target = resolveAliasedSymbol(sym, checker)
+function getGstsClientTargetSubType(target: ts.Symbol): ClientGraphSubType | undefined {
   const subType = getClientGraphSubTypeForGstsFunctionName(target.getName())
   if (!subType) return undefined
   const decls = target.getDeclarations() ?? []
   if (!decls.length || decls.some((decl) => isGstsServerFunctionDecl(decl))) return subType
   return undefined
-}
-
-function getGstsClientCallSubType(
-  call: ts.CallExpression,
-  checker: ts.TypeChecker
-): ClientGraphSubType | undefined {
-  const symbol = getCallSymbol(call, checker)
-  return symbol ? getGstsClientSymbolSubType(symbol, checker) : undefined
 }
 
 function getGstsClientNamespaceSubType(
@@ -275,6 +256,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
   const features = buildFeatureFlags(ctx.config)
   const enumImport = findEnumImportInfo(sf)
   const needsEnumImportRef = { value: false }
+  const checker = ctx.checker
   const makeEnv = (
     gstsIdent: string,
     eventName?: string,
@@ -283,7 +265,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
     gstsIdent,
     config: ctx.config,
     file: sf,
-    checker: ctx.checker,
+    checker,
     loopMax,
     tempCounter: 1,
     timerCounterRef: ctx.timerCounterRef,
@@ -297,6 +279,45 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
 
   const baseEnv = makeEnv('gsts')
 
+  // Resolve actual symbols, including nested namespace/re-export aliases. Cache the checker
+  // results across validation passes rather than filtering calls by their written names.
+  const callSymbolCache = new WeakMap<ts.CallExpression, ts.Symbol | null>()
+  const resolvedSymbolCache = new Map<ts.Symbol, ts.Symbol>()
+  const serverSymbolCache = new Map<ts.Symbol, boolean>()
+  const clientSymbolCache = new Map<ts.Symbol, ClientGraphSubType | undefined>()
+
+  const getCachedCallSymbol = (call: ts.CallExpression): ts.Symbol | null => {
+    const cached = callSymbolCache.get(call)
+    if (cached !== undefined || callSymbolCache.has(call)) return cached ?? null
+    const symbol = getCallSymbol(call, checker)
+    callSymbolCache.set(call, symbol)
+    return symbol
+  }
+  const getResolvedSymbol = (symbol: ts.Symbol): ts.Symbol => {
+    const cached = resolvedSymbolCache.get(symbol)
+    if (cached) return cached
+    const resolved = resolveAliasedSymbol(symbol, checker)
+    resolvedSymbolCache.set(symbol, resolved)
+    return resolved
+  }
+  const isCachedGstsServerCall = (call: ts.CallExpression): boolean => {
+    const symbol = getCachedCallSymbol(call)
+    if (!symbol) return false
+    const cached = serverSymbolCache.get(symbol)
+    if (cached !== undefined || serverSymbolCache.has(symbol)) return cached === true
+    const result = isGstsServerTargetSymbol(getResolvedSymbol(symbol))
+    serverSymbolCache.set(symbol, result)
+    return result
+  }
+  const getCachedClientCallSubType = (call: ts.CallExpression): ClientGraphSubType | undefined => {
+    const symbol = getCachedCallSymbol(call)
+    if (!symbol) return undefined
+    const cached = clientSymbolCache.get(symbol)
+    if (cached !== undefined || clientSymbolCache.has(symbol)) return cached
+    const result = getGstsClientTargetSubType(getResolvedSymbol(symbol))
+    clientSymbolCache.set(symbol, result)
+    return result
+  }
   const topLevelGstsServerDecls = (() => {
     const out: {
       name: string
@@ -316,7 +337,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
           fail(baseEnv, stmt, `duplicate gstsServer function name: ${name}`)
         }
         seen.add(name)
-        const symbol = ctx.checker.getSymbolAtLocation(stmt.name) ?? null
+        const symbol = checker.getSymbolAtLocation(stmt.name) ?? null
         out.push({ name, symbol, decl: stmt, fn: stmt })
         continue
       }
@@ -332,7 +353,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
             fail(baseEnv, decl, `duplicate gstsServer function name: ${name}`)
           }
           seen.add(name)
-          const symbol = ctx.checker.getSymbolAtLocation(decl.name) ?? null
+          const symbol = checker.getSymbolAtLocation(decl.name) ?? null
           out.push({
             name,
             symbol,
@@ -369,7 +390,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
         out.push({
           name,
           subType,
-          symbol: ctx.checker.getSymbolAtLocation(stmt.name) ?? null,
+          symbol: checker.getSymbolAtLocation(stmt.name) ?? null,
           decl: stmt,
           fn: stmt
         })
@@ -391,7 +412,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
         out.push({
           name,
           subType,
-          symbol: ctx.checker.getSymbolAtLocation(decl.name) ?? null,
+          symbol: checker.getSymbolAtLocation(decl.name) ?? null,
           decl,
           fn: decl.initializer
         })
@@ -429,8 +450,9 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
           )
         }
       }
-      if (ts.isCallExpression(node) && isGstsServerCall(node, ctx.checker)) {
-        if (!inServerCtx) {
+      if (ts.isCallExpression(node)) {
+        const isServerFunctionCall = isCachedGstsServerCall(node)
+        if (isServerFunctionCall && !inServerCtx) {
           fail(
             baseEnv,
             node,
@@ -440,7 +462,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
       }
       if (
         ts.isCallExpression(node) &&
-        isServerOnCall(node, ctx.checker) &&
+        isServerOnCall(node, checker) &&
         node.arguments.length >= 2
       ) {
         visit(node.expression, inServerCtx)
@@ -516,7 +538,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
       }
 
       if (ts.isCallExpression(node)) {
-        const targetSubType = getGstsClientCallSubType(node, ctx.checker)
+        const targetSubType = getCachedClientCallSubType(node)
         if (targetSubType && targetSubType !== clientSubType) {
           fail(
             baseEnv,
@@ -525,7 +547,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
           )
         }
 
-        const clientInfo = getClientOnCallInfo(node, ctx.checker)
+        const clientInfo = getClientOnCallInfo(node, checker)
         if (clientInfo) {
           visit(node.expression, clientSubType)
           node.arguments.forEach((arg, index) => {
@@ -560,9 +582,9 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
       const calls: { target: ts.Symbol; call: ts.CallExpression }[] = []
       const visit = (node: ts.Node) => {
         if (ts.isCallExpression(node)) {
-          const sym = getCallSymbol(node, ctx.checker)
+          const sym = getCachedCallSymbol(node)
           if (sym) {
-            const target = resolveAliasedSymbol(sym, ctx.checker)
+            const target = getResolvedSymbol(sym)
             if (bySymbol.has(target)) {
               calls.push({ target, call: node })
             }
@@ -609,9 +631,9 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
       const calls: { target: ts.Symbol; call: ts.CallExpression }[] = []
       const visit = (node: ts.Node) => {
         if (ts.isCallExpression(node)) {
-          const symbol = getCallSymbol(node, ctx.checker)
+          const symbol = getCachedCallSymbol(node)
           if (symbol) {
-            const target = resolveAliasedSymbol(symbol, ctx.checker)
+            const target = getResolvedSymbol(symbol)
             if (bySymbol.has(target)) calls.push({ target, call: node })
           }
         }
@@ -648,7 +670,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
     const visit = (node: ts.Node): ts.Node => {
       if (
         ts.isCallExpression(node) &&
-        isServerOnCall(node, ctx.checker) &&
+        isServerOnCall(node, checker) &&
         node.arguments.length >= 2
       ) {
         const handler = node.arguments[1]
@@ -671,7 +693,7 @@ export function transformToGs(sf: ts.SourceFile, ctx: TransformCtx): ts.SourceFi
         }
       }
       if (ts.isCallExpression(node)) {
-        const clientInfo = getClientOnCallInfo(node, ctx.checker)
+        const clientInfo = getClientOnCallInfo(node, checker)
         if (clientInfo) {
           const handler = clientInfo.handler
           const gstsIdent =

@@ -30,6 +30,83 @@ function normForMap(p: string): string {
   return ts.sys.useCaseSensitiveFileNames ? abs : abs.toLowerCase()
 }
 
+type ModuleResolver = (
+  moduleName: string,
+  containingFile: string
+) => ts.ResolvedModuleFull | undefined
+
+function createModuleResolver(cwd: string, options: ts.CompilerOptions): ModuleResolver {
+  const canonicalFileName = ts.sys.useCaseSensitiveFileNames
+    ? (fileName: string) => fileName
+    : (fileName: string) => fileName.toLowerCase()
+  const resolutionCache = ts.createModuleResolutionCache(cwd, canonicalFileName, options)
+  const results = new Map<string, ts.ResolvedModuleFull | null>()
+
+  return (moduleName, containingFile) => {
+    const key = `${normForMap(containingFile)}\0${moduleName}`
+    const cached = results.get(key)
+    if (cached !== undefined) return cached ?? undefined
+
+    const resolved = ts.resolveModuleName(
+      moduleName,
+      containingFile,
+      options,
+      ts.sys,
+      resolutionCache
+    ).resolvedModule
+    results.set(key, resolved ?? null)
+    return resolved
+  }
+}
+
+function createCachedTypeChecker(checker: ts.TypeChecker): ts.TypeChecker {
+  const typesByNode = new WeakMap<ts.Node, ts.Type>()
+  const symbolsByNode = new WeakMap<ts.Node, ts.Symbol | null>()
+  const aliasesBySymbol = new WeakMap<ts.Symbol, ts.Symbol>()
+  const defaultTypeStrings = new WeakMap<ts.Type, string>()
+  const cached = Object.create(checker) as ts.TypeChecker
+
+  const getTypeAtLocation: ts.TypeChecker['getTypeAtLocation'] = (node) => {
+    const existing = typesByNode.get(node)
+    if (existing) return existing
+    const result = checker.getTypeAtLocation(node)
+    typesByNode.set(node, result)
+    return result
+  }
+  const getSymbolAtLocation: ts.TypeChecker['getSymbolAtLocation'] = (node) => {
+    const existing = symbolsByNode.get(node)
+    if (existing !== undefined) return existing ?? undefined
+    const result = checker.getSymbolAtLocation(node)
+    symbolsByNode.set(node, result ?? null)
+    return result
+  }
+  const getAliasedSymbol: ts.TypeChecker['getAliasedSymbol'] = (symbol) => {
+    const existing = aliasesBySymbol.get(symbol)
+    if (existing) return existing
+    const result = checker.getAliasedSymbol(symbol)
+    aliasesBySymbol.set(symbol, result)
+    return result
+  }
+  const typeToString: ts.TypeChecker['typeToString'] = (type, enclosingDeclaration, flags) => {
+    if (enclosingDeclaration !== undefined || flags !== undefined) {
+      return checker.typeToString(type, enclosingDeclaration, flags)
+    }
+    const existing = defaultTypeStrings.get(type)
+    if (existing !== undefined) return existing
+    const result = checker.typeToString(type)
+    defaultTypeStrings.set(type, result)
+    return result
+  }
+
+  Object.defineProperties(cached, {
+    getTypeAtLocation: { value: getTypeAtLocation },
+    getSymbolAtLocation: { value: getSymbolAtLocation },
+    getAliasedSymbol: { value: getAliasedSymbol },
+    typeToString: { value: typeToString }
+  })
+  return cached
+}
+
 function isPathInside(root: string, target: string): boolean {
   const rel = path.relative(root, target)
   return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel))
@@ -91,8 +168,8 @@ function collectRuntimeModuleSpecifiers(sf: ts.SourceFile): string[] {
 function collectRuntimeDependencyFiles(
   roots: string[],
   program: ts.Program,
-  options: ts.CompilerOptions,
-  compileRoot: string
+  compileRoot: string,
+  resolveModule: ModuleResolver
 ): string[] {
   const queue = [...roots]
   const seen = new Map<string, string>()
@@ -106,7 +183,7 @@ function collectRuntimeDependencyFiles(
     const sf = program.getSourceFile(file)
     if (!sf) throw new Error(`[error] failed to load source file: ${file}`)
     for (const spec of collectRuntimeModuleSpecifiers(sf)) {
-      const resolved = ts.resolveModuleName(spec, file, options, ts.sys).resolvedModule
+      const resolved = resolveModule(spec, file)
       if (!resolved || resolved.isExternalLibraryImport || resolved.packageId) continue
       const target = path.resolve(resolved.resolvedFileName)
       if (!isEligibleInputTsFile(target)) continue
@@ -192,9 +269,9 @@ function rewriteRelativeModuleSpecifiers(
   ctx: {
     inFile: string
     outFile: string
-    options: ts.CompilerOptions
     inToOutFiles: Map<string, string>
     strictRuntime: boolean
+    resolveModule: ModuleResolver
   }
 ): ts.SourceFile {
   const fromDir = path.dirname(ctx.inFile)
@@ -203,7 +280,7 @@ function rewriteRelativeModuleSpecifiers(
   const rewriteOne = (rawSpec: string, typeOnly = false): string | null => {
     // 统一用 TS 模块解析：既支持 ./../，也支持 tsconfig paths 等“非点号开头”的本地别名导入。
     // 仅当解析结果命中 filtered（且不是外部库导入）时才改写到目标输出路径。
-    const resolved = ts.resolveModuleName(rawSpec, ctx.inFile, ctx.options, ts.sys).resolvedModule
+    const resolved = ctx.resolveModule(rawSpec, ctx.inFile)
     const resolvedFile = resolved?.resolvedFileName
     if (resolvedFile && !resolved.isExternalLibraryImport && !resolved.packageId) {
       const outTarget = ctx.inToOutFiles.get(normForMap(resolvedFile))
@@ -352,6 +429,10 @@ export type TsToGsCompileParams = {
    * Optional entries used only for TS program/type-checking (dev incremental).
    */
   programEntries?: string[]
+  /** Reuses the TypeScript Program and unchanged SourceFiles across dev rebuilds. */
+  programCache?: TsToGsProgramCache
+  /** Files reported by the watcher as changed or removed. */
+  invalidatedFiles?: Iterable<string>
   /**
    * Called immediately after each `.gs.ts` file is written.
    */
@@ -395,6 +476,9 @@ export type TsToGsCompileProfile = {
     programSourceFiles: number
     timerFiles: number
     entryFiles: number
+    programReused: boolean
+    sourceFilesReused: number
+    sourceFilesCreated: number
   }
   timingsMs: {
     setup: number
@@ -409,6 +493,29 @@ export type TsToGsCompileProfile = {
     total: number
   }
   files: TsToGsFileProfile[]
+}
+
+type CachedSourceFile = {
+  sourceFile: ts.SourceFile
+  mtimeMs: number
+  size: number
+}
+
+export type TsToGsProgramCache = {
+  program?: ts.Program
+  optionsKey?: string
+  sourceFiles: Map<string, CachedSourceFile>
+}
+
+export function createTsToGsProgramCache(): TsToGsProgramCache {
+  return { sourceFiles: new Map() }
+}
+
+export function invalidateTsToGsProgramCache(
+  cache: TsToGsProgramCache,
+  files: Iterable<string>
+): void {
+  for (const file of files) cache.sourceFiles.delete(normForMap(file))
 }
 
 export async function compileTsToGs(params: TsToGsCompileParams): Promise<TsToGsCompileResult> {
@@ -493,7 +600,82 @@ export async function compileTsToGs(params: TsToGsCompileParams): Promise<TsToGs
     rootNames.push(extra)
   }
   const createProgramStart = profiling ? performance.now() : 0
-  const prg = ts.createProgram({ rootNames, options })
+  let programReused = false
+  let sourceFilesReused = 0
+  let sourceFilesCreated = 0
+  let prg: ts.Program
+  const programCache = params.programCache
+  if (programCache) {
+    const optionsKey = JSON.stringify(options)
+    if (programCache.optionsKey !== optionsKey) {
+      programCache.program = undefined
+      programCache.sourceFiles.clear()
+      programCache.optionsKey = optionsKey
+    }
+    invalidateTsToGsProgramCache(programCache, params.invalidatedFiles ?? [])
+
+    const host = ts.createCompilerHost(options)
+    const readSourceFile = host.getSourceFile.bind(host)
+    const reusedKeys = new Set<string>()
+    const createdKeys = new Set<string>()
+    host.getSourceFile = (fileName, languageVersion, onError, shouldCreateNewSourceFile) => {
+      const key = normForMap(fileName)
+      if (!shouldCreateNewSourceFile) {
+        const cached = programCache.sourceFiles.get(key)
+        if (cached) {
+          try {
+            const stat = fs.statSync(fileName)
+            if (cached.mtimeMs === stat.mtimeMs && cached.size === stat.size) {
+              if (!reusedKeys.has(key) && !createdKeys.has(key)) {
+                reusedKeys.add(key)
+                sourceFilesReused += 1
+              }
+              return cached.sourceFile
+            }
+          } catch {
+            programCache.sourceFiles.delete(key)
+          }
+        }
+      }
+
+      const sourceFile = readSourceFile(
+        fileName,
+        languageVersion,
+        onError,
+        shouldCreateNewSourceFile
+      )
+      if (!sourceFile) {
+        programCache.sourceFiles.delete(key)
+        return undefined
+      }
+      try {
+        const stat = fs.statSync(fileName)
+        programCache.sourceFiles.set(key, {
+          sourceFile,
+          mtimeMs: stat.mtimeMs,
+          size: stat.size
+        })
+      } catch {
+        programCache.sourceFiles.delete(key)
+      }
+      if (!createdKeys.has(key)) {
+        createdKeys.add(key)
+        sourceFilesCreated += 1
+      }
+      return sourceFile
+    }
+
+    programReused = !!programCache.program
+    prg = ts.createProgram({
+      rootNames,
+      options,
+      host,
+      oldProgram: programCache.program
+    })
+    programCache.program = prg
+  } else {
+    prg = ts.createProgram({ rootNames, options })
+  }
   const createProgramMs = profiling ? performance.now() - createProgramStart : 0
   const getTypeCheckerStart = profiling ? performance.now() : 0
   const checker = prg.getTypeChecker()
@@ -503,11 +685,12 @@ export async function compileTsToGs(params: TsToGsCompileParams): Promise<TsToGs
     const sf = prg.getSourceFile(file)
     return !!sf && hasNodeGraphEntryCall(sf, checker)
   })
+  const resolveModule = createModuleResolver(path.resolve(params.cfgDir), options)
   const runtimeSourceFiles = collectRuntimeDependencyFiles(
     matchedEntryFiles,
     prg,
-    options,
-    compileRoot
+    compileRoot,
+    resolveModule
   )
   const emitFiles = [
     ...new Map(
@@ -561,19 +744,20 @@ export async function compileTsToGs(params: TsToGsCompileParams): Promise<TsToGs
     const outFile = path.resolve(outDir, outRel)
     fs.mkdirSync(path.dirname(outFile), { recursive: true })
 
+    const fileChecker = createCachedTypeChecker(checker)
     const entryCheckStart = profiling ? performance.now() : 0
-    const hasEntry = hasNodeGraphEntryCall(sf, checker)
+    const hasEntry = hasNodeGraphEntryCall(sf, fileChecker)
     const entryCheckMs = profiling ? performance.now() - entryCheckStart : 0
     const transformStart = profiling ? performance.now() : 0
-    const out = transformToGs(sf, { checker, config: params.cfg, timerCounterRef })
+    const out = transformToGs(sf, { checker: fileChecker, config: params.cfg, timerCounterRef })
     const transformMs = profiling ? performance.now() - transformStart : 0
     const rewriteImportsStart = profiling ? performance.now() : 0
     const rewritten = rewriteRelativeModuleSpecifiers(out, {
       inFile,
       outFile,
-      options,
       inToOutFiles: inToOutFiles,
-      strictRuntime: runtimeSourceKeys.has(normForMap(inFile))
+      strictRuntime: runtimeSourceKeys.has(normForMap(inFile)),
+      resolveModule
     })
     const rewriteImportsMs = profiling ? performance.now() - rewriteImportsStart : 0
     const printStart = profiling ? performance.now() : 0
@@ -632,7 +816,10 @@ export async function compileTsToGs(params: TsToGsCompileParams): Promise<TsToGs
               rootNames: rootNames.length,
               programSourceFiles: prg.getSourceFiles().length,
               timerFiles: timerFiles.length,
-              entryFiles: entryOutFiles.length
+              entryFiles: entryOutFiles.length,
+              programReused,
+              sourceFilesReused,
+              sourceFilesCreated
             },
             timingsMs: {
               setup: setupMs,
