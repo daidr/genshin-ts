@@ -12,6 +12,9 @@ export class Counter {
     this.count++
     return this.count
   }
+  reset() {
+    this.count = 0
+  }
 }
 
 /** 节点 Index 计数器 */

@@ -50,6 +50,7 @@ import {
   resolveClientReflectVariant,
   type ClientReflectVariant
 } from './client_nodes.js'
+import { wrapGiaLowMemory } from './encode_gia.js'
 import type { IrToGiaOptions } from './index.js'
 import { buildExecutionGraph, layoutPositions } from './layout.js'
 import { parseEnumValue } from './mappings.js'
@@ -1318,5 +1319,7 @@ export function clientIrToGia(ir: ClientIRDocument, opts: IrToGiaOptions): Uint8
   })
 
   const { rootMessage } = loadGiaProto(opts.protoPath)
-  return new Uint8Array(wrap_gia(rootMessage, root))
+  return new Uint8Array(
+    opts.lowMemoryEncoding ? wrapGiaLowMemory(rootMessage, root) : wrap_gia(rootMessage, root)
+  )
 }

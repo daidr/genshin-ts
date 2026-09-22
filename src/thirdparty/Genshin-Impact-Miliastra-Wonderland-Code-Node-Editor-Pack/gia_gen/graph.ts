@@ -33,6 +33,7 @@ import {
   reflects_records,
   to_node_pin,
   type_equal,
+  type NodePins,
   type NodeType
 } from './nodes.js'
 import { assert, assertEq, Counter, empty, randomInt, randomName, todo } from './utils.js'
@@ -348,6 +349,34 @@ export class Graph<M extends AllModes = 'server'> {
   }
 }
 
+const nodePinTemplates = new WeakMap<SingleNodeData, Map<number | string, NodePins>>()
+
+function getNodePinTemplate(record: SingleNodeData, concreteId: number | string): NodePins {
+  const templates = nodePinTemplates.get(record) ?? new Map<number | string, NodePins>()
+  const cached = templates.get(concreteId)
+  if (cached) return cached
+  const pins = empty(record.reflectMap)
+    ? to_node_pin(record)
+    : reflects_records(record, concreteId, true)
+  templates.set(concreteId, pins)
+  nodePinTemplates.set(record, templates)
+  return pins
+}
+
+// Cache reflection work, not the mutable type objects owned by individual pins.
+function copyPinType(type: NodeType): NodeType {
+  switch (type.t) {
+    case 'l':
+      return { t: 'l', i: copyPinType(type.i) }
+    case 'd':
+      return { t: 'd', k: copyPinType(type.k), v: copyPinType(type.v) }
+    case 's':
+      return { t: 's', f: type.f.map(([name, field]) => [name, copyPinType(field)]) }
+    default:
+      return { ...type }
+  }
+}
+
 export class Node<M extends AllModes = 'server'> {
   public readonly mode: M
   private node_index: number
@@ -393,9 +422,7 @@ export class Node<M extends AllModes = 'server'> {
     assert(this.record.id === id || this.record.reflectMap?.find((x) => x[0] === id) !== undefined)
     this.node_id = id
 
-    const rec = empty(this.record.reflectMap)
-      ? to_node_pin(this.record)
-      : reflects_records(this.record, id, true)
+    const rec = getNodePinTemplate(this.record, id)
     for (let i = 0; i < rec.inputs.length; i++) {
       if (empty(this.pins[i])) {
         this.pins[i] = new Pin(this.GenericId, 3, i)
@@ -403,7 +430,7 @@ export class Node<M extends AllModes = 'server'> {
       if (empty(rec.inputs[i])) {
         this.pins[i].clear()
       } else {
-        this.pins[i].setType(rec.inputs[i])
+        this.pins[i].setType(copyPinType(rec.inputs[i]))
       }
     }
     for (let j = 0; j < rec.outputs.length; j++) {
@@ -414,7 +441,7 @@ export class Node<M extends AllModes = 'server'> {
       if (empty(rec.outputs[j])) {
         this.pins[i].clear()
       } else {
-        this.pins[i].setType(rec.outputs[j])
+        this.pins[i].setType(copyPinType(rec.outputs[j]))
       }
     }
   }

@@ -18,6 +18,7 @@ import { isListValueInfo, type ListValueInfo } from '../../runtime/variables.js'
 import type { NodeType } from '../../thirdparty/Genshin-Impact-Miliastra-Wonderland-Code-Node-Editor-Pack/gia_gen/nodes.js'
 import { Graph, Node, NodeIdFor, Pin, wrap_gia, type Root as GiaRoot } from '../gia_vendor.js'
 import { clientIrToGia } from './client_graph.js'
+import { wrapGiaLowMemory } from './encode_gia.js'
 import { buildExecutionGraph, layoutPositions } from './layout.js'
 import { buildConnTypeIndex, resolveGiaNodeId, type ConnTypeInfo } from './node_id.js'
 import { optimizeTimerDispatchAggregate } from './optimize_timer_dispatch.js'
@@ -35,6 +36,8 @@ export interface IrToGiaOptions {
   name?: string
   protoPath: string
   optimize?: IrToGiaOptimizeOptions
+  /** Opt in for compiler-owned plain data; the default preserves single-pass encoding. */
+  lowMemoryEncoding?: boolean
   onProfile?: (profile: IrToGiaProfile) => void
 }
 
@@ -681,7 +684,9 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
   const { rootMessage } = loadGiaProto(protoPath)
   const loadProtoMs = profiling ? performance.now() - loadProtoStart : 0
   const wrapGiaStart = profiling ? performance.now() : 0
-  const buffer = wrap_gia(rootMessage, root)
+  const buffer = opts.lowMemoryEncoding
+    ? wrapGiaLowMemory(rootMessage, root)
+    : wrap_gia(rootMessage, root)
   const bytes = new Uint8Array(buffer)
   const wrapGiaMs = profiling ? performance.now() - wrapGiaStart : 0
 

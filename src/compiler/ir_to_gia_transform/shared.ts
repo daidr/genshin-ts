@@ -123,12 +123,13 @@ export function writeGiaFromIrJsonFile(
     let transformProfile: IrToGiaProfile | undefined
     const bytes = irToGia(ir, {
       protoPath: DEFAULT_GIA_PROTO,
+      lowMemoryEncoding: true,
       onProfile: profiling ? (value) => (transformProfile = value) : undefined
     })
     const transformMs = profiling ? performance.now() - transformStart : 0
     const writeStart = profiling ? performance.now() : 0
     fs.mkdirSync(path.dirname(target), { recursive: true })
-    fs.writeFileSync(target, Buffer.from(bytes))
+    fs.writeFileSync(target, bytes)
     const writeMs = profiling ? performance.now() - writeStart : 0
     const res = { irPath, giaPath: target, graphId: resolveGraphId(ir), sourceIndex: idx }
     outputs.push(res)
