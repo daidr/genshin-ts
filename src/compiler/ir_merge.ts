@@ -120,10 +120,6 @@ function collectInternalVarNames(doc: AnyIRDocument): Set<string> {
   return out
 }
 
-function deepClone<T>(v: T): T {
-  return JSON.parse(JSON.stringify(v)) as T
-}
-
 function pickTopmostDir(outDirAbs: string, paths: string[]): string {
   const scored = paths
     .map((p) => {
@@ -272,24 +268,71 @@ export type MergeGroupResult = {
   outJsonPath: string
   merged: IRDocument
   sourceJsonPaths: string[]
+  sourceIndex?: number
+  mergedOutput?: boolean
 }
 
-export function mergeIrJsonFilesByGraphId(params: {
+type MergeParams = {
   outDirAbs: string
   irJsonPaths: string[]
-}): MergeGroupResult[] {
+}
+
+function appendIrSources(items: IrSource[], source: string, sourceJsonPath: string) {
+  const raw: unknown = JSON.parse(source)
+  if (isMergedMarker(raw)) return
+  const list = Array.isArray(raw) ? raw : [raw]
+  list.forEach((doc, sourceIndex) => {
+    if (isMergedMarker(doc) || !isIrDocumentLike(doc)) return
+    items.push({ doc, sourceJsonPath, sourceIndex })
+  })
+}
+
+export function mergeIrJsonFilesByGraphId(params: MergeParams): MergeGroupResult[] {
   const items: IrSource[] = []
   for (const p of params.irJsonPaths) {
-    const raw: unknown = JSON.parse(fs.readFileSync(p, 'utf8'))
-    if (isMergedMarker(raw)) continue
-    const list = Array.isArray(raw) ? raw : [raw]
-    list.forEach((doc, idx) => {
-      if (isMergedMarker(doc)) return
-      if (!isIrDocumentLike(doc)) return
-      items.push({ doc, sourceJsonPath: p, sourceIndex: idx })
-    })
+    appendIrSources(items, fs.readFileSync(p, 'utf8'), p)
   }
+  return mergeIrSources(params.outDirAbs, items)
+}
 
+/** Prefetch a bounded window; parse and report failures in the original input order. */
+export async function mergeIrJsonFilesByGraphIdAsync(
+  params: MergeParams
+): Promise<MergeGroupResult[]> {
+  type ReadResult = { ok: true; source: string } | { ok: false; error: unknown }
+  const pending: Promise<ReadResult>[] = []
+  const items: IrSource[] = []
+  let readFailed = false
+  const read = (file: string): Promise<ReadResult> =>
+    fs.promises.readFile(file, 'utf8').then(
+      (source) => ({ ok: true, source }),
+      (error: unknown) => {
+        readFailed = true
+        return { ok: false, error }
+      }
+    )
+  let next = 0
+  while (next < Math.min(8, params.irJsonPaths.length)) {
+    pending.push(read(params.irJsonPaths[next++]))
+  }
+  try {
+    for (const file of params.irJsonPaths) {
+      const result = await pending.shift()!
+      if (!result.ok) throw result.error
+      appendIrSources(items, result.source, file)
+      if (!readFailed && next < params.irJsonPaths.length) {
+        pending.push(read(params.irJsonPaths[next++]))
+      }
+    }
+  } finally {
+    // No new reads after the first ordered failure, no unhandled rejections or pending I/O
+    // when this invocation settles. Like the sync API, merge writes start only after all reads.
+    await Promise.all(pending)
+  }
+  return mergeIrSources(params.outDirAbs, items)
+}
+
+function mergeIrSources(outDirAbs: string, items: IrSource[]): MergeGroupResult[] {
   const groups = new Map<number, IrSource[]>()
   for (const it of items) {
     // 用户未指定 id 时，按节点图类型使用默认 id；合并也按同样规则分组。
@@ -313,12 +356,16 @@ export function mergeIrJsonFilesByGraphId(params: {
         graphId,
         outJsonPath: ordered[0].sourceJsonPath,
         merged: ordered[0].doc,
-        sourceJsonPaths: [ordered[0].sourceJsonPath]
+        sourceJsonPaths: [ordered[0].sourceJsonPath],
+        sourceIndex: ordered[0].sourceIndex,
+        mergedOutput: false
       })
       continue
     }
 
-    const base = deepClone(ordered[0].doc) as AnyIRDocument
+    // Every document above comes from this invocation's JSON.parse and belongs exclusively to
+    // one graph-id group, so the merge can safely consume it in place.
+    const base = ordered[0].doc as AnyIRDocument
     for (const it of ordered.slice(1)) {
       normalizeGraphCompatibility(base, it.doc, it.sourceJsonPath)
     }
@@ -331,7 +378,7 @@ export function mergeIrJsonFilesByGraphId(params: {
     }
 
     const topDir = pickTopmostDir(
-      params.outDirAbs,
+      outDirAbs,
       ordered.map((x) => x.sourceJsonPath)
     )
     const dirName = path.basename(topDir)
@@ -360,23 +407,23 @@ export function mergeIrJsonFilesByGraphId(params: {
     let nextId = 1
     const varsAfterRename: { source: string; vars: Variable[] | undefined }[] = []
     for (const it of ordered) {
-      const cloned = deepClone(it.doc) as AnyIRDocument
+      const sourceDoc = it.doc as AnyIRDocument
 
       // 变量重命名：把所有 _gsts* 变量按源文件打 tag，避免合并后同名互相覆盖
-      const tag = buildSourceTag(params.outDirAbs, it.sourceJsonPath, it.sourceIndex)
-      const internalNames = collectInternalVarNames(cloned)
+      const tag = buildSourceTag(outDirAbs, it.sourceJsonPath, it.sourceIndex)
+      const internalNames = collectInternalVarNames(sourceDoc)
       const rename = new Map<string, string>()
       for (const name of internalNames) {
         rename.set(name, `${name}__${tag}`)
       }
       if (rename.size) {
-        rewriteVariablesInPlace(cloned, rename)
-        rewriteNodeGraphVariableRefsInPlace(cloned, rename)
+        rewriteVariablesInPlace(sourceDoc, rename)
+        rewriteNodeGraphVariableRefsInPlace(sourceDoc, rename)
       }
 
-      varsAfterRename.push({ source: it.sourceJsonPath, vars: cloned.variables })
+      varsAfterRename.push({ source: it.sourceJsonPath, vars: sourceDoc.variables })
 
-      const nodes = getNodes(cloned)
+      const nodes = getNodes(sourceDoc)
       if (!nodes.length) continue
 
       const map = new Map<number, number>()
@@ -402,7 +449,8 @@ export function mergeIrJsonFilesByGraphId(params: {
       graphId,
       outJsonPath,
       merged: base,
-      sourceJsonPaths
+      sourceJsonPaths,
+      mergedOutput: true
     })
   }
 
