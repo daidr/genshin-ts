@@ -3,7 +3,7 @@
 ## v0.2.3
 
 - Map injection now supports the new map directory structure introduced in Genshin Impact 7.1.
-- Improved compilation and injection performance, making large projects roughly twice as fast as in the previous release. With the optimizations across recent releases, overall compilation performance is now approximately 170% higher than in v1.
+- Improved compilation and injection performance, making large projects roughly twice as fast as in the previous release. With the optimizations across recent releases, overall compilation performance is now approximately 170% higher than in v0.1.
 
 TypeScript compilation and type hints for the client-side Lua widget scripts introduced in 7.1 will be added in a future update.
 
