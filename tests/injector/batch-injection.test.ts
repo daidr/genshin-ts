@@ -653,6 +653,29 @@ try {
   assert.match(failedCli.stderr, /Injection failed invalid\.gia/)
   assert.match(failedCli.stdout, /ok 0, skipped 0, fail 1/)
 
+  // A migrated map must receive injection in its own directory, leaving the old save intact.
+  const nestedGilPath = path.join(saveDir, '456', '456.gil')
+  fs.mkdirSync(path.dirname(nestedGilPath))
+  fs.writeFileSync(nestedGilPath, gilBytes)
+  const legacyBytes = fs.readFileSync(configuredGilPath)
+  const nestedWrite = spawnSync(process.execPath, unchangedArgs, {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    windowsHide: true,
+    env: cliEnv
+  })
+  assert.equal(nestedWrite.status, 0, nestedWrite.stderr)
+  assert.deepEqual(fs.readFileSync(nestedGilPath), injectedBytes)
+  assert.deepEqual(fs.readFileSync(configuredGilPath), legacyBytes)
+  const maps = spawnSync(
+    process.execPath,
+    ['--import', 'tsx', path.resolve('src/cli/gsts.ts'), 'maps', '--config', configPath],
+    { cwd: process.cwd(), encoding: 'utf8', windowsHide: true, env: cliEnv }
+  )
+  assert.equal(maps.status, 0, maps.stderr)
+  assert.equal(maps.stdout.split('\n').filter((line) => /\s456\s/.test(line)).length, 1)
+  fs.unlinkSync(nestedGilPath)
+
   const invalidGilBytes = Buffer.alloc(24)
   fs.writeFileSync(configuredGilPath, invalidGilBytes)
   const globalFailedCli = spawnSync(

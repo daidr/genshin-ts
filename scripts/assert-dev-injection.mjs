@@ -71,7 +71,7 @@ function graphs(file) {
 const source = (id, text) =>
   `import {g} from 'genshin-ts/runtime/core'\ng.server({id:${id},name:'_GSTS_review'}).on('whenEntityIsCreated',(_evt,f)=>{f.printString('${text}')})\n`
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-async function fixture(name, withEntries = true) {
+async function fixture(name, withEntries = true, nested = false) {
   const dir = path.join(study, name),
     src = path.join(dir, 'src'),
     logs = path.join(dir, 'logs'),
@@ -82,7 +82,8 @@ async function fixture(name, withEntries = true) {
     )
   for (const d of [src, logs, player, path.join(appData, 'Roaming/genshin-ts')])
     fs.mkdirSync(d, { recursive: true })
-  const gil = path.join(player, '1073741851.gil')
+  const gil = path.join(player, ...(nested ? ['1073741851'] : []), '1073741851.gil')
+  fs.mkdirSync(path.dirname(gil), { recursive: true })
   fs.writeFileSync(gil, mapBytes('initial'))
   fs.writeFileSync(
     path.join(appData, 'Roaming/genshin-ts/state.json'),
@@ -201,6 +202,9 @@ async function settleEdit(f, file, text) {
   await delay(1300)
 }
 async function saveMap(f, label) {
+  // Compilation can finish late; let the CLI's self-write cooldown expire before saving.
+  const lastInject = f.profiles.findLast((p) => p.kind === 'inject-profile')
+  if (lastInject) await delay(Math.max(0, lastInject.time + 1100 - performance.now()))
   const n = f.extractCount()
   fs.writeFileSync(f.gil, mapBytes(label))
   await f.wait(() => f.extractCount() > n, 'extract ' + label)
@@ -321,6 +325,19 @@ try {
   assert.ok(empty.artifact().includes('Prefab_empty-updated'))
 } finally {
   await empty.stop()
+}
+const nested = await fixture('nested-map', true, true)
+try {
+  await nested.wait(() => nested.extractCount() >= 1, 'nested initial')
+  assert.ok(JSON.stringify(graphs(nested.gil)[ids[0]]).includes('initial-A'))
+  await delay(1100)
+  const g = await saveMap(nested, 'nested-updated')
+  assert.ok(JSON.stringify(g[ids[0]]).includes('initial-A'))
+  assert.ok(JSON.stringify(g[ids[0]]).includes('initial-B'))
+  assert.ok(nested.artifact().includes('Prefab_nested-updated'))
+  assert.ok(!fs.existsSync(path.join(path.dirname(path.dirname(nested.gil)), '1073741851.gil')))
+} finally {
+  await nested.stop()
 }
 console.log(
   '[ok] dev failure recovery, graph migration, connected merges, entry removal and no-GIA extraction'

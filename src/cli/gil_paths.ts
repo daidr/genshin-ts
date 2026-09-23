@@ -1,16 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { existsDir } from '../compiler/config_loader.js'
+import { existsDir, existsFile } from '../compiler/config_loader.js'
 import type { GstsGameRegion, GstsInjectConfig } from '../compiler/gsts_config.js'
-
-function exists(p: string): boolean {
-  try {
-    return fs.existsSync(p)
-  } catch {
-    return false
-  }
-}
 
 function listNumericDirs(parent: string): number[] {
   if (!existsDir(parent)) return []
@@ -101,9 +93,14 @@ export function resolveGilTarget(cfg: GstsInjectConfig): ResolvedGilTarget {
     throw new Error('[error] mapId is required')
   }
 
-  const gilPath = path.join(saveLevelDir, `${mapId}.gil`)
-  if (!exists(gilPath)) {
-    throw new Error(`[error] target gil not found: ${gilPath}`)
+  // Prefer the current layout when an older flat save still exists.
+  const candidates = [
+    path.join(saveLevelDir, String(mapId), `${mapId}.gil`),
+    path.join(saveLevelDir, `${mapId}.gil`)
+  ]
+  const gilPath = candidates.find(existsFile)
+  if (!gilPath) {
+    throw new Error(`[error] target gil not found: ${candidates.join(' or ')}`)
   }
 
   return { region, beyondLocalRoot, playerId, saveLevelDir, mapId, gilPath }
@@ -111,4 +108,21 @@ export function resolveGilTarget(cfg: GstsInjectConfig): ResolvedGilTarget {
 
 export function resolveGilFolder(cfg: GstsInjectConfig): ResolvedGilFolder {
   return resolveBase(cfg)
+}
+
+export function listGilFiles(saveLevelDir: string): string[] {
+  const entries = fs.readdirSync(saveLevelDir, { withFileTypes: true })
+  const files = new Map<string, string>()
+  for (const entry of entries) {
+    if (entry.isFile() && entry.name.toLowerCase().endsWith('.gil')) {
+      files.set(entry.name.toLowerCase(), path.join(saveLevelDir, entry.name))
+    }
+  }
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !/^\d+$/.test(entry.name)) continue
+    const name = `${entry.name}.gil`
+    const gilPath = path.join(saveLevelDir, entry.name, name)
+    if (existsFile(gilPath)) files.set(name, gilPath)
+  }
+  return [...files.values()]
 }

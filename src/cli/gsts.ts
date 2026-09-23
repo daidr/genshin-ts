@@ -42,7 +42,7 @@ import {
   getGilFileVersion,
   writeFileAtomic
 } from './gil_file_transaction.js'
-import { resolveGilFolder, resolveGilTarget } from './gil_paths.js'
+import { listGilFiles, resolveGilFolder, resolveGilTarget } from './gil_paths.js'
 import { DEFAULT_RESOURCES_PATH } from './gil_resources.js'
 import { DEFAULT_SIGNALS_PATH } from './gil_signals.js'
 import {
@@ -1724,16 +1724,12 @@ async function runDev(opts: GlobalOptions) {
 async function runMaps(opts: GlobalOptions) {
   const loaded = await loadConfigOrNull(opts)
   const gil: GstsInjectConfig = loaded?.cfg.inject ?? {}
-  const resolve = resolveGilFolder as unknown as (cfg: GstsInjectConfig) => { saveLevelDir: string }
-  const resolved = resolve(gil)
+  const resolved = resolveGilFolder(gil)
 
-  const files = fs
-    .readdirSync(resolved.saveLevelDir, { withFileTypes: true })
-    .filter((d) => d.isFile() && d.name.toLowerCase().endsWith('.gil'))
-    .map((d) => {
-      const full = path.join(resolved.saveLevelDir, d.name)
+  const files = listGilFiles(resolved.saveLevelDir)
+    .map((full) => {
       const st = fs.statSync(full)
-      return { name: d.name, full, mtimeMs: st.mtimeMs }
+      return { name: path.basename(full), mtimeMs: st.mtimeMs }
     })
     .sort((a, b) => b.mtimeMs - a.mtimeMs)
 
@@ -1767,7 +1763,7 @@ async function runOpen(target: string | undefined, opts: GlobalOptions) {
     if (!inject) throw new Error('[error] inject is not configured (set config.inject)')
     const resolved = resolveGilTarget(inject)
     openAndSelect(resolved.gilPath)
-    ui.ok(`opened ${resolved.saveLevelDir}`)
+    ui.ok(`opened ${path.dirname(resolved.gilPath)}`)
     return
   }
   throw new Error('[error] invalid target (map|backup|data)')
