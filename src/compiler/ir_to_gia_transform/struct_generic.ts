@@ -30,10 +30,13 @@ const ID_KIND_SYS_CALL = 22000
 /** First placeholder structure id; real ids are large (1077936129+), so these never collide. */
 export const STRUCT_ID_PLACEHOLDER_BASE = 1
 
+type StructValueType = 'struct' | 'struct_list'
+
 type StructPinSpec = {
   kind: number
   index: number
-  value: 'struct' | 'struct_list'
+  /** 'variable': the custom variable's own type, a structure or a structure list */
+  value: StructValueType | 'variable'
 }
 
 type StructGenericSpec = {
@@ -42,7 +45,8 @@ type StructGenericSpec = {
   usingType: number
   /** graph affiliation type, observed per node */
   affiliationType: number
-  indexOfConcrete: number
+  /** indexOfConcrete per value type; custom variables index struct and struct list apart */
+  indexOfConcrete: Record<StructValueType, number>
   pins: StructPinSpec[]
   /** input pins the struct variant does not have */
   dropInputs?: number[]
@@ -50,27 +54,32 @@ type StructGenericSpec = {
 
 const ASSEMBLY_LIST_ITEMS = 100
 
+// Structure types come right after the vendor concrete maps: custom variables (M0, 21 types)
+// take struct at 21 and struct list at 22; list nodes (M5 / M7, 10 types) take 10.
+const CUSTOM_VARIABLE_CONCRETE = { struct: 21, struct_list: 22 }
+const LIST_CONCRETE = { struct: 10, struct_list: 10 }
+
 // Constants taken from editor-saved graphs; they do not depend on the structure.
 const STRUCT_GENERIC_SPECS: Record<string, StructGenericSpec> = {
   set_custom_variable: {
     genericId: 22,
     usingType: 175,
     affiliationType: 27,
-    indexOfConcrete: 22,
-    pins: [{ kind: PIN_KIND_IN_PARAM, index: 2, value: 'struct_list' }]
+    indexOfConcrete: CUSTOM_VARIABLE_CONCRETE,
+    pins: [{ kind: PIN_KIND_IN_PARAM, index: 2, value: 'variable' }]
   },
   get_custom_variable: {
     genericId: 50,
     usingType: 175,
     affiliationType: 23,
-    indexOfConcrete: 22,
-    pins: [{ kind: PIN_KIND_OUT_PARAM, index: 0, value: 'struct_list' }]
+    indexOfConcrete: CUSTOM_VARIABLE_CONCRETE,
+    pins: [{ kind: PIN_KIND_OUT_PARAM, index: 0, value: 'variable' }]
   },
   get_corresponding_value_from_list: {
     genericId: 128,
     usingType: 10,
     affiliationType: 73,
-    indexOfConcrete: 10,
+    indexOfConcrete: LIST_CONCRETE,
     pins: [
       { kind: PIN_KIND_IN_PARAM, index: 0, value: 'struct_list' },
       { kind: PIN_KIND_OUT_PARAM, index: 0, value: 'struct' }
@@ -80,14 +89,14 @@ const STRUCT_GENERIC_SPECS: Record<string, StructGenericSpec> = {
     genericId: 142,
     usingType: 10,
     affiliationType: 79,
-    indexOfConcrete: 10,
+    indexOfConcrete: LIST_CONCRETE,
     pins: [{ kind: PIN_KIND_IN_PARAM, index: 0, value: 'struct_list' }]
   },
   assembly_list: {
     genericId: 169,
     usingType: 10,
     affiliationType: 47,
-    indexOfConcrete: 10,
+    indexOfConcrete: LIST_CONCRETE,
     pins: [
       ...Array.from({ length: ASSEMBLY_LIST_ITEMS }, (_, i) => ({
         kind: PIN_KIND_IN_PARAM,
@@ -108,6 +117,8 @@ const isStructType = (t: unknown): t is 'struct' | 'struct_list' =>
 export type StructGenericInfo = {
   /** IR node id -> structure name, for generic nodes typed with a structure */
   nodes: Map<NodeId, string>
+  /** IR node id -> custom variable type, for structure-typed custom variable nodes */
+  variableTypes: Map<NodeId, StructValueType>
   /** structure name -> placeholder structure id */
   placeholders: Map<string, number>
 }
@@ -134,6 +145,13 @@ export function prepareStructGenericNodes(ir: IRDocument): StructGenericInfo {
 
   const typeById = new Map<NodeId, string>()
   const structTyped = new Set<NodeId>()
+  // structure value types on each node's structure connections, either end
+  const valueTypes = new Map<NodeId, Set<StructValueType>>()
+  const addValueType = (id: NodeId, type: StructValueType) => {
+    const set = valueTypes.get(id) ?? new Set<StructValueType>()
+    set.add(type)
+    valueTypes.set(id, set)
+  }
   for (const node of nodes) {
     typeById.set(node.id, node.type)
     for (const arg of node.args ?? []) {
@@ -141,6 +159,8 @@ export function prepareStructGenericNodes(ir: IRDocument): StructGenericInfo {
       union(node.id, arg.value.node_id)
       structTyped.add(node.id)
       structTyped.add(arg.value.node_id)
+      addValueType(node.id, arg.value.type)
+      addValueType(arg.value.node_id, arg.value.type)
     }
   }
 
@@ -159,7 +179,11 @@ export function prepareStructGenericNodes(ir: IRDocument): StructGenericInfo {
     nameByRoot.set(root, nameArg.value)
   }
 
-  const info: StructGenericInfo = { nodes: new Map(), placeholders: new Map() }
+  const info: StructGenericInfo = {
+    nodes: new Map(),
+    variableTypes: new Map(),
+    placeholders: new Map()
+  }
   for (const id of structTyped) {
     const type = typeById.get(id)
     if (!type || STRUCT_NODE_TYPES.has(type)) continue
@@ -174,6 +198,15 @@ export function prepareStructGenericNodes(ir: IRDocument): StructGenericInfo {
       )
     }
     info.nodes.set(id, name)
+    if (STRUCT_GENERIC_SPECS[type].pins.some((p) => p.value === 'variable')) {
+      const types = [...(valueTypes.get(id) ?? [])]
+      if (types.length !== 1) {
+        throw new Error(
+          `[error] ${type} (id=${id}) is used both as a structure and as a structure list`
+        )
+      }
+      info.variableTypes.set(id, types[0])
+    }
     if (!info.placeholders.has(name)) {
       info.placeholders.set(name, STRUCT_ID_PLACEHOLDER_BASE + info.placeholders.size)
     }
@@ -224,11 +257,7 @@ type RawNode = {
 
 type RawGraph = { nodes?: RawNode[]; affiliations?: unknown[] }
 
-function structPinValue(
-  value: 'struct' | 'struct_list',
-  indexOfConcrete: number,
-  structId: number
-) {
+function structPinValue(value: StructValueType, indexOfConcrete: number, structId: number) {
   const item = { structId }
   if (value === 'struct') {
     return {
@@ -313,12 +342,14 @@ export function postprocessStructGenericNodes(
       if (pin.i1) pin.i2 = { ...pin.i1 }
     }
     const nodeInputs = inputs.get(node.nodeIndex)
+    const variableType = info.variableTypes.get(node.nodeIndex)
     const structPins: RawPin[] = spec.pins.map((p) => {
+      const value = p.value === 'variable' ? variableType! : p.value
       const pin: RawPin = {
         i1: { kind: p.kind, index: p.index },
         i2: { kind: p.kind, index: p.index },
-        value: structPinValue(p.value, spec.indexOfConcrete, structId),
-        type: p.value === 'struct' ? VAR_TYPE_STRUCT : VAR_TYPE_STRUCT_LIST
+        value: structPinValue(value, spec.indexOfConcrete[value], structId),
+        type: value === 'struct' ? VAR_TYPE_STRUCT : VAR_TYPE_STRUCT_LIST
       }
       const from = p.kind === PIN_KIND_IN_PARAM ? nodeInputs?.get(p.index) : undefined
       if (from) {

@@ -40,6 +40,11 @@ g.server({ id: 1073741890 }).on('whenEntityIsCreated', (_evt, f) => {
   }
   const value = f.assembleStructure(Struct.TestStruct, { '新增变量3-字符串': 'saved' })
   f.setCustomVariable(f.getSelfEntity(), 'saves', f.assemblyList([value], 'struct'))
+
+  // A single structure in a custom variable.
+  const last = f.getCustomVariable(f.getSelfEntity(), 'last').asType('struct')
+  f.printString(f.splitStructure(Struct.TestStruct, last)['新增变量3-字符串'])
+  f.setCustomVariable(f.getSelfEntity(), 'last', value)
 })
 
 // Client graphs only assemble / split; ids match the sample map's creation graphs.
