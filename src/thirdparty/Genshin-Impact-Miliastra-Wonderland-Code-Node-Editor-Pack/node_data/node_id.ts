@@ -2452,6 +2452,8 @@ export const NODE_ID = {
   Set_Player_s_Current_Channel__Generic: 771,
   Consume_Gift_Box: 772,
   Consume_Gift_Box__Generic: 772,
+  Open_Gift_Box_Interface: 856,
+  Open_Gift_Box_Interface__Generic: 856,
   Query_Corresponding_Gift_Box_Quantity: 773,
   Query_Corresponding_Gift_Box_Quantity__Generic: 773,
   Query_Corresponding_Gift_Box_Consumption: 774,

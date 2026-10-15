@@ -408,7 +408,11 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
       if (applyArgsWithNullHole(nodeType, giaNode, irNode, 4, 3)) return true
     }
 
-    if (nodeType === 'send_signal' || nodeType === 'monitor_signal') {
+    if (
+      nodeType === 'send_signal' ||
+      nodeType === 'send_client_script_signal' ||
+      nodeType === 'monitor_signal'
+    ) {
       const nameArg = irNode.args?.[0]
       if (nameArg && nameArg.type === 'conn') {
         throw new Error(`[error] ${nodeType} does not accept wired signal name`)
@@ -422,7 +426,8 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
       }
       // Create input pins for signal parameters so graph.connect can find them
       // Signal name is an exec literal (not a data pin), so data pins start at index 0
-      if (nodeType === 'send_signal') {
+      // (send_client_script_signal: data pin 0 is the target player, signal params follow)
+      if (nodeType === 'send_signal' || nodeType === 'send_client_script_signal') {
         const args = irNode.args ?? []
         for (let i = 1; i < args.length; i++) {
           const arg = args[i]
@@ -521,6 +526,7 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
       case 'create_prefab_group':
         return idx >= 4 ? idx + 1 : idx // hole at 4
       case 'send_signal':
+      case 'send_client_script_signal':
         return idx > 0 ? idx - 1 : idx // signal name is exec literal, data pins shift by -1
       default:
         return idx

@@ -3,11 +3,12 @@ import {
   parseMessage,
   readFieldBytes,
   readFieldMessages,
+  readFieldVarint,
   readVarint
 } from './binary.js'
 import type { LenField } from './types.js'
 
-type SignalNodeKind = 'send' | 'monitor' | 'sendServer'
+type SignalNodeKind = 'send' | 'monitor' | 'sendServer' | 'sendClient'
 
 type NodeGraphIdInfo = {
   class?: number
@@ -20,6 +21,7 @@ type SignalNodeIds = {
   send?: NodeGraphIdInfo
   monitor?: NodeGraphIdInfo
   sendServer?: NodeGraphIdInfo
+  sendClient?: NodeGraphIdInfo
 }
 
 export type SignalNodeIdMap = Map<string, SignalNodeIds>
@@ -41,10 +43,14 @@ type TFunc = (key: string, options?: Record<string, unknown>) => string
 
 const SIGNAL_NODE_TYPE_SKILLS = 20002
 
+// field 107.1 of a composite node definition: which signal node it defines
+const SIGNAL_DEF_KIND_SEND_CLIENT_SCRIPT = 1006
+
 const SIGNAL_NODE_ID_PLACEHOLDERS = new Map<number, SignalNodeKind>([
   [300000, 'send'],
   [300001, 'monitor'],
-  [300002, 'sendServer']
+  [300002, 'sendServer'],
+  [300005, 'sendClient']
 ])
 
 function parseNodeGraphId(buf: Uint8Array): NodeGraphIdInfo {
@@ -94,7 +100,7 @@ function parseCompositeDefId(buf: Uint8Array): NodeGraphIdInfo | undefined {
 }
 
 function parseSignalName(buf: Uint8Array): string | undefined {
-  const defBytes = readFieldBytes(buf, 101) ?? readFieldBytes(buf, 102)
+  const defBytes = readFieldBytes(buf, 101) ?? readFieldBytes(buf, 102) ?? readFieldBytes(buf, 108)
   if (!defBytes) return undefined
   const nameBytes = readFieldBytes(defBytes, 1)
   if (!nameBytes) return undefined
@@ -145,8 +151,15 @@ export function buildSignalNodeIdMapFromFields(
     if (!nodeId?.nodeId) continue
 
     const outputs = readFieldMessages(containerBytes, 103).length
+    const defKind = readFieldVarint(signalDefBytes, 1)
     const kind: SignalNodeKind | undefined =
-      nodeId.type === SIGNAL_NODE_TYPE_SKILLS ? 'sendServer' : outputs >= 3 ? 'monitor' : 'send'
+      defKind === SIGNAL_DEF_KIND_SEND_CLIENT_SCRIPT
+        ? 'sendClient'
+        : nodeId.type === SIGNAL_NODE_TYPE_SKILLS
+          ? 'sendServer'
+          : outputs >= 3
+            ? 'monitor'
+            : 'send'
 
     const entry = result.get(signalName) ?? {}
     const existing = entry[kind]

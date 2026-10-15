@@ -7440,6 +7440,71 @@ export class ServerExecutionFlowFunctions {
   }
 
   /**
+   * Send a custom Signal to the client node graphs of the specified Player. Before use, select the corresponding Signal name to ensure correct parameter usage
+   *
+   * 发送客户端脚本信号: 向指定玩家的客户端节点图发送一个自定义信号，使用前需要先选择对应的信号名，然后才能正确的使用该信号的参数
+   *
+   * GSTS Note: You still need to register the signal in the signal manager in the editor
+   *
+   * GSTS 注: 你仍然需要在编辑器内的信号管理器注册信号
+   *
+   * @param targetPlayer
+   *
+   * 目标玩家
+   * @param signalName Only literal string or extracted Signal.xxx definition is supported
+   *
+   * 信号名（仅支持字面量字符串或提取出的 Signal.xxx 定义）
+   *
+   * @param params Signal parameters to pass, matching the signal's registered parameters in the editor
+   *
+   * 信号参数，需与编辑器信号管理器中注册的参数一一对应
+   */
+  sendClientScriptSignal<S extends SignalDefinition>(
+    targetPlayer: PlayerEntity,
+    signalName: S,
+    ...params: SignalParamValues<S>
+  ): void
+  sendClientScriptSignal(targetPlayer: PlayerEntity, signalName: StrValue, ...params: any[]): void
+  sendClientScriptSignal(
+    targetPlayer: PlayerEntity,
+    signalName: StrValue | SignalDefinition,
+    ...params: any[]
+  ): void {
+    const targetPlayerObj = parseValue(targetPlayer, 'entity')
+    const signalDefinition = isSignalDefinition(signalName) ? signalName : undefined
+    const rawSignalName = signalDefinition ? signalDefinition.name : (signalName as StrValue)
+    const signalNameObj = ensureLiteralStr(rawSignalName, 'signalName')
+    const paramObjs = params.map((p, index) => {
+      const signalParamType = signalDefinition?.params[index]?.[1]
+      if (signalParamType && signalParamType !== 'unknown') {
+        return parseValue(p, signalParamType as any)
+      }
+      const genericType = matchTypes(
+        [
+          'float',
+          'int',
+          'bool',
+          'config_id',
+          'entity',
+          'faction',
+          'guid',
+          'prefab_id',
+          'str',
+          'vec3'
+        ],
+        p
+      )
+      return parseValue(p, genericType)
+    })
+    this.registry.registerNode({
+      id: 0,
+      type: 'exec',
+      nodeType: 'send_client_script_signal',
+      args: [signalNameObj, targetPlayerObj, ...paramObjs]
+    })
+  }
+
+  /**
    * Set the active Nameplate list for the specified target. Nameplates included in the input list are enabled, while those not included are disabled
    *
    * 设置实体生效铭牌: 直接设置指定目标的生效铭牌列表，在入参列表中的铭牌配置会生效，不在列表中的会失效
@@ -9493,6 +9558,29 @@ export class ServerExecutionFlowFunctions {
     const ret = new bool()
     ret.markPin(ref, 'consumer', 0)
     return ret as unknown as boolean
+  }
+
+  /**
+   * Available only for Beyond Mode; Open the Wonderland Gift Box interface of the specified index for the specified Player
+   *
+   * 打开礼盒界面: 仅超限模式可用，为指定玩家打开对应索引的奇域礼盒界面
+   *
+   * @param playerEntity
+   *
+   * 玩家实体
+   * @param giftBoxIndex
+   *
+   * 礼盒索引
+   */
+  openGiftBoxInterface(playerEntity: PlayerEntity, giftBoxIndex: IntValue): void {
+    const playerEntityObj = parseValue(playerEntity, 'entity')
+    const giftBoxIndexObj = parseValue(giftBoxIndex, 'int')
+    this.registry.registerNode({
+      id: 0,
+      type: 'exec',
+      nodeType: 'open_gift_box_interface',
+      args: [playerEntityObj, giftBoxIndexObj]
+    })
   }
 
   /**

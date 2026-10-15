@@ -193,6 +193,7 @@ const ENTITY_HELPER_METHODS = [
   'modifySkillResourceAmount',
   'modifyUiControlStatusWithinTheInterfaceLayout',
   'modifyingCharacterDisruptorDevice',
+  'openGiftBoxInterface',
   'openShop',
   'closeFloatingInteractionPage',
   'pauseBasicMotionDevice',
@@ -381,6 +382,7 @@ const ENTITY_HELPER_METHOD_ALIAS_SOURCES = {
   reviveAllCharacters: 'reviveAllPlayerSCharacters',
   defeatAllCharacters: 'defeatAllPlayerSCharacters',
   consumeGift: 'consumeGiftBox',
+  openGiftBox: 'openGiftBoxInterface',
   rankScoreChange: 'getPlayerRankScoreChange',
   setRankScoreChange: 'setPlayerRankScoreChange',
   isEscapeValid: 'getPlayerEscapeValidity',
@@ -499,6 +501,7 @@ const ENTITY_HELPER_KIND_BY_KEY = {
   closeShop: ['player'],
   closeSpecifiedSoundEffectPlayer: ['player', 'character', 'stage', 'object', 'creation'],
   consumeGift: ['player'],
+  openGiftBox: ['player'],
   consumeGiftBox: ['player'],
   creationAttr: ['creation'],
   currentTarget: ['creation'],
@@ -629,6 +632,7 @@ const ENTITY_HELPER_KIND_BY_KEY = {
   nickname: ['player'],
   objectAttr: ['object'],
   closeFloatingInteractionPage: ['player'],
+  openGiftBoxInterface: ['player'],
   openShop: ['player'],
   ownedEntities: ['player', 'character', 'stage', 'object', 'creation'],
   owner: ['player', 'character', 'stage', 'object', 'creation'],
@@ -1603,6 +1607,17 @@ interface EntityHelperFromFirstParam {
    * 是否成功消耗礼盒
    */
   consumeGiftBox: (giftBoxIndex: IntValue, consumptionQuantity: IntValue) => boolean
+
+  /**
+   * Available only for Beyond Mode; Open the Wonderland Gift Box interface of the specified index for the specified Player
+   *
+   * 打开礼盒界面: 仅超限模式可用，为指定玩家打开对应索引的奇域礼盒界面
+   *
+   * @param giftBoxIndex
+   *
+   * 礼盒索引
+   */
+  openGiftBoxInterface: (giftBoxIndex: IntValue) => void
 
   /**
    * Unregister the specified Revive Point ID for the player. The layer will not revive at this Revive Point next time
@@ -5717,6 +5732,17 @@ interface EntityHelperMethodAliases {
    * 消耗数量
    */
   consumeGift: (giftBoxIndex: IntValue, consumptionQuantity: IntValue) => void
+
+  /**
+   * Available only for Beyond Mode; Open the Wonderland Gift Box interface of the specified index for the specified Player
+   *
+   * 打开礼盒界面: 仅超限模式可用，为指定玩家打开对应索引的奇域礼盒界面
+   *
+   * @param giftBoxIndex
+   *
+   * 礼盒索引
+   */
+  openGiftBox: (giftBoxIndex: IntValue) => void
 
   /**
    * Returns the Rank change score for the Player Entity under different Settlement states

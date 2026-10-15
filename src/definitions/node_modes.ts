@@ -30,6 +30,7 @@ export const NODE_TYPE_BY_METHOD = {
   modifyingCharacterDisruptorDevice: 'beyond',
   modifySkillCdPercentageBasedOnMaxCd: 'beyond',
   modifySkillResourceAmount: 'beyond',
+  openGiftBoxInterface: 'beyond',
   queryAllSkillInstanceIdsBySkillConfigId: 'beyond',
   queryAllSkillInstanceIdsBySkillSlot: 'beyond',
   queryCharacterSkill: 'beyond',

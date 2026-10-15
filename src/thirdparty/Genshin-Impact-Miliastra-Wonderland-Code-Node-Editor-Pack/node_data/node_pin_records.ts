@@ -4253,13 +4253,19 @@ export const NODE_PIN_RECORDS = [
     outputs: []
   },
   {
+    name: 'Open Gift Box Interface',
+    id: 856,
+    inputs: ['Ety', 'Int'],
+    outputs: []
+  },
+  {
     name: 'Query Corresponding Gift Box Quantity',
     id: 773,
     inputs: ['Ety', 'Int'],
     outputs: ['Int']
   },
   {
-    name: 'Query Corresponding Gift Box Consumption Quantity',
+    name: 'Query Corresponding Gorgeous Performance Box Consumption Quantity',
     id: 774,
     inputs: ['Ety', 'Int'],
     outputs: ['Int']
@@ -6501,6 +6507,12 @@ export const NODE_PIN_RECORDS = [
     name: 'Modify Structure',
     id: 300004,
     inputs: [],
+    outputs: []
+  },
+  {
+    name: 'Send Client Scripted ServerSignal',
+    id: 300005,
+    inputs: ['Str', 'Ety'],
     outputs: []
   }
 ] as const satisfies SingleNodeData[]
