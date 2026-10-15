@@ -20917,6 +20917,55 @@
                 }
               }
             ]
+          },
+          {
+            "raw_title": "28. Query if Entity Has Unit Status",
+            "name": "Query if Entity Has Unit Status",
+            "ordinal": 28,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhdzd7i50td0/804c8e33-ee64-4538-82ce-ba2a43df4836.png"
+            ],
+            "functions": [
+              "Check whether the target entity has the specified Unit Status"
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "Target Entity",
+                "data_type": "Entity",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Target Entity",
+                  "Type": "Entity",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Unit Status Config ID",
+                "data_type": "Config ID",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Unit Status Config ID",
+                  "Type": "Config ID",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Output Parameter",
+                "name": "Has",
+                "data_type": "Boolean",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Output Parameter",
+                  "Parameter Name": "Has",
+                  "Type": "Boolean",
+                  "Description": ""
+                }
+              }
+            ]
           }
         ]
       },
@@ -21222,6 +21271,151 @@
                 }
               }
             ]
+          },
+          {
+            "raw_title": "6. Get Entity Type List",
+            "name": "Get Entity Type List",
+            "ordinal": 6,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhdzd7i50td0/8b552cd2-cde5-4e45-8038-14cfb144c19d.png"
+            ],
+            "functions": [
+              "Assemble the required entity types into a list."
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "0",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "0",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "1",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "1",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "2",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "2",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "3",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "3",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "4",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "4",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "5",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "5",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "6",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "6",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "7",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "7",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "8",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "8",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "9",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "9",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Output Parameter",
+                "name": "List",
+                "data_type": "Enumeration List",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Output Parameter",
+                  "Parameter Name": "List",
+                  "Type": "Enumeration List",
+                  "Description": ""
+                }
+              }
+            ]
           }
         ]
       },
@@ -21481,6 +21675,277 @@
                   "Parameter Type": "Output Parameter",
                   "Parameter Name": "Value",
                   "Type": "Generic",
+                  "Description": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "V. Ray",
+        "nodes": [
+          {
+            "raw_title": "1. Get Ray Detection Result",
+            "name": "Get Ray Detection Result",
+            "ordinal": 1,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhdzd7i50td0/4e922790-d1ed-440a-afc9-c5fd40960f1c.png"
+            ],
+            "functions": [
+              "Get the ray detection result. Hits are evaluated from nearest to farthest, and the first target or hit position that meets the filter criteria is returned."
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "Detect Initiator Entity",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Detect Initiator Entity",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Launch Location",
+                "data_type": "3D Vector",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Launch Location",
+                  "Type": "3D Vector",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Launch Direction",
+                "data_type": "3D Vector",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Launch Direction",
+                  "Type": "3D Vector",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Max Ray Length",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Max Ray Length",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Faction Filter",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Faction Filter",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Entity Type Filter",
+                "data_type": "Enumeration List",
+                "description": "Categories: Stage, Object, Player, Character, and Creation",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Entity Type Filter",
+                  "Type": "Enumeration List",
+                  "Description": "Categories: Stage, Object, Player, Character, and Creation"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Hit Layer Filter",
+                "data_type": "Enumeration List",
+                "description": "Categories: Hurtbox, Environment, and Object Self-Collision",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Hit Layer Filter",
+                  "Type": "Enumeration List",
+                  "Description": "Categories: Hurtbox, Environment, and Object Self-Collision"
+                }
+              },
+              {
+                "io": "Output Parameter",
+                "name": "On-Hit Location",
+                "data_type": "3D Vector",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Output Parameter",
+                  "Parameter Name": "On-Hit Location",
+                  "Type": "3D Vector",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Output Parameter",
+                "name": "On-Hit Entity",
+                "data_type": "Boolean",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Output Parameter",
+                  "Parameter Name": "On-Hit Entity",
+                  "Type": "Boolean",
+                  "Description": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "2. Get Ray Filter Type List",
+            "name": "Get Ray Filter Type List",
+            "ordinal": 2,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhdzd7i50td0/06c9ab9a-3ee2-4494-98e5-2eea0861638c.png"
+            ],
+            "functions": [
+              "Assemble the required ray detection filter types into a list. Available filters include Hurtbox, Environment, and Object Self-Collision."
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "0",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "0",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "1",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "1",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "2",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "2",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "3",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "3",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "4",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "4",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "5",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "5",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "6",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "6",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "7",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "7",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "8",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "8",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "9",
+                "data_type": "Enumeration",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "9",
+                  "Type": "Enumeration",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Output Parameter",
+                "name": "List",
+                "data_type": "Enumeration List",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Output Parameter",
+                  "Parameter Name": "List",
+                  "Type": "Enumeration List",
                   "Description": ""
                 }
               }
@@ -22381,7 +22846,7 @@
             "name": "获取前一帧执行战术",
             "ordinal": 27,
             "images": [
-              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mh1w3z96rpne/b9a63272-ca8a-412a-8ea0-25a026189772.undefined"
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mh1w3z96rpne/0e7296e2-a398-4568-af4a-0f76224adf4b.undefined"
             ],
             "functions": [
               "获取造物前一帧执行的战术"
@@ -22408,6 +22873,67 @@
                   "参数类型": "出参",
                   "参数名": "战术上下文",
                   "类型": "字符串",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "战术持续时长",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "战术持续时长",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "28. 实体是否携带指定单位状态",
+            "name": "实体是否携带指定单位状态",
+            "ordinal": 28,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mh1w3z96rpne/db37135c-8d36-4028-93be-4231cb454a27.undefined"
+            ],
+            "functions": [
+              "查询目标实体是否携带指定的单位状态"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "目标实体",
+                "data_type": "实体",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "目标实体",
+                  "类型": "实体",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "单位状态",
+                "data_type": "配置ID",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "单位状态",
+                  "类型": "配置ID",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "是否携带",
+                "data_type": "布尔值",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "是否携带",
+                  "类型": "布尔值",
                   "说明": ""
                 }
               }
@@ -22717,6 +23243,151 @@
                 }
               }
             ]
+          },
+          {
+            "raw_title": "6. 获取实体类型列表",
+            "name": "获取实体类型列表",
+            "ordinal": 6,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mh1w3z96rpne/30562c59-8261-4364-8e8f-efa743357b05.undefined"
+            ],
+            "functions": [
+              "将所需的实体类型拼装为一个列表。"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "0",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "0",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "1",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "1",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "2",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "2",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "3",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "3",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "4",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "4",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "5",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "5",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "6",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "6",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "7",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "7",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "8",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "8",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "9",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "9",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "列表",
+                "data_type": "枚举列表",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "列表",
+                  "类型": "枚举列表",
+                  "说明": ""
+                }
+              }
+            ]
           }
         ]
       },
@@ -22976,6 +23647,277 @@
                   "参数类型": "出参",
                   "参数名": "键列表",
                   "类型": "泛型",
+                  "说明": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "五、射线",
+        "nodes": [
+          {
+            "raw_title": "1. 获取射线检测结果",
+            "name": "获取射线检测结果",
+            "ordinal": 1,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mh1w3z96rpne/b38cc939-5c14-4a52-884e-b2b4b4d3b03b.undefined"
+            ],
+            "functions": [
+              "获取射线检测结果，会根据射线命中从近到远的顺序返回满足筛选条件的第一个目标或命中位置"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "检测发起者实体",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "检测发起者实体",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "出射位置",
+                "data_type": "三维向量",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "出射位置",
+                  "类型": "三维向量",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "出射方向",
+                "data_type": "三维向量",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "出射方向",
+                  "类型": "三维向量",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "射线最大长度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "射线最大长度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "阵营筛选",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "阵营筛选",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "实体类型筛选",
+                "data_type": "枚举列表",
+                "description": "分为关卡、物件、玩家、角色、造物",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "实体类型筛选",
+                  "类型": "枚举列表",
+                  "说明": "分为关卡、物件、玩家、角色、造物"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "命中层筛选",
+                "data_type": "枚举列表",
+                "description": "分为受击盒、场景、物件自身碰撞",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "命中层筛选",
+                  "类型": "枚举列表",
+                  "说明": "分为受击盒、场景、物件自身碰撞"
+                }
+              },
+              {
+                "io": "出参",
+                "name": "命中位置",
+                "data_type": "三维向量",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "命中位置",
+                  "类型": "三维向量",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "是否命中实体",
+                "data_type": "布尔值",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "是否命中实体",
+                  "类型": "布尔值",
+                  "说明": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "2. 获取射线筛选类型列表",
+            "name": "获取射线筛选类型列表",
+            "ordinal": 2,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mh1w3z96rpne/827e2488-9a46-4d47-8c58-df4f0048477f.undefined"
+            ],
+            "functions": [
+              "将所需的射线筛选类型拼装为一个列表。可筛选项有受击盒、场景、物件自身碰撞"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "0",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "0",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "1",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "1",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "2",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "2",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "3",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "3",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "4",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "4",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "5",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "5",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "6",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "6",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "7",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "7",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "8",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "8",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "9",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "9",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "列表",
+                "data_type": "枚举列表",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "列表",
+                  "类型": "枚举列表",
                   "说明": ""
                 }
               }
@@ -37840,6 +38782,1129 @@
                 }
               }
             ]
+          },
+          {
+            "raw_title": "13. Tactic: Aerial Landing",
+            "name": "Tactic: Aerial Landing",
+            "ordinal": 13,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhw2560p865k/7a3c509d-4253-4476-9c14-f4b7d367050a.png"
+            ],
+            "functions": [
+              "The creation performs an aerial landing action. It calculates a landing point based on the configured angle, then moves toward that point.",
+              "The tactic is considered complete when the vertical distance between the creation’s current position and the landing point is less than the Height Threshold for Landing Detection.",
+              "Execution Conditions:"
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "Execute",
+                "data_type": "Boolean",
+                "description": "Default: Yes",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Execute",
+                  "Type": "Boolean",
+                  "Description": "Default: Yes"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Tactical Context",
+                "data_type": "String",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Tactical Context",
+                  "Type": "String",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Can Skill be Interrupted",
+                "data_type": "Boolean",
+                "description": "Default: No",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Can Skill be Interrupted",
+                  "Type": "Boolean",
+                  "Description": "Default: No"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Landing Angle from Horizontal",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Landing Angle from Horizontal",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Landing Angle from Horizontal",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Landing Angle from Horizontal",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Height Threshold for Landing Detection",
+                "data_type": "Floating Point Numbers",
+                "description": "Height Above Ground",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Height Threshold for Landing Detection",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Height Above Ground"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Movement SPD",
+                "data_type": "Enumeration",
+                "description": "Walk, Run",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Movement SPD",
+                  "Type": "Enumeration",
+                  "Description": "Walk, Run"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Overwrite Movement SPD",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Overwrite Movement SPD",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Override Turn Speed",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Override Turn Speed",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Descent Duration",
+                "data_type": "Floating Point Numbers",
+                "description": "If the value is less than 0, the tactic is not executed.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Descent Duration",
+                  "Type": "Floating Point Numbers",
+                  "Description": "If the value is less than 0, the tactic is not executed."
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "14. Tactic: Aerial Pursuit",
+            "name": "Tactic: Aerial Pursuit",
+            "ordinal": 14,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhw2560p865k/b2d58971-addd-40a6-aa49-f7672a4e2191.png"
+            ],
+            "functions": [
+              "The creation performs an aerial pursuit action.",
+              "While pursuing a target, the creation automatically selects a suitable position around the target as its destination.",
+              "Execution Conditions:",
+              "[Required]",
+              "[Meet any one of the Conditions]"
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "Execute",
+                "data_type": "Boolean",
+                "description": "Default: Yes",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Execute",
+                  "Type": "Boolean",
+                  "Description": "Default: Yes"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Tactical Context",
+                "data_type": "String",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Tactical Context",
+                  "Type": "String",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Can skill be interrupted",
+                "data_type": "Boolean",
+                "description": "Default: No",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Can skill be interrupted",
+                  "Type": "Boolean",
+                  "Description": "Default: No"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Horizontal Distance to Trigger Pursuit",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Horizontal Distance to Trigger Pursuit",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Horizontal Distance to Stop Pursuit",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Horizontal Distance to Stop Pursuit",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Use Elevation Difference When Pursuing",
+                "data_type": "Boolean",
+                "description": "When set to No, both Height Difference to Trigger Pursuit and Height Difference to Stop Pursuit are ignored.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Use Elevation Difference When Pursuing",
+                  "Type": "Boolean",
+                  "Description": "When set to No, both Height Difference to Trigger Pursuit and Height Difference to Stop Pursuit are ignored."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Height Difference to Trigger Pursuit",
+                "data_type": "Floating Point Numbers",
+                "description": "If the value is less than 0, this setting is ignored.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Height Difference to Trigger Pursuit",
+                  "Type": "Floating Point Numbers",
+                  "Description": "If the value is less than 0, this setting is ignored."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Height Difference to Stop Pursuit",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Height Difference to Stop Pursuit",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Vertical Offset from Target",
+                "data_type": "Floating Point Numbers",
+                "description": "Height offset range for the target point.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Vertical Offset from Target",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Height offset range for the target point."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Vertical Offset from Target",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Vertical Offset from Target",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Movement SPD",
+                "data_type": "Enumeration",
+                "description": "Walk, Run",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Movement SPD",
+                  "Type": "Enumeration",
+                  "Description": "Walk, Run"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Overwrite Movement SPD",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Overwrite Movement SPD",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Override Turn Speed",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Override Turn Speed",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Single Pursuit Maximum Duration",
+                "data_type": "Floating Point Numbers",
+                "description": "If the value is less than 0, the tactic is not executed.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Single Pursuit Maximum Duration",
+                  "Type": "Floating Point Numbers",
+                  "Description": "If the value is less than 0, the tactic is not executed."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Tactical Instance CD",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Tactical Instance CD",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "15. Tactic: Aerial Escape",
+            "name": "Tactic: Aerial Escape",
+            "ordinal": 15,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhw2560p865k/90f64120-987f-48f5-958e-7b5abde57e77.png"
+            ],
+            "functions": [
+              "The creation performs an aerial escape action. This tactic causes the creation to flee its target by attempting to turn away and move farther away.",
+              "You can configure multiple escape movement segments. The number of segments ranges from [Minimum Escape Segments, Maximum Escape Segments).",
+              "The system calculates an escape position for each segment or attempt. Both azimuth and pitch angle settings are supported.",
+              "Execution Conditions:"
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "Execute",
+                "data_type": "Boolean",
+                "description": "Default: Yes",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Execute",
+                  "Type": "Boolean",
+                  "Description": "Default: Yes"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Tactical Context",
+                "data_type": "String",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Tactical Context",
+                  "Type": "String",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Can skill be interrupted",
+                "data_type": "Boolean",
+                "description": "Default: No",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Can skill be interrupted",
+                  "Type": "Boolean",
+                  "Description": "Default: No"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Escape Trigger Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Escape Trigger Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Movement SPD",
+                "data_type": "Enumeration",
+                "description": "Walk, Run",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Movement SPD",
+                  "Type": "Enumeration",
+                  "Description": "Walk, Run"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Overwrite Movement SPD",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Overwrite Movement SPD",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Override Turn Speed",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Override Turn Speed",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Escape Azimuth",
+                "data_type": "Floating Point Numbers",
+                "description": "The actual escape point search range is twice the absolute value of the configured value.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Escape Azimuth",
+                  "Type": "Floating Point Numbers",
+                  "Description": "The actual escape point search range is twice the absolute value of the configured value."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Escape Pitch Angle",
+                "data_type": "Floating Point Numbers",
+                "description": "Escape pitch angle range. Negative values indicate upward angles, while positive values indicate downward angles.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Escape Pitch Angle",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Escape pitch angle range. Negative values indicate upward angles, while positive values indicate downward angles."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Escape Pitch Angle",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Escape Pitch Angle",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Escape Segments",
+                "data_type": "Integer",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Escape Segments",
+                  "Type": "Integer",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Escape Segments",
+                "data_type": "Integer",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Escape Segments",
+                  "Type": "Integer",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Escape Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Escape Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Escape Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Escape Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Upward Escape Weight",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Upward Escape Weight",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Downward Escape Weight",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Downward Escape Weight",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Turn Toward Target When Escape Ends or Is Blocked",
+                "data_type": "Boolean",
+                "description": "Default: Yes",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Turn Toward Target When Escape Ends or Is Blocked",
+                  "Type": "Boolean",
+                  "Description": "Default: Yes"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Escape Trigger CD",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Escape Trigger CD",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Clear aggro and cancel tactic after countdown",
+                "data_type": "Floating Point Numbers",
+                "description": "If the value is less than 0, the tactic is not executed.Otherwise, the timer starts when the tactic begins. When the time limit is reached, the entity is forced to exit combat.The entity exits combat immediately when the tactic ends.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Clear aggro and cancel tactic after countdown",
+                  "Type": "Floating Point Numbers",
+                  "Description": "If the value is less than 0, the tactic is not executed.Otherwise, the timer starts when the tactic begins. When the time limit is reached, the entity is forced to exit combat.The entity exits combat immediately when the tactic ends."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Whether restricted by territory",
+                "data_type": "Boolean",
+                "description": "When set to Yes, the tactic ends immediately if no valid positions exist within the territory.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Whether restricted by territory",
+                  "Type": "Boolean",
+                  "Description": "When set to Yes, the tactic ends immediately if no valid positions exist within the territory."
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "16. Tactic: Aerial Confrontation",
+            "name": "Tactic: Aerial Confrontation",
+            "ordinal": 16,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhw2560p865k/e53ed4ba-87f0-499d-af91-674dd428b9c4.png"
+            ],
+            "functions": [
+              "The creation performs an aerial confrontation action. This multidirectional movement tactic allows the creation to randomly select a destination within the configured probability space around the target and move toward it.",
+              "Supports three-dimensional movement behaviors such as pursuing the player, moving away from them, and circling them from either side. It also provides settings to adjust the creation’s distance from the player and to avoid obstacles.",
+              "Execution Conditions:"
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "Execute",
+                "data_type": "Boolean",
+                "description": "Default: Yes",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Execute",
+                  "Type": "Boolean",
+                  "Description": "Default: Yes"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Tactical Context",
+                "data_type": "String",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Tactical Context",
+                  "Type": "String",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Can skill be interrupted",
+                "data_type": "Boolean",
+                "description": "Default: No",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Can skill be interrupted",
+                  "Type": "Boolean",
+                  "Description": "Default: No"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Inner Radius of Confrontation Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Inner Radius of Confrontation Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Outer Radius of Confrontation Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Outer Radius of Confrontation Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Standoff Height",
+                "data_type": "Floating Point Numbers",
+                "description": "Height Above Ground",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Standoff Height",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Height Above Ground"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Standoff Height",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Standoff Height",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Optimal Height Above Ground",
+                "data_type": "Floating Point Numbers",
+                "description": "The greater the difference between the optimal height and the actual height, the more likely the unit is to move in the opposite direction.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Optimal Height Above Ground",
+                  "Type": "Floating Point Numbers",
+                  "Description": "The greater the difference between the optimal height and the actual height, the more likely the unit is to move in the opposite direction."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Rest Interval",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Rest Interval",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Rest Interval",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Rest Interval",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Whether restricted by territory",
+                "data_type": "Boolean",
+                "description": "When set to Yes, the tactic ends immediately if no valid positions exist within the territory.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Whether restricted by territory",
+                  "Type": "Boolean",
+                  "Description": "When set to Yes, the tactic ends immediately if no valid positions exist within the territory."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Limit Height Based on Reference Ground",
+                "data_type": "Boolean",
+                "description": "Minimum/Maximum Standoff Height only takes effect when this setting is set to Yes, or when Optimal Height Above Ground is greater than 0.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Limit Height Based on Reference Ground",
+                  "Type": "Boolean",
+                  "Description": "Minimum/Maximum Standoff Height only takes effect when this setting is set to Yes, or when Optimal Height Above Ground is greater than 0."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Cancel Trigger Weight by Movement",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Cancel Trigger Weight by Movement",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Forward Movement Weight",
+                "data_type": "Floating Point Numbers",
+                "description": "This only affects movement weights in Normal Mode. Even if a direction's weight is reduced to 0, the unit may still move in that direction due to obstacle avoidance or exceptional circumstances.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Forward Movement Weight",
+                  "Type": "Floating Point Numbers",
+                  "Description": "This only affects movement weights in Normal Mode. Even if a direction's weight is reduced to 0, the unit may still move in that direction due to obstacle avoidance or exceptional circumstances."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Backward Movement Weight",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Backward Movement Weight",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Leftward Movement Weight",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Leftward Movement Weight",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Rightward Movement Weight",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Rightward Movement Weight",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Upward Movement Weight",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Upward Movement Weight",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Downward Movement Weight",
+                "data_type": "Floating Point Numbers",
+                "description": "Same as above.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Downward Movement Weight",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Same as above."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Lateral Obstacle Avoidance Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "If the configured value is less than 0, obstacle avoidance will not execute.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Lateral Obstacle Avoidance Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": "If the configured value is less than 0, obstacle avoidance will not execute."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Ascent Height for Obstacle Avoidance",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Ascent Height for Obstacle Avoidance",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Obstacle-Avoidance Angle Relative to Vertical",
+                "data_type": "Floating Point Numbers",
+                "description": "When the angle between the movement direction and the vertical direction exceeds this value, the unit stops instead of flying upward to bypass the obstacle.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Obstacle-Avoidance Angle Relative to Vertical",
+                  "Type": "Floating Point Numbers",
+                  "Description": "When the angle between the movement direction and the vertical direction exceeds this value, the unit stops instead of flying upward to bypass the obstacle."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Overwrite Movement SPD",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Overwrite Movement SPD",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Overwrite Movement Rotation SPD",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Overwrite Movement Rotation SPD",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Override On-The-Spot Turn Speed",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Override On-The-Spot Turn Speed",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Movement SPD",
+                "data_type": "Enumeration",
+                "description": "Walk, Run",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Movement SPD",
+                  "Type": "Enumeration",
+                  "Description": "Walk, Run"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Single Movement Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Single Movement Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Single Movement Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Single Movement Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "17. Tactic: Aerial Idling",
+            "name": "Tactic: Aerial Idling",
+            "ordinal": 17,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/en-us/mhw2560p865k/c62fcd82-e220-410d-8a48-83ff230d8370.png"
+            ],
+            "functions": [
+              "The creation performs an aerial idling action, moving randomly within a specified area.",
+              "Execution Conditions:",
+              "Point Selection Rules:",
+              "This is because selecting a valid target point is one of the conditions for entering the tactic."
+            ],
+            "parameters": [
+              {
+                "io": "Input Parameter",
+                "name": "Execute",
+                "data_type": "Boolean",
+                "description": "Default: Yes",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Execute",
+                  "Type": "Boolean",
+                  "Description": "Default: Yes"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Tactical Context",
+                "data_type": "String",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Tactical Context",
+                  "Type": "String",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Can skill be interrupted",
+                "data_type": "Boolean",
+                "description": "Default: No",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Can skill be interrupted",
+                  "Type": "Boolean",
+                  "Description": "Default: No"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Movement SPD",
+                "data_type": "Enumeration",
+                "description": "Walk, Run",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Movement SPD",
+                  "Type": "Enumeration",
+                  "Description": "Walk, Run"
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Overwrite Movement SPD",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Overwrite Movement SPD",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Override Turn Speed",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Override Turn Speed",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Idle Roaming Radius",
+                "data_type": "Floating Point Numbers",
+                "description": "Maximum Idle Roaming distance from the spawn point.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Idle Roaming Radius",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Maximum Idle Roaming distance from the spawn point."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Height Relative to Spawn Point",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Height Relative to Spawn Point",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Height Relative to Spawn Point",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Height Relative to Spawn Point",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Idle Roaming Interval",
+                "data_type": "Floating Point Numbers",
+                "description": "Idle Roaming cooldown. Each time the tactic ends, a duration is randomly selected from [Minimum Idle Roaming Interval, Maximum Idle Roaming Interval] and used as the cooldown. This tactic cannot be executed during the cooldown.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Idle Roaming Interval",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Idle Roaming cooldown. Each time the tactic ends, a duration is randomly selected from [Minimum Idle Roaming Interval, Maximum Idle Roaming Interval] and used as the cooldown. This tactic cannot be executed during the cooldown."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Idle Roaming Interval",
+                "data_type": "Floating Point Numbers",
+                "description": "",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Idle Roaming Interval",
+                  "Type": "Floating Point Numbers",
+                  "Description": ""
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Single Idle Maximum Duration",
+                "data_type": "Floating Point Numbers",
+                "description": "A single Idle Roaming action automatically stops after exceeding this duration.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Single Idle Maximum Duration",
+                  "Type": "Floating Point Numbers",
+                  "Description": "A single Idle Roaming action automatically stops after exceeding this duration."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Minimum Idle Roaming Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "Idle Roaming distance from the current position.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Minimum Idle Roaming Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Idle Roaming distance from the current position."
+                }
+              },
+              {
+                "io": "Input Parameter",
+                "name": "Maximum Idle Roaming Distance",
+                "data_type": "Floating Point Numbers",
+                "description": "Idle Roaming distance from the current position.",
+                "raw": {
+                  "Parameter Type": "Input Parameter",
+                  "Parameter Name": "Maximum Idle Roaming Distance",
+                  "Type": "Floating Point Numbers",
+                  "Description": "Idle Roaming distance from the current position."
+                }
+              }
+            ]
           }
         ]
       }
@@ -39280,6 +41345,1129 @@
                   "参数名": "是否可以打断技能",
                   "类型": "布尔值",
                   "说明": "默认为否"
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "13. 战术：空中降落",
+            "name": "战术：空中降落",
+            "ordinal": 13,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhb09x012qu8/630f8d76-d025-4eff-afb6-c8f9a0960e3e.undefined"
+            ],
+            "functions": [
+              "造物执行空中降落行为，根据配置角度计算出落地点，向落地点移动",
+              "当前位置与落地点的高度差小于 判定降落时的离地高度 时，视为战术执行完成",
+              "执行条件："
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "是否执行",
+                "data_type": "布尔值",
+                "description": "默认为是",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否执行",
+                  "类型": "布尔值",
+                  "说明": "默认为是"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "战术上下文",
+                "data_type": "字符串",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "战术上下文",
+                  "类型": "字符串",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否可以打断技能",
+                "data_type": "布尔值",
+                "description": "默认为否",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否可以打断技能",
+                  "类型": "布尔值",
+                  "说明": "默认为否"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "降落方向与水平面最小夹角",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "降落方向与水平面最小夹角",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "降落方向与水平面最大夹角",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "降落方向与水平面最大夹角",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "判定降落时的离地高度",
+                "data_type": "浮点数",
+                "description": "相对地面高度",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "判定降落时的离地高度",
+                  "类型": "浮点数",
+                  "说明": "相对地面高度"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "移动速度",
+                "data_type": "枚举",
+                "description": "走、跑",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "移动速度",
+                  "类型": "枚举",
+                  "说明": "走、跑"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写移动速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写移动速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写转向速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写转向速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "降落最大持续时间",
+                "data_type": "浮点数",
+                "description": "若数值小于0，则不执行战术",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "降落最大持续时间",
+                  "类型": "浮点数",
+                  "说明": "若数值小于0，则不执行战术"
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "14. 战术：空中追击",
+            "name": "战术：空中追击",
+            "ordinal": 14,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhb09x012qu8/b5f23d75-87d9-461d-a767-d47221c5fbd9.undefined"
+            ],
+            "functions": [
+              "造物执行空中追击行为",
+              "追击目标战术，会自主选择目标周围合适的位置做目标点",
+              "执行条件：",
+              "【必须满足】",
+              "【任一满足】"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "是否执行",
+                "data_type": "布尔值",
+                "description": "默认为是",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否执行",
+                  "类型": "布尔值",
+                  "说明": "默认为是"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "战术上下文",
+                "data_type": "字符串",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "战术上下文",
+                  "类型": "字符串",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否可以打断技能",
+                "data_type": "布尔值",
+                "description": "默认为否",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否可以打断技能",
+                  "类型": "布尔值",
+                  "说明": "默认为否"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "触发追击的水平距离",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "触发追击的水平距离",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "停止追击的水平距离",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "停止追击的水平距离",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否使用高度差追击",
+                "data_type": "布尔值",
+                "description": "当配置为否时，触发追击的高度差和停止追击的高度差均不生效",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否使用高度差追击",
+                  "类型": "布尔值",
+                  "说明": "当配置为否时，触发追击的高度差和停止追击的高度差均不生效"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "触发追击的高度差",
+                "data_type": "浮点数",
+                "description": "若数值小于0，则不生效",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "触发追击的高度差",
+                  "类型": "浮点数",
+                  "说明": "若数值小于0，则不生效"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "停止追击的高度差",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "停止追击的高度差",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "相对目标高度偏移下限",
+                "data_type": "浮点数",
+                "description": "目标点的高度偏移范围",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "相对目标高度偏移下限",
+                  "类型": "浮点数",
+                  "说明": "目标点的高度偏移范围"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "相对目标高度偏移上限",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "相对目标高度偏移上限",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "移动速度",
+                "data_type": "枚举",
+                "description": "走、跑",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "移动速度",
+                  "类型": "枚举",
+                  "说明": "走、跑"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写移动速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写移动速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写转向速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写转向速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "单次追击最大持续时间",
+                "data_type": "浮点数",
+                "description": "若数值小于0，则不执行战术",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "单次追击最大持续时间",
+                  "类型": "浮点数",
+                  "说明": "若数值小于0，则不执行战术"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "战术实例冷却时间",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "战术实例冷却时间",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "15. 战术：空中逃跑",
+            "name": "战术：空中逃跑",
+            "ordinal": 15,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhb09x012qu8/0d7bb95d-66b7-4a36-9680-8e650b7aa4a2.undefined"
+            ],
+            "functions": [
+              "造物执行空中逃跑行为，逃离目标的战术，试图背对目标并向远处移动。",
+              "允许配置多段逃跑移动，段数的取值范围为 [逃跑最少段数，逃跑最多段数)",
+              "每段/每次会计算一个逃跑点位，支持方位角和俯仰角的配置。",
+              "执行条件："
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "是否执行",
+                "data_type": "布尔值",
+                "description": "默认为是",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否执行",
+                  "类型": "布尔值",
+                  "说明": "默认为是"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "战术上下文",
+                "data_type": "字符串",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "战术上下文",
+                  "类型": "字符串",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否可以打断技能",
+                "data_type": "布尔值",
+                "description": "默认为否",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否可以打断技能",
+                  "类型": "布尔值",
+                  "说明": "默认为否"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑触发距离",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑触发距离",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "移动速度",
+                "data_type": "枚举",
+                "description": "走、跑",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "移动速度",
+                  "类型": "枚举",
+                  "说明": "走、跑"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写移动速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写移动速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写转向速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写转向速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑最大方位角",
+                "data_type": "浮点数",
+                "description": "以配置值绝对值的2倍，做实际逃跑选点范围",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑最大方位角",
+                  "类型": "浮点数",
+                  "说明": "以配置值绝对值的2倍，做实际逃跑选点范围"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑最小俯仰角",
+                "data_type": "浮点数",
+                "description": "逃跑俯仰角范围，上负下正",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑最小俯仰角",
+                  "类型": "浮点数",
+                  "说明": "逃跑俯仰角范围，上负下正"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑最大俯仰角",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑最大俯仰角",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑最少段数",
+                "data_type": "整数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑最少段数",
+                  "类型": "整数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑最多段数",
+                "data_type": "整数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑最多段数",
+                  "类型": "整数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑距离最小值",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑距离最小值",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑距离最大值",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑距离最大值",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "向上逃离权重",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "向上逃离权重",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "向下逃离权重",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "向下逃离权重",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃跑完成/被阻挡时是否转向目标",
+                "data_type": "布尔值",
+                "description": "默认为是",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃跑完成/被阻挡时是否转向目标",
+                  "类型": "布尔值",
+                  "说明": "默认为是"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "逃离触发冷却时间",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "逃离触发冷却时间",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "计时清除仇恨并退出战术",
+                "data_type": "浮点数",
+                "description": "若数值小于0，则不执行战术。否则从进入战术开始计时, 超时直接强制脱战。执行战术结束后，会马上触发脱战",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "计时清除仇恨并退出战术",
+                  "类型": "浮点数",
+                  "说明": "若数值小于0，则不执行战术。否则从进入战术开始计时, 超时直接强制脱战。执行战术结束后，会马上触发脱战"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否受到领地限制",
+                "data_type": "布尔值",
+                "description": "当配置为是，且领地内无合法的点位，会立刻结束该战术",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否受到领地限制",
+                  "类型": "布尔值",
+                  "说明": "当配置为是，且领地内无合法的点位，会立刻结束该战术"
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "16. 战术：空中对峙",
+            "name": "战术：空中对峙",
+            "ordinal": 16,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhb09x012qu8/afe58cec-a110-44ea-b1e2-01d327803bb5.undefined"
+            ],
+            "functions": [
+              "造物执行空中对峙行为，空间中的多向移动战术，能基于配置的目标周围概率空间随机选取位置移动。",
+              "能在三维空间中实现追击/远离/左右绕玩家移动等表现，也包含一些与玩家距离调整和避障的配置。",
+              "执行条件："
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "是否执行",
+                "data_type": "布尔值",
+                "description": "默认为是",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否执行",
+                  "类型": "布尔值",
+                  "说明": "默认为是"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "战术上下文",
+                "data_type": "字符串",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "战术上下文",
+                  "类型": "字符串",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否可以打断技能",
+                "data_type": "布尔值",
+                "description": "默认为否",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否可以打断技能",
+                  "类型": "布尔值",
+                  "说明": "默认为否"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "对峙距离内圈半径",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "对峙距离内圈半径",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "对峙距离外圈半径",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "对峙距离外圈半径",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "对峙最小高度",
+                "data_type": "浮点数",
+                "description": "相对地面高度",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "对峙最小高度",
+                  "类型": "浮点数",
+                  "说明": "相对地面高度"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "对峙最大高度",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "对峙最大高度",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "相对地面的最适高度",
+                "data_type": "浮点数",
+                "description": "最适高度与实际高度的差值越大，往反方向移动的概率越大",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "相对地面的最适高度",
+                  "类型": "浮点数",
+                  "说明": "最适高度与实际高度的差值越大，往反方向移动的概率越大"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "休息间隔时间最小值",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "休息间隔时间最小值",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "休息间隔时间最大值",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "休息间隔时间最大值",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否受到领地限制",
+                "data_type": "布尔值",
+                "description": "当配置为是，且领地内无合法的点位，会立刻结束该战术",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否受到领地限制",
+                  "类型": "布尔值",
+                  "说明": "当配置为是，且领地内无合法的点位，会立刻结束该战术"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否受到参考地面的高度限制",
+                "data_type": "布尔值",
+                "description": "当配置为是，或相对地面的最适高度大于0时，对峙最小/最大高度才会生效",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否受到参考地面的高度限制",
+                  "类型": "布尔值",
+                  "说明": "当配置为是，或相对地面的最适高度大于0时，对峙最小/最大高度才会生效"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "移动取消触发权重",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "移动取消触发权重",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "往前移动权重",
+                "data_type": "浮点数",
+                "description": "只影响常规模式下的移动权重，把某个方向的权重降为0，也可能因为避障/异常情况进入该方向",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "往前移动权重",
+                  "类型": "浮点数",
+                  "说明": "只影响常规模式下的移动权重，把某个方向的权重降为0，也可能因为避障/异常情况进入该方向"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "往后移动权重",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "往后移动权重",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "往左移动权重",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "往左移动权重",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "往右移动权重",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "往右移动权重",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "往上移动权重",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "往上移动权重",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "往下移动权重",
+                "data_type": "浮点数",
+                "description": "同上",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "往下移动权重",
+                  "类型": "浮点数",
+                  "说明": "同上"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "左右避障距离",
+                "data_type": "浮点数",
+                "description": "当配置数值小于0，则不执行避障功能",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "左右避障距离",
+                  "类型": "浮点数",
+                  "说明": "当配置数值小于0，则不执行避障功能"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "避障上飞高度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "避障上飞高度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "移动方向与垂直方向的最大避障夹角",
+                "data_type": "浮点数",
+                "description": "移动方向与垂直方向夹角大于该角度时，不进行上飞绕路而是直接停止",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "移动方向与垂直方向的最大避障夹角",
+                  "类型": "浮点数",
+                  "说明": "移动方向与垂直方向夹角大于该角度时，不进行上飞绕路而是直接停止"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写移动速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写移动速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写移动转向速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写移动转向速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写原地转向速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写原地转向速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "移动速度",
+                "data_type": "枚举",
+                "description": "走、跑",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "移动速度",
+                  "类型": "枚举",
+                  "说明": "走、跑"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "单次最小移动距离",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "单次最小移动距离",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "单次最大移动距离",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "单次最大移动距离",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "17. 战术：空中闲逛",
+            "name": "战术：空中闲逛",
+            "ordinal": 17,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhb09x012qu8/213a98d5-e079-4e73-960d-9f24f23a6130.undefined"
+            ],
+            "functions": [
+              "造物执行空中闲逛行为，在范围内随机移动",
+              "执行条件：",
+              "选点规则：",
+              "因为选到合适的目标点是进入战术的条件之一"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "是否执行",
+                "data_type": "布尔值",
+                "description": "默认为是",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否执行",
+                  "类型": "布尔值",
+                  "说明": "默认为是"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "战术上下文",
+                "data_type": "字符串",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "战术上下文",
+                  "类型": "字符串",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "是否可以打断技能",
+                "data_type": "布尔值",
+                "description": "默认为否",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "是否可以打断技能",
+                  "类型": "布尔值",
+                  "说明": "默认为否"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "移动速度",
+                "data_type": "枚举",
+                "description": "走、跑",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "移动速度",
+                  "类型": "枚举",
+                  "说明": "走、跑"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写移动速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写移动速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "覆写转向速度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "覆写转向速度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "闲逛半径",
+                "data_type": "浮点数",
+                "description": "闲逛距离出生点的最远距离",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "闲逛半径",
+                  "类型": "浮点数",
+                  "说明": "闲逛距离出生点的最远距离"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "相对出生点最小高度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "相对出生点最小高度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "相对出生点最大高度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "相对出生点最大高度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "闲逛最小间隔时长",
+                "data_type": "浮点数",
+                "description": "闲逛冷却时间， 每次退出战术时， 都会在 [闲逛最小间隔时长，闲逛最大间隔时长] 里随机一个时间， 作为冷却时间，冷却时间内不会执行本战术",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "闲逛最小间隔时长",
+                  "类型": "浮点数",
+                  "说明": "闲逛冷却时间， 每次退出战术时， 都会在 [闲逛最小间隔时长，闲逛最大间隔时长] 里随机一个时间， 作为冷却时间，冷却时间内不会执行本战术"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "闲逛最大间隔时长",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "闲逛最大间隔时长",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "单次闲逛最大持续时间",
+                "data_type": "浮点数",
+                "description": "单次闲逛超出该时长时自动停止",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "单次闲逛最大持续时间",
+                  "类型": "浮点数",
+                  "说明": "单次闲逛超出该时长时自动停止"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "单次最小闲逛距离",
+                "data_type": "浮点数",
+                "description": "闲逛距当前点距离",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "单次最小闲逛距离",
+                  "类型": "浮点数",
+                  "说明": "闲逛距当前点距离"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "单次最大闲逛距离",
+                "data_type": "浮点数",
+                "description": "闲逛距当前点距离",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "单次最大闲逛距离",
+                  "类型": "浮点数",
+                  "说明": "闲逛距当前点距离"
                 }
               }
             ]
@@ -54931,7 +58119,7 @@
             "name": "获取前一帧执行战术",
             "ordinal": 27,
             "images": [
-              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhk4furvds12/cff1002e-7840-4ca4-b1e6-fc28f5c34821.undefined"
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhk4furvds12/48c15659-c603-4bc5-8831-7eb21d982240.undefined"
             ],
             "functions": [
               "获取造物前一帧执行的战术"
@@ -54958,6 +58146,67 @@
                   "参数类型": "出参",
                   "参数名": "战术上下文",
                   "类型": "字符串",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "战术持续时长",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "战术持续时长",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "28. 实体是否携带指定单位状态",
+            "name": "实体是否携带指定单位状态",
+            "ordinal": 28,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhk4furvds12/af9859fd-14a2-48c8-bff7-15ea437e96d3.undefined"
+            ],
+            "functions": [
+              "查询目标实体是否携带指定的单位状态"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "目标实体",
+                "data_type": "实体",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "目标实体",
+                  "类型": "实体",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "单位状态",
+                "data_type": "配置ID",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "单位状态",
+                  "类型": "配置ID",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "是否携带",
+                "data_type": "布尔值",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "是否携带",
+                  "类型": "布尔值",
                   "说明": ""
                 }
               }
@@ -55267,6 +58516,151 @@
                 }
               }
             ]
+          },
+          {
+            "raw_title": "6. 获取实体类型列表",
+            "name": "获取实体类型列表",
+            "ordinal": 6,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhk4furvds12/f6e19f88-2677-4e3f-9ebe-12c2693b6bfe.undefined"
+            ],
+            "functions": [
+              "将所需的实体类型拼装为一个列表。"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "0",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "0",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "1",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "1",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "2",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "2",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "3",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "3",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "4",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "4",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "5",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "5",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "6",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "6",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "7",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "7",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "8",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "8",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "9",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "9",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "列表",
+                "data_type": "枚举列表",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "列表",
+                  "类型": "枚举列表",
+                  "说明": ""
+                }
+              }
+            ]
           }
         ]
       },
@@ -55526,6 +58920,277 @@
                   "参数类型": "出参",
                   "参数名": "键列表",
                   "类型": "泛型",
+                  "说明": ""
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "五、射线",
+        "nodes": [
+          {
+            "raw_title": "1. 获取射线检测结果",
+            "name": "获取射线检测结果",
+            "ordinal": 1,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhk4furvds12/8d2819f1-2994-40cc-9055-43dfd8fdf5f4.undefined"
+            ],
+            "functions": [
+              "获取射线检测结果，会根据射线命中从近到远的顺序返回满足筛选条件的第一个目标或命中位置"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "检测发起者实体",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "检测发起者实体",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "出射位置",
+                "data_type": "三维向量",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "出射位置",
+                  "类型": "三维向量",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "出射方向",
+                "data_type": "三维向量",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "出射方向",
+                  "类型": "三维向量",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "射线最大长度",
+                "data_type": "浮点数",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "射线最大长度",
+                  "类型": "浮点数",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "阵营筛选",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "阵营筛选",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "实体类型筛选",
+                "data_type": "枚举列表",
+                "description": "分为关卡、物件、玩家、角色、造物",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "实体类型筛选",
+                  "类型": "枚举列表",
+                  "说明": "分为关卡、物件、玩家、角色、造物"
+                }
+              },
+              {
+                "io": "入参",
+                "name": "命中层筛选",
+                "data_type": "枚举列表",
+                "description": "分为受击盒、场景、物件自身碰撞",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "命中层筛选",
+                  "类型": "枚举列表",
+                  "说明": "分为受击盒、场景、物件自身碰撞"
+                }
+              },
+              {
+                "io": "出参",
+                "name": "命中位置",
+                "data_type": "三维向量",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "命中位置",
+                  "类型": "三维向量",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "是否命中实体",
+                "data_type": "布尔值",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "是否命中实体",
+                  "类型": "布尔值",
+                  "说明": ""
+                }
+              }
+            ]
+          },
+          {
+            "raw_title": "2. 获取射线筛选类型列表",
+            "name": "获取射线筛选类型列表",
+            "ordinal": 2,
+            "images": [
+              "https://act-webstatic.mihoyo.com/ugc-tutorial/knowledge/cn/zh-cn/mhk4furvds12/7866247b-6069-4177-98bd-fbe8fcecae36.undefined"
+            ],
+            "functions": [
+              "将所需的射线筛选类型拼装为一个列表。可筛选项有受击盒、场景、物件自身碰撞"
+            ],
+            "parameters": [
+              {
+                "io": "入参",
+                "name": "0",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "0",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "1",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "1",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "2",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "2",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "3",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "3",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "4",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "4",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "5",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "5",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "6",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "6",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "7",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "7",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "8",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "8",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "入参",
+                "name": "9",
+                "data_type": "枚举",
+                "description": "",
+                "raw": {
+                  "参数类型": "入参",
+                  "参数名": "9",
+                  "类型": "枚举",
+                  "说明": ""
+                }
+              },
+              {
+                "io": "出参",
+                "name": "列表",
+                "data_type": "枚举列表",
+                "description": "",
+                "raw": {
+                  "参数类型": "出参",
+                  "参数名": "列表",
+                  "类型": "枚举列表",
                   "说明": ""
                 }
               }

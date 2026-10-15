@@ -2,18 +2,18 @@
   "formatVersion": 2,
   "source": {
     "encoding": "xor-0xe5 protobuf wire format",
-    "scannedNodeFiles": 799,
-    "selectedClientNodes": 297,
-    "aggregateSha256": "9cf2a0d142d301c9faec297d5bcec01ac433ad55efa2d06dd611ca6151bc76be",
-    "chsTextMapSha256": "355815f5143c6749b9341ff62b0a6d6dbd751664c4e3c6f00bc9bcd6c37b3e48"
+    "scannedNodeFiles": 810,
+    "selectedClientNodes": 306,
+    "aggregateSha256": "adb3de27199de354df74033f207485097e62d26220e23c7cb4ba893c2bd29882",
+    "chsTextMapSha256": "b50ba993dbc156314f5594a13e1abbd499b6a5ea3b92af8d4bf9746a138449dd"
   },
   "summary": {
-    "inputPins": 1173,
-    "connectableInputs": 828,
-    "literalOnlyInputs": 345,
+    "inputPins": 1291,
+    "connectableInputs": 926,
+    "literalOnlyInputs": 365,
     "reflectiveInputs": 309,
-    "pinsWithExplicitDefaults": 109,
-    "namedPins": 1446,
+    "pinsWithExplicitDefaults": 134,
+    "namedPins": 1575,
     "concreteVariantGroups": 88,
     "concreteVariants": 4259,
     "concreteVariantBindings": 53934
@@ -3830,7 +3830,7 @@
     {
       "genericId": 200051,
       "sourceFile": "Node/1875278929319613044.mihoyobin",
-      "sha256": "553e551fd6f6f47c35e69525a116ac63d00d0e55ead5a862515a7d072ba25315",
+      "sha256": "de63815f476e190351a4c180d0782818fe654f7497c09451cb8665096226e994",
       "pins": [
         {
           "kind": "in_flow",
@@ -3932,8 +3932,7 @@
           "index": 9,
           "valueClass": 7,
           "clientVarType": 11,
-          "connectionType": 11,
-          "connectable": true,
+          "connectable": false,
           "nameHash": 1582145533,
           "name": "攻击盒为长方体时的缩放"
         },
@@ -4635,7 +4634,7 @@
     {
       "genericId": 200059,
       "sourceFile": "Node/13636086550487873293.mihoyobin",
-      "sha256": "2707579f009a0b552de99c2f6c86eef20b840609fb3b97e2e41eb4040e8d095f",
+      "sha256": "b08efee3ba3a8b803b1cb46646001a191c8ad719264ce15011e06b89a952aeb4",
       "pins": [
         {
           "kind": "in_flow",
@@ -4755,8 +4754,7 @@
           "i2Index": 9,
           "valueClass": 7,
           "clientVarType": 11,
-          "connectionType": 11,
-          "connectable": true,
+          "connectable": false,
           "nameHash": 2323852252,
           "name": "攻击盒为长方体时的缩放"
         },
@@ -7973,7 +7971,7 @@
     {
       "genericId": 200112,
       "sourceFile": "Node/2996954345884179671.mihoyobin",
-      "sha256": "72afb44593cada07ba6f4b8cc926b465452ae17cb618598d8b3c4123e6fcb899",
+      "sha256": "27584f8edac08d24ab0f5b2300d2cadc47fe9f5062a4924a1a1d03dae289530c",
       "pins": [
         {
           "kind": "in_flow",
@@ -8076,8 +8074,7 @@
           "index": 9,
           "valueClass": 7,
           "clientVarType": 11,
-          "connectionType": 11,
-          "connectable": true,
+          "connectable": false,
           "nameHash": 4062505861,
           "name": "攻击盒为长方体时的缩放"
         },
@@ -9391,7 +9388,7 @@
     {
       "genericId": 200115,
       "sourceFile": "Node/15601835644948918886.mihoyobin",
-      "sha256": "1aec957cc1ab7e8f0f4760ea47e5f22deb2dcfc21480a4d9383d15786952cf2c",
+      "sha256": "a1ee2d02bea4fe7e78b77d06001668f169d96a8ab1d29da3386c7b6bd07821ee",
       "pins": [
         {
           "kind": "in_flow",
@@ -9512,8 +9509,7 @@
           "i2Index": 9,
           "valueClass": 7,
           "clientVarType": 11,
-          "connectionType": 11,
-          "connectable": true,
+          "connectable": false,
           "nameHash": 2256927276,
           "name": "攻击盒为长方体时的缩放"
         },
@@ -34938,7 +34934,7 @@
     {
       "genericId": 200252,
       "sourceFile": "Node/14590817563750870045.mihoyobin",
-      "sha256": "eb35cc703a796e96236305c714bd9841bd44265020b6320f3c938d223e552ac5",
+      "sha256": "605cf6b46697d09c8ea5547cb27900ff9004e1f6b836475fcdb6125326fc70e0",
       "pins": [
         {
           "kind": "output",
@@ -34957,6 +34953,15 @@
           "connectionType": 9,
           "nameHash": 4210955156,
           "name": "战术上下文"
+        },
+        {
+          "kind": "output",
+          "index": 2,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "nameHash": 1183208331,
+          "name": "战术持续时长"
         }
       ]
     },
@@ -36579,6 +36584,340 @@
       ]
     },
     {
+      "genericId": 200301,
+      "sourceFile": "Node/9706379154925295902.mihoyobin",
+      "sha256": "41b1006331dd391aa60e1b055de6bf2b29063e6a7facf996088fb391d7a2a055",
+      "pins": [
+        {
+          "kind": "input",
+          "index": 0,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 899815395,
+          "name": "检测发起者实体"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 7,
+          "clientVarType": 11,
+          "connectionType": 11,
+          "connectable": true,
+          "nameHash": 2301483935,
+          "name": "出射位置"
+        },
+        {
+          "kind": "input",
+          "index": 2,
+          "valueClass": 7,
+          "clientVarType": 11,
+          "connectionType": 11,
+          "connectable": true,
+          "nameHash": 674427891,
+          "name": "出射方向"
+        },
+        {
+          "kind": "input",
+          "index": 3,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 64416433,
+          "name": "射线最大长度"
+        },
+        {
+          "kind": "input",
+          "index": 4,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210026,
+          "connectable": true,
+          "nameHash": 852928456,
+          "name": "阵营筛选"
+        },
+        {
+          "kind": "input",
+          "index": 5,
+          "valueClass": 10002,
+          "clientVarType": 17,
+          "connectionType": 17,
+          "connectable": true,
+          "nameHash": 1542656663,
+          "name": "实体类型筛选"
+        },
+        {
+          "kind": "input",
+          "index": 6,
+          "valueClass": 10002,
+          "clientVarType": 17,
+          "connectionType": 17,
+          "connectable": true,
+          "nameHash": 492984096,
+          "name": "命中层筛选"
+        },
+        {
+          "kind": "output",
+          "index": 0,
+          "valueClass": 7,
+          "clientVarType": 11,
+          "connectionType": 11,
+          "nameHash": 4111711801,
+          "name": "命中位置"
+        },
+        {
+          "kind": "output",
+          "index": 1,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "nameHash": 3044304620,
+          "name": "是否命中实体"
+        }
+      ]
+    },
+    {
+      "genericId": 200302,
+      "sourceFile": "Node/16741171627840089547.mihoyobin",
+      "sha256": "4267f9cc6f1fe8b858b4b75bc2cf53f053fd4d2715f811141804c9914d8c04e0",
+      "pins": [
+        {
+          "kind": "input",
+          "index": 0,
+          "valueClass": 2,
+          "clientVarType": 3,
+          "connectionType": 3,
+          "connectable": true,
+          "nameHash": 2620116883,
+          "name": "Count"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 1440612007,
+          "name": "0"
+        },
+        {
+          "kind": "input",
+          "index": 2,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 3301000019,
+          "name": "1"
+        },
+        {
+          "kind": "input",
+          "index": 3,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 3772810921,
+          "name": "2"
+        },
+        {
+          "kind": "input",
+          "index": 4,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 961820664,
+          "name": "3"
+        },
+        {
+          "kind": "input",
+          "index": 5,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 1244633743,
+          "name": "4"
+        },
+        {
+          "kind": "input",
+          "index": 6,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 3841340976,
+          "name": "5"
+        },
+        {
+          "kind": "input",
+          "index": 7,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 2351774411,
+          "name": "6"
+        },
+        {
+          "kind": "input",
+          "index": 8,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 840737439,
+          "name": "7"
+        },
+        {
+          "kind": "input",
+          "index": 9,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 3202273845,
+          "name": "8"
+        },
+        {
+          "kind": "input",
+          "index": 10,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectable": false,
+          "nameHash": 2830597116,
+          "name": "9"
+        },
+        {
+          "kind": "output",
+          "index": 0,
+          "valueClass": 10002,
+          "clientVarType": 17,
+          "connectionType": 17,
+          "nameHash": 2701912953,
+          "name": "列表"
+        },
+        {
+          "kind": "client_signal",
+          "index": 0
+        }
+      ]
+    },
+    {
+      "genericId": 200303,
+      "sourceFile": "Node/1244314151563021145.mihoyobin",
+      "sha256": "848cdeb23aa5752072cabe6a77fb4add066e0faf3265b951e9705b5f010a95ab",
+      "pins": [
+        {
+          "kind": "in_flow",
+          "index": 0,
+          "nameHash": 3052921510
+        },
+        {
+          "kind": "out_flow",
+          "index": 0,
+          "nameHash": 1397028518,
+          "name": "失败执行"
+        },
+        {
+          "kind": "input",
+          "index": 0,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 2182556443,
+          "defaultValue": true,
+          "name": "是否执行"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 5,
+          "clientVarType": 9,
+          "connectable": false,
+          "nameHash": 1525838511,
+          "name": "战术上下文"
+        },
+        {
+          "kind": "input",
+          "index": 2,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 1562745627,
+          "defaultValue": false,
+          "name": "是否可以打断技能"
+        },
+        {
+          "kind": "input",
+          "index": 3,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2378808961,
+          "name": "降落方向与水平面最小夹角"
+        },
+        {
+          "kind": "input",
+          "index": 4,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3180193392,
+          "name": "降落方向与水平面最大夹角"
+        },
+        {
+          "kind": "input",
+          "index": 5,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1220544111,
+          "name": "判定降落时的离地高度"
+        },
+        {
+          "kind": "input",
+          "index": 6,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210047,
+          "connectable": true,
+          "nameHash": 2636096384,
+          "defaultValue": 3601,
+          "name": "移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 7,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 836446187,
+          "name": "覆写移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 8,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 4179973887,
+          "name": "覆写转向速度"
+        },
+        {
+          "kind": "input",
+          "index": 9,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1540176789,
+          "name": "降落最大持续时间"
+        }
+      ]
+    },
+    {
       "genericId": 200304,
       "sourceFile": "Node/863152022921239959.mihoyobin",
       "sha256": "d9323b38ac6c909cc5b7b915b2c350e8ceda6a467a4dccf8d32ae4ce2abebd29",
@@ -36748,6 +37087,1030 @@
           "kind": "client_exec",
           "index": 0,
           "nameHash": 2059701224
+        }
+      ]
+    },
+    {
+      "genericId": 200307,
+      "sourceFile": "Node/15550020904630729637.mihoyobin",
+      "sha256": "7effd922837d1e01ec00de2f88d24801dc448df783d3767993a5c8e99fd85643",
+      "pins": [
+        {
+          "kind": "input",
+          "index": 0,
+          "clientVarType": 1,
+          "connectionType": 1,
+          "connectable": true,
+          "nameHash": 1764149859,
+          "name": "目标实体"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 1,
+          "clientVarType": 18,
+          "connectionType": 18,
+          "connectable": true,
+          "nameHash": 2421204575,
+          "name": "单位状态"
+        },
+        {
+          "kind": "output",
+          "index": 0,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "nameHash": 1336641257,
+          "name": "是否携带"
+        }
+      ]
+    },
+    {
+      "genericId": 200308,
+      "sourceFile": "Node/3653558339455364828.mihoyobin",
+      "sha256": "c8583ed49a8d3c6db59f2d56cda2cc69c0d29725f13b81be1c7ba47ae1b49685",
+      "pins": [
+        {
+          "kind": "in_flow",
+          "index": 0,
+          "nameHash": 3684636302
+        },
+        {
+          "kind": "out_flow",
+          "index": 0,
+          "nameHash": 3403924342,
+          "name": "失败执行"
+        },
+        {
+          "kind": "input",
+          "index": 0,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 1541632611,
+          "defaultValue": true,
+          "name": "是否执行"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 5,
+          "clientVarType": 9,
+          "connectable": false,
+          "nameHash": 870514631,
+          "name": "战术上下文"
+        },
+        {
+          "kind": "input",
+          "index": 2,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 333295123,
+          "defaultValue": false,
+          "name": "是否可以打断技能"
+        },
+        {
+          "kind": "input",
+          "index": 3,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2107472601,
+          "name": "触发追击的水平距离"
+        },
+        {
+          "kind": "input",
+          "index": 4,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3942169472,
+          "name": "停止追击的水平距离"
+        },
+        {
+          "kind": "input",
+          "index": 5,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 3310003815,
+          "defaultValue": true,
+          "name": "是否使用高度差追击"
+        },
+        {
+          "kind": "input",
+          "index": 6,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 4182253168,
+          "name": "触发追击的高度差"
+        },
+        {
+          "kind": "input",
+          "index": 7,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1588923379,
+          "name": "停止追击的高度差"
+        },
+        {
+          "kind": "input",
+          "index": 8,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1449559567,
+          "name": "相对目标高度偏移下限"
+        },
+        {
+          "kind": "input",
+          "index": 9,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 286798589,
+          "name": "相对目标高度偏移上限"
+        },
+        {
+          "kind": "input",
+          "index": 10,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210047,
+          "connectable": true,
+          "nameHash": 3968124532,
+          "defaultValue": 3601,
+          "name": "移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 11,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3236041451,
+          "name": "覆写移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 12,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3144517412,
+          "name": "覆写转向速度"
+        },
+        {
+          "kind": "input",
+          "index": 13,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2720771650,
+          "name": "单次追击最大持续时间"
+        },
+        {
+          "kind": "input",
+          "index": 14,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3534207678,
+          "name": "战术实例冷却时间"
+        }
+      ]
+    },
+    {
+      "genericId": 200309,
+      "sourceFile": "Node/5742394129487351022.mihoyobin",
+      "sha256": "910aae73cf12fb2d04155753a2003051598176223714870e42c92b6874a25e98",
+      "pins": [
+        {
+          "kind": "in_flow",
+          "index": 0,
+          "nameHash": 2869168934
+        },
+        {
+          "kind": "out_flow",
+          "index": 0,
+          "nameHash": 3125974798,
+          "name": "失败执行"
+        },
+        {
+          "kind": "input",
+          "index": 0,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 2946809499,
+          "defaultValue": true,
+          "name": "是否执行"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 5,
+          "clientVarType": 9,
+          "connectable": false,
+          "nameHash": 2708982751,
+          "name": "战术上下文"
+        },
+        {
+          "kind": "input",
+          "index": 2,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 1705722451,
+          "defaultValue": false,
+          "name": "是否可以打断技能"
+        },
+        {
+          "kind": "input",
+          "index": 3,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3015131065,
+          "name": "逃跑触发距离"
+        },
+        {
+          "kind": "input",
+          "index": 4,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210047,
+          "connectable": true,
+          "nameHash": 1534738376,
+          "defaultValue": 3601,
+          "name": "移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 5,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1572060087,
+          "name": "覆写移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 6,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1429351080,
+          "name": "覆写转向速度"
+        },
+        {
+          "kind": "input",
+          "index": 7,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1283390451,
+          "name": "逃跑最大方位角"
+        },
+        {
+          "kind": "input",
+          "index": 8,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2795372199,
+          "name": "逃跑最小俯仰角"
+        },
+        {
+          "kind": "input",
+          "index": 9,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 376339069,
+          "name": "逃跑最大俯仰角"
+        },
+        {
+          "kind": "input",
+          "index": 10,
+          "valueClass": 2,
+          "clientVarType": 3,
+          "connectionType": 3,
+          "connectable": true,
+          "nameHash": 1453454156,
+          "name": "逃跑最少段数"
+        },
+        {
+          "kind": "input",
+          "index": 11,
+          "valueClass": 2,
+          "clientVarType": 3,
+          "connectionType": 3,
+          "connectable": true,
+          "nameHash": 2694979219,
+          "name": "逃跑最多段数"
+        },
+        {
+          "kind": "input",
+          "index": 12,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 301750868,
+          "name": "逃跑距离最小值"
+        },
+        {
+          "kind": "input",
+          "index": 13,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 925035170,
+          "name": "逃跑距离最大值"
+        },
+        {
+          "kind": "input",
+          "index": 14,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1161951190,
+          "name": "向上逃离权重"
+        },
+        {
+          "kind": "input",
+          "index": 15,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2969731875,
+          "name": "向下逃离权重"
+        },
+        {
+          "kind": "input",
+          "index": 16,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 1719613384,
+          "defaultValue": true,
+          "name": "逃跑完成/被阻挡时是否转向目标"
+        },
+        {
+          "kind": "input",
+          "index": 17,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2384715667,
+          "name": "逃离触发冷却时间"
+        },
+        {
+          "kind": "input",
+          "index": 18,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1257273895,
+          "defaultValue": -1,
+          "name": "计时清除仇恨并退出战术"
+        },
+        {
+          "kind": "input",
+          "index": 19,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 3645740677,
+          "defaultValue": true,
+          "name": "是否受到领地限制"
+        }
+      ]
+    },
+    {
+      "genericId": 200310,
+      "sourceFile": "Node/10038672886572232414.mihoyobin",
+      "sha256": "637150af2dd88b31ea1650bb17f732125cce0f641bf3286528222e4177ff2bd3",
+      "pins": [
+        {
+          "kind": "in_flow",
+          "index": 0,
+          "nameHash": 3446345646
+        },
+        {
+          "kind": "out_flow",
+          "index": 0,
+          "nameHash": 1890945718,
+          "name": "失败执行"
+        },
+        {
+          "kind": "input",
+          "index": 0,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 3857728003,
+          "defaultValue": true,
+          "name": "是否执行"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 5,
+          "clientVarType": 9,
+          "connectable": false,
+          "nameHash": 569280223,
+          "name": "战术上下文"
+        },
+        {
+          "kind": "input",
+          "index": 2,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 2761887603,
+          "defaultValue": false,
+          "name": "是否可以打断技能"
+        },
+        {
+          "kind": "input",
+          "index": 3,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 445633073,
+          "name": "对峙距离内圈半径"
+        },
+        {
+          "kind": "input",
+          "index": 4,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 192033624,
+          "name": "对峙距离外圈半径"
+        },
+        {
+          "kind": "input",
+          "index": 5,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3215191783,
+          "name": "对峙最小高度"
+        },
+        {
+          "kind": "input",
+          "index": 6,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2069021336,
+          "name": "对峙最大高度"
+        },
+        {
+          "kind": "input",
+          "index": 7,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3752377891,
+          "name": "相对地面的最适高度"
+        },
+        {
+          "kind": "input",
+          "index": 8,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3472369551,
+          "name": "休息间隔时间最小值"
+        },
+        {
+          "kind": "input",
+          "index": 9,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2929329053,
+          "name": "休息间隔时间最大值"
+        },
+        {
+          "kind": "input",
+          "index": 10,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 700516020,
+          "defaultValue": true,
+          "name": "是否受到领地限制"
+        },
+        {
+          "kind": "input",
+          "index": 11,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 3366501955,
+          "defaultValue": true,
+          "name": "是否受到参考地面的高度限制"
+        },
+        {
+          "kind": "input",
+          "index": 12,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 300143516,
+          "name": "移动取消触发权重"
+        },
+        {
+          "kind": "input",
+          "index": 13,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3325492786,
+          "name": "往前移动权重"
+        },
+        {
+          "kind": "input",
+          "index": 14,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2003423926,
+          "name": "往后移动权重"
+        },
+        {
+          "kind": "input",
+          "index": 15,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3792295795,
+          "name": "往左移动权重"
+        },
+        {
+          "kind": "input",
+          "index": 16,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2423357328,
+          "name": "往右移动权重"
+        },
+        {
+          "kind": "input",
+          "index": 17,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2539652915,
+          "name": "往上移动权重"
+        },
+        {
+          "kind": "input",
+          "index": 18,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1629705071,
+          "name": "往下移动权重"
+        },
+        {
+          "kind": "input",
+          "index": 19,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2642514533,
+          "defaultValue": 1.5,
+          "name": "左右避障距离"
+        },
+        {
+          "kind": "input",
+          "index": 20,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3620216575,
+          "defaultValue": 3,
+          "name": "避障上飞高度"
+        },
+        {
+          "kind": "input",
+          "index": 21,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3998370748,
+          "defaultValue": 120,
+          "name": "移动方向与垂直方向的最大避障夹角"
+        },
+        {
+          "kind": "input",
+          "index": 22,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2089898923,
+          "name": "覆写移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 23,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3723770451,
+          "name": "覆写移动转向速度"
+        },
+        {
+          "kind": "input",
+          "index": 24,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 3091958611,
+          "name": "覆写原地转向速度"
+        },
+        {
+          "kind": "input",
+          "index": 25,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210047,
+          "connectable": true,
+          "nameHash": 3743213060,
+          "defaultValue": 3601,
+          "name": "移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 26,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 18599787,
+          "name": "单次最小移动距离"
+        },
+        {
+          "kind": "input",
+          "index": 27,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 924444163,
+          "name": "单次最大移动距离"
+        }
+      ]
+    },
+    {
+      "genericId": 200311,
+      "sourceFile": "Node/13153519696291963406.mihoyobin",
+      "sha256": "dd0fe0b89dd106799ea231ffea59394656129ef09c0f48e1e1128fd89a6ae796",
+      "pins": [
+        {
+          "kind": "in_flow",
+          "index": 0,
+          "nameHash": 580064006
+        },
+        {
+          "kind": "out_flow",
+          "index": 0,
+          "nameHash": 2311112342,
+          "name": "失败执行"
+        },
+        {
+          "kind": "input",
+          "index": 0,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 2070231987,
+          "defaultValue": true,
+          "name": "是否执行"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 5,
+          "clientVarType": 9,
+          "connectable": false,
+          "nameHash": 969100903,
+          "name": "战术上下文"
+        },
+        {
+          "kind": "input",
+          "index": 2,
+          "valueClass": 6,
+          "clientVarType": 5,
+          "connectionType": 5,
+          "connectable": true,
+          "nameHash": 2348046107,
+          "defaultValue": false,
+          "name": "是否可以打断技能"
+        },
+        {
+          "kind": "input",
+          "index": 3,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210047,
+          "connectable": true,
+          "nameHash": 2426668025,
+          "defaultValue": 3601,
+          "name": "移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 4,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 4058434480,
+          "name": "覆写移动速度"
+        },
+        {
+          "kind": "input",
+          "index": 5,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 4080478951,
+          "name": "覆写转向速度"
+        },
+        {
+          "kind": "input",
+          "index": 6,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1275515488,
+          "name": "闲逛半径"
+        },
+        {
+          "kind": "input",
+          "index": 7,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1301108707,
+          "name": "相对出生点最小高度"
+        },
+        {
+          "kind": "input",
+          "index": 8,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 244845415,
+          "name": "相对出生点最大高度"
+        },
+        {
+          "kind": "input",
+          "index": 9,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1791683141,
+          "name": "闲逛最小间隔时长"
+        },
+        {
+          "kind": "input",
+          "index": 10,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1403836964,
+          "name": "闲逛最大间隔时长"
+        },
+        {
+          "kind": "input",
+          "index": 11,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 734105131,
+          "name": "单次闲逛最大持续时间"
+        },
+        {
+          "kind": "input",
+          "index": 12,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 1981177500,
+          "name": "单次最小闲逛距离"
+        },
+        {
+          "kind": "input",
+          "index": 13,
+          "valueClass": 4,
+          "clientVarType": 7,
+          "connectionType": 7,
+          "connectable": true,
+          "nameHash": 2645036018,
+          "name": "单次最大闲逛距离"
+        }
+      ]
+    },
+    {
+      "genericId": 200312,
+      "sourceFile": "Node/15004529561808324115.mihoyobin",
+      "sha256": "3e240c56db9f93dd5d8f55741ad35558e14b35705eeb2e4bbde7df289001291d",
+      "pins": [
+        {
+          "kind": "input",
+          "index": 0,
+          "valueClass": 2,
+          "clientVarType": 3,
+          "connectionType": 3,
+          "connectable": true,
+          "nameHash": 1557274251,
+          "defaultValue": 1,
+          "name": "Count"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 4294680327,
+          "name": "0"
+        },
+        {
+          "kind": "input",
+          "index": 2,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 777980699,
+          "name": "1"
+        },
+        {
+          "kind": "input",
+          "index": 3,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 2584480465,
+          "name": "2"
+        },
+        {
+          "kind": "input",
+          "index": 4,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 3852817304,
+          "name": "3"
+        },
+        {
+          "kind": "input",
+          "index": 5,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 4017072935,
+          "name": "4"
+        },
+        {
+          "kind": "input",
+          "index": 6,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 2433942088,
+          "name": "5"
+        },
+        {
+          "kind": "input",
+          "index": 7,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 3252395827,
+          "name": "6"
+        },
+        {
+          "kind": "input",
+          "index": 8,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 2631801839,
+          "name": "7"
+        },
+        {
+          "kind": "input",
+          "index": 9,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 2098007685,
+          "name": "8"
+        },
+        {
+          "kind": "input",
+          "index": 10,
+          "valueClass": 6,
+          "clientVarType": 13,
+          "connectionType": 210015,
+          "connectable": true,
+          "nameHash": 3891259124,
+          "name": "9"
+        },
+        {
+          "kind": "output",
+          "index": 0,
+          "clientVarType": 17,
+          "connectionType": 17,
+          "nameHash": 1070867009,
+          "name": "列表"
+        },
+        {
+          "kind": "client_signal",
+          "index": 0
         }
       ]
     }

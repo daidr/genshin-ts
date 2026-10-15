@@ -16,6 +16,7 @@ import {
 import { CLIENT_NODE_METADATA } from '../src/thirdparty/Genshin-Impact-Miliastra-Wonderland-Code-Node-Editor-Pack/node_data/client_node_metadata.js'
 import { buildClientEnumBinding } from './client-nodegraph/client_enum_binding.js'
 import { snakeToCamel } from './client-nodegraph/client_nodes_codegen.js'
+import { HIDDEN_EDITOR_ENUM_VALUES } from './client-nodegraph/hidden_editor_enum_values.js'
 
 /** graph entry/exit nodes handled by the runtime, never exposed as methods */
 const RUNTIME_INTERNAL_NODE_TYPES = new Set([
@@ -250,7 +251,10 @@ for (const expectation of enumMatchExpectations) {
       )
       continue
     }
-    const officialValues = new Set(officialEnum.values.map((value) => value.value))
+    const officialValues = new Set([
+      ...officialEnum.values.map((value) => value.value),
+      ...(HIDDEN_EDITOR_ENUM_VALUES[officialEnum.id] ?? [])
+    ])
     const missingValues = row.values.filter((value) => !officialValues.has(value))
     if (missingValues.length) {
       errors.push(

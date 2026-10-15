@@ -2,12 +2,11 @@
   "source": {
     "beyondGlobal": {
       "relativePath": "Resource/Json/Beyond/BeyondGlobal/18125831855067188558.mihoyobin",
-      "sha256": "91c2d65a7ed5f2ecfc15ea8186ca125e7a30a00914a4b4f142f3b184e7c828b0",
-      "decodedSectionsSha256": "8bf4ebc5d8c840c4cc3c0e6d1322392f898e097f6fcc264dd02144e471356cb1"
+      "sha256": "0fefabaecfac69b7edf87f0297e8cd2a7712a9e3a0274a2ebcc5b4b4866621e7"
     },
     "chsTextMap": {
       "relativePath": "Resource/Json/TextMap/CHS/17720714722766726369.mihoyobin",
-      "sha256": "355815f5143c6749b9341ff62b0a6d6dbd751664c4e3c6f00bc9bcd6c37b3e48"
+      "sha256": "b50ba993dbc156314f5594a13e1abbd499b6a5ea3b92af8d4bf9746a138449dd"
     }
   },
   "groups": [
@@ -17,7 +16,7 @@
       "family": "server",
       "name": "【超限】服务端蓝图",
       "subTypes": [],
-      "count": 478,
+      "count": 480,
       "nodes": [
         {
           "genericType": 20000,
@@ -2355,6 +2354,12 @@
         },
         {
           "genericType": 20000,
+          "genericId": 856,
+          "name": "打开礼盒界面",
+          "inCurrentMetadata": false
+        },
+        {
+          "genericType": 20000,
           "genericId": 773,
           "name": "查询对应礼盒数量",
           "inCurrentMetadata": false
@@ -2651,6 +2656,12 @@
           "genericType": 20000,
           "genericId": 833,
           "name": "更新消息队列",
+          "inCurrentMetadata": false
+        },
+        {
+          "genericType": 20000,
+          "genericId": 300005,
+          "name": "发送客户端脚本信号",
           "inCurrentMetadata": false
         },
         {
@@ -4602,7 +4613,7 @@
       "subTypes": [
         "creation_status_decision"
       ],
-      "count": 86,
+      "count": 90,
       "nodes": [
         {
           "genericType": 20007,
@@ -5020,6 +5031,12 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200312,
+          "name": "获取实体类型列表",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200227,
           "name": "查询阵营是否敌对",
           "inCurrentMetadata": true
@@ -5074,6 +5091,18 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200301,
+          "name": "获取射线检测结果",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200302,
+          "name": "获取射线筛选类型列表",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200236,
           "name": "拼装结构体",
           "inCurrentMetadata": true
@@ -5118,6 +5147,12 @@
           "genericType": 20007,
           "genericId": 200252,
           "name": "获取前一帧执行战术",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200307,
+          "name": "实体是否携带指定单位状态",
           "inCurrentMetadata": true
         }
       ]
@@ -5952,7 +5987,7 @@
       "subTypes": [
         "creation_status"
       ],
-      "count": 99,
+      "count": 108,
       "nodes": [
         {
           "genericType": 20007,
@@ -6436,6 +6471,12 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200312,
+          "name": "获取实体类型列表",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200227,
           "name": "查询阵营是否敌对",
           "inCurrentMetadata": true
@@ -6490,6 +6531,18 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200301,
+          "name": "获取射线检测结果",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200302,
+          "name": "获取射线筛选类型列表",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200236,
           "name": "拼装结构体",
           "inCurrentMetadata": true
@@ -6532,6 +6585,36 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200303,
+          "name": "战术：空中降落",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200308,
+          "name": "战术：空中追击",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200309,
+          "name": "战术：空中逃跑",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200310,
+          "name": "战术：空中对峙",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200311,
+          "name": "战术：空中闲逛",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200250,
           "name": "获取前一帧执行状态",
           "inCurrentMetadata": true
@@ -6540,6 +6623,12 @@
           "genericType": 20007,
           "genericId": 200252,
           "name": "获取前一帧执行战术",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200307,
+          "name": "实体是否携带指定单位状态",
           "inCurrentMetadata": true
         },
         {
@@ -6556,7 +6645,7 @@
       "family": "server",
       "name": "【经典】服务端蓝图",
       "subTypes": [],
-      "count": 406,
+      "count": 407,
       "nodes": [
         {
           "genericType": 20000,
@@ -8846,6 +8935,12 @@
         },
         {
           "genericType": 20000,
+          "genericId": 300005,
+          "name": "发送客户端脚本信号",
+          "inCurrentMetadata": false
+        },
+        {
+          "genericType": 20000,
           "genericId": 834,
           "name": "切换自定义地图",
           "inCurrentMetadata": false
@@ -9556,7 +9651,7 @@
       "subTypes": [
         "creation_status_decision"
       ],
-      "count": 86,
+      "count": 90,
       "nodes": [
         {
           "genericType": 20007,
@@ -9974,6 +10069,12 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200312,
+          "name": "获取实体类型列表",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200227,
           "name": "查询阵营是否敌对",
           "inCurrentMetadata": true
@@ -10028,6 +10129,18 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200301,
+          "name": "获取射线检测结果",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200302,
+          "name": "获取射线筛选类型列表",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200236,
           "name": "拼装结构体",
           "inCurrentMetadata": true
@@ -10072,6 +10185,12 @@
           "genericType": 20007,
           "genericId": 200252,
           "name": "获取前一帧执行战术",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200307,
+          "name": "实体是否携带指定单位状态",
           "inCurrentMetadata": true
         }
       ]
@@ -10810,7 +10929,7 @@
       "subTypes": [
         "creation_status"
       ],
-      "count": 99,
+      "count": 108,
       "nodes": [
         {
           "genericType": 20007,
@@ -11294,6 +11413,12 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200312,
+          "name": "获取实体类型列表",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200227,
           "name": "查询阵营是否敌对",
           "inCurrentMetadata": true
@@ -11348,6 +11473,18 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200301,
+          "name": "获取射线检测结果",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200302,
+          "name": "获取射线筛选类型列表",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200236,
           "name": "拼装结构体",
           "inCurrentMetadata": true
@@ -11390,6 +11527,36 @@
         },
         {
           "genericType": 20007,
+          "genericId": 200303,
+          "name": "战术：空中降落",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200308,
+          "name": "战术：空中追击",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200309,
+          "name": "战术：空中逃跑",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200310,
+          "name": "战术：空中对峙",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200311,
+          "name": "战术：空中闲逛",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
           "genericId": 200250,
           "name": "获取前一帧执行状态",
           "inCurrentMetadata": true
@@ -11398,6 +11565,12 @@
           "genericType": 20007,
           "genericId": 200252,
           "name": "获取前一帧执行战术",
+          "inCurrentMetadata": true
+        },
+        {
+          "genericType": 20007,
+          "genericId": 200307,
+          "name": "实体是否携带指定单位状态",
           "inCurrentMetadata": true
         },
         {
@@ -13648,8 +13821,8 @@
       "subTypes": [
         "creation_status_decision"
       ],
-      "beyondCount": 86,
-      "classicCount": 86,
+      "beyondCount": 90,
+      "classicCount": 90,
       "shared": [
         {
           "genericId": 200125,
@@ -13928,6 +14101,10 @@
           "name": "获取列表最小值"
         },
         {
+          "genericId": 200312,
+          "name": "获取实体类型列表"
+        },
+        {
           "genericId": 200227,
           "name": "查询阵营是否敌对"
         },
@@ -13964,6 +14141,14 @@
           "name": "获取字典中键组成的列表"
         },
         {
+          "genericId": 200301,
+          "name": "获取射线检测结果"
+        },
+        {
+          "genericId": 200302,
+          "name": "获取射线筛选类型列表"
+        },
+        {
           "genericId": 200236,
           "name": "拼装结构体"
         },
@@ -13994,6 +14179,10 @@
         {
           "genericId": 200252,
           "name": "获取前一帧执行战术"
+        },
+        {
+          "genericId": 200307,
+          "name": "实体是否携带指定单位状态"
         }
       ],
       "classicOnly": [],
@@ -14570,8 +14759,8 @@
       "subTypes": [
         "creation_status"
       ],
-      "beyondCount": 99,
-      "classicCount": 99,
+      "beyondCount": 108,
+      "classicCount": 108,
       "shared": [
         {
           "genericId": 200125,
@@ -14894,6 +15083,10 @@
           "name": "获取列表最小值"
         },
         {
+          "genericId": 200312,
+          "name": "获取实体类型列表"
+        },
+        {
           "genericId": 200227,
           "name": "查询阵营是否敌对"
         },
@@ -14930,6 +15123,14 @@
           "name": "获取字典中键组成的列表"
         },
         {
+          "genericId": 200301,
+          "name": "获取射线检测结果"
+        },
+        {
+          "genericId": 200302,
+          "name": "获取射线筛选类型列表"
+        },
+        {
           "genericId": 200236,
           "name": "拼装结构体"
         },
@@ -14958,12 +15159,36 @@
           "name": "战术：旋转朝向目标实体"
         },
         {
+          "genericId": 200303,
+          "name": "战术：空中降落"
+        },
+        {
+          "genericId": 200308,
+          "name": "战术：空中追击"
+        },
+        {
+          "genericId": 200309,
+          "name": "战术：空中逃跑"
+        },
+        {
+          "genericId": 200310,
+          "name": "战术：空中对峙"
+        },
+        {
+          "genericId": 200311,
+          "name": "战术：空中闲逛"
+        },
+        {
           "genericId": 200250,
           "name": "获取前一帧执行状态"
         },
         {
           "genericId": 200252,
           "name": "获取前一帧执行战术"
+        },
+        {
+          "genericId": 200307,
+          "name": "实体是否携带指定单位状态"
         },
         {
           "genericId": 200253,

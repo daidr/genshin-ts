@@ -2,19 +2,19 @@
   "formatVersion": 2,
   "source": {
     "encoding": "xor-0xe5 protobuf wire format",
-    "scannedNodeFiles": 799,
-    "selectedServerNodes": 493,
-    "aggregateSha256": "9cf2a0d142d301c9faec297d5bcec01ac433ad55efa2d06dd611ca6151bc76be",
-    "chsTextMapSha256": "355815f5143c6749b9341ff62b0a6d6dbd751664c4e3c6f00bc9bcd6c37b3e48"
+    "scannedNodeFiles": 810,
+    "selectedServerNodes": 494,
+    "aggregateSha256": "adb3de27199de354df74033f207485097e62d26220e23c7cb4ba893c2bd29882",
+    "chsTextMapSha256": "b50ba993dbc156314f5594a13e1abbd499b6a5ea3b92af8d4bf9746a138449dd"
   },
   "summary": {
-    "inputPins": 1202,
-    "connectableInputs": 1201,
+    "inputPins": 1205,
+    "connectableInputs": 1204,
     "literalOnlyInputs": 1,
     "reflectiveInputs": 280,
     "pinsWithExplicitDefaults": 80,
     "pinsWithUnsupportedDefaults": 1,
-    "namedPins": 1820,
+    "namedPins": 1825,
     "concreteVariantGroups": 1,
     "concreteVariants": 41,
     "concreteVariantBindings": 82
@@ -15660,7 +15660,7 @@
     {
       "genericId": 303,
       "sourceFile": "Node/1262003236601033229.mihoyobin",
-      "sha256": "a73ae3c61f7fb9efa127e7cc86fdcec3aa7f4a4a0c25d05139a440bac0138560",
+      "sha256": "bd0fef562c3e4f936e75a260c78e78bc78e2f962e5cd969367b318a56a1e16af",
       "pins": [
         {
           "kind": "in_flow",
@@ -15750,13 +15750,22 @@
           "connectable": true,
           "nameHash": 4123779691,
           "name": "发起者实体"
+        },
+        {
+          "kind": "input",
+          "index": 8,
+          "clientVarType": 1,
+          "connectionType": 1,
+          "connectable": true,
+          "nameHash": 4106781295,
+          "name": "能力单元所属实体"
         }
       ]
     },
     {
       "genericId": 304,
       "sourceFile": "Node/12609674871159607885.mihoyobin",
-      "sha256": "03c4a4ef0d68402fab6d3e3cbc399d415e7965152a4459913a511009c291059c",
+      "sha256": "bbea5e28e9eb89be2149799cf278acd13af146f6b55d5abc801f9a4fcf658516",
       "pins": [
         {
           "kind": "out_flow",
@@ -15825,13 +15834,22 @@
           "connectionType": 5,
           "nameHash": 20888072,
           "name": "元素攻击强效"
+        },
+        {
+          "kind": "output",
+          "index": 7,
+          "valueClass": 6,
+          "clientVarType": 4,
+          "connectionType": 4,
+          "nameHash": 870069812,
+          "name": "是否暴击"
         }
       ]
     },
     {
       "genericId": 305,
       "sourceFile": "Node/6034201771185578346.mihoyobin",
-      "sha256": "aabe87fb0a27e06f7bbd3bff13b4beb4277468a773d8ab633861c76063297e4b",
+      "sha256": "72b9ffa08e3c08c3a7d39c21456fc0a662abc43538ed3a9badcc112317da31f8",
       "pins": [
         {
           "kind": "out_flow",
@@ -15900,6 +15918,15 @@
           "connectionType": 5,
           "nameHash": 2900680224,
           "name": "元素攻击强效"
+        },
+        {
+          "kind": "output",
+          "index": 7,
+          "valueClass": 6,
+          "clientVarType": 4,
+          "connectionType": 4,
+          "nameHash": 1784694732,
+          "name": "是否暴击"
         }
       ]
     },
@@ -31497,6 +31524,42 @@
           "connectionType": 4,
           "nameHash": 4267934385,
           "name": "是否订阅"
+        }
+      ]
+    },
+    {
+      "genericId": 856,
+      "sourceFile": "Node/3970178351876667481.mihoyobin",
+      "sha256": "d5c9188a2b6c1e2aba8579222579194911dd78ae5c0e16589528edb14cd476c3",
+      "pins": [
+        {
+          "kind": "in_flow",
+          "index": 0,
+          "nameHash": 966322150
+        },
+        {
+          "kind": "out_flow",
+          "index": 0,
+          "nameHash": 2887757782
+        },
+        {
+          "kind": "input",
+          "index": 0,
+          "clientVarType": 1,
+          "connectionType": 1,
+          "connectable": true,
+          "nameHash": 3969180427,
+          "name": "玩家实体"
+        },
+        {
+          "kind": "input",
+          "index": 1,
+          "valueClass": 2,
+          "clientVarType": 3,
+          "connectionType": 3,
+          "connectable": true,
+          "nameHash": 2296959727,
+          "name": "礼盒索引"
         }
       ]
     },

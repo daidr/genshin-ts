@@ -553,7 +553,7 @@ function emitValueConsumer(
     if (type === 'EntityType[]') {
       const probe = `enumListProbe${nextSerial(state)}`
       lines.push(
-        `const ${probe} = f.getRayDetectionResult(wireEntity, wireVec3, wireVec3, wireFloat, ${enumExpression(
+        `const ${probe} = f.getRayDetectionResult(${rayInitiator(state)}, wireVec3, wireVec3, wireFloat, ${enumExpression(
           state,
           'TargetType'
         )}, ${expression}, f.getRayFilterTypeList(${emitEnumArray(state, 'RayFilterType', 10)}))`
@@ -564,7 +564,7 @@ function emitValueConsumer(
     if (type === 'RayFilterType[]') {
       const probe = `enumListProbe${nextSerial(state)}`
       lines.push(
-        `const ${probe} = f.getRayDetectionResult(wireEntity, wireVec3, wireVec3, wireFloat, ${enumExpression(
+        `const ${probe} = f.getRayDetectionResult(${rayInitiator(state)}, wireVec3, wireVec3, wireFloat, ${enumExpression(
           state,
           'TargetType'
         )}, f.getEntityTypeList(${emitEnumArray(state, 'EntityType', 10)}), ${expression})`
@@ -644,6 +644,13 @@ function emitOutputConsumer(
     return
   }
   emitValueConsumer(lines, state, resultName, method.returnText)
+}
+
+/** Status graphs take the ray initiator from the TargetEntity dropdown. */
+function rayInitiator(state: EmitState): string {
+  const statusGraph =
+    state.graph.subType === 'creation_status' || state.graph.subType === 'creation_status_decision'
+  return statusGraph ? enumExpression(state, 'TargetEntity') : 'wireEntity'
 }
 
 function emitWirePool(state: EmitState): string[] {
@@ -756,7 +763,7 @@ function emitMethod(state: EmitState, method: MethodInfo, metadata: MetadataReco
     const rayFilters = returnType === 'RayFilterType[]' ? call : otherList
     const probe = `enumListProbe${nextSerial(state)}`
     lines.push(
-      `const ${probe} = f.getRayDetectionResult(wireEntity, wireVec3, wireVec3, wireFloat, ${enumExpression(
+      `const ${probe} = f.getRayDetectionResult(${rayInitiator(state)}, wireVec3, wireVec3, wireFloat, ${enumExpression(
         state,
         'TargetType'
       )}, ${entityTypes}, ${rayFilters})`

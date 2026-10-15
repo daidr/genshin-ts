@@ -138,6 +138,8 @@ const SEED_ZH_TO_EN: Record<string, string> = {
   指定挂接点打矩形攻击盒: 'Trigger Rectangular Hitbox at Specified Attachment Point',
   指定挂接点打球形攻击盒: 'Trigger Spherical Hitbox at Specified Attachment Point',
   指定挂接点打扇形攻击盒: 'Trigger Sector Hitbox at Specified Attachment Point',
+  // zh docs list 战术持续时长 before the en page does (see EN_PARAM_BACKFILL)
+  获取前一帧执行战术: 'Get Previous Frame Execution Tactic',
   // exec cluster: aggro
   设置指定实体的仇恨值: 'Set the Aggro Value of the Specified Entity',
   增加指定实体的仇恨值: 'Increase the Aggro Value of the Specified Entity',
@@ -200,6 +202,14 @@ const SEED_ZH_TO_EN: Record<string, string> = {
   获取指定实体的仇恨列表: 'Get the Aggro List of the Specified Entity',
   获取指定实体的仇恨目标: 'Get the Aggro Target of the Specified Entity',
   获取碰撞触发器内所有实体: 'Get All Entities Within the Collision Trigger'
+}
+
+/**
+ * Trailing params the zh page already documents but the en page does not yet
+ * (2026-10). En names come from the editor TextMap pin names.
+ */
+const EN_PARAM_BACKFILL: Record<string, Record<string, string>> = {
+  获取前一帧执行战术: { 战术持续时长: 'Tactic Duration' }
 }
 
 /**
@@ -596,7 +606,23 @@ function alignSection(
   let enPool = [...enNodes]
 
   const take = (zh: DocNodeEntry, en: DocNodeEntry, provenance: AlignedDocNode['provenance']) => {
-    matches.push({ zh, en, provenance })
+    const backfill = EN_PARAM_BACKFILL[zh.name]
+    const enEntry =
+      backfill && en.params.length < zh.params.length
+        ? {
+            ...en,
+            params: [
+              ...en.params,
+              ...zh.params.slice(en.params.length).map((p) => ({
+                io: p.io,
+                name: backfill[p.name] ?? '',
+                dataType: p.dataType,
+                description: ''
+              }))
+            ]
+          }
+        : en
+    matches.push({ zh, en: enEntry, provenance })
     zhPool = zhPool.filter((n) => n !== zh)
     enPool = enPool.filter((n) => n !== en)
   }
@@ -629,7 +655,9 @@ function alignSection(
     for (const zh of [...zhPool]) {
       const expectedEn = SEED_ZH_TO_EN[zh.name]
       if (!expectedEn) continue
-      const candidates = enPool.filter((en) => canonicalEnName(en.name) === canonicalEnName(expectedEn))
+      const candidates = enPool.filter(
+        (en) => canonicalEnName(en.name) === canonicalEnName(expectedEn)
+      )
       if (candidates.length === 1) {
         take(zh, candidates[0], 'seed')
         changed = true
@@ -644,9 +672,7 @@ function alignSection(
   return { matches, unresolvedZh: zhPool, unresolvedEn: enPool }
 }
 
-export function buildDocNameAlignment(
-  defsPath = 'resources/node_definitions.json'
-): DocAlignment {
+export function buildDocNameAlignment(defsPath = 'resources/node_definitions.json'): DocAlignment {
   const defs = JSON.parse(fs.readFileSync(defsPath, 'utf8')) as Record<string, unknown>
 
   const seedMisses: DocAlignmentReport['seedMisses'] = []
@@ -758,7 +784,10 @@ export function buildDocNameAlignment(
 
     const variants: AlignedDocNode[] = []
     for (const [groupIndex, group] of groups.entries()) {
-      const votes = new Map<string, { count: number; clientPage: boolean; matches: SectionMatch[] }>()
+      const votes = new Map<
+        string,
+        { count: number; clientPage: boolean; matches: SectionMatch[] }
+      >()
       for (const m of group) {
         const enName = canonicalEnName(m.en.name)
         const vote = votes.get(enName) ?? { count: 0, clientPage: false, matches: [] }

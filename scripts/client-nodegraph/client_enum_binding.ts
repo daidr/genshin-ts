@@ -369,7 +369,9 @@ const CLASS_BY_ZH_PARAM: Record<string, string> = {
   受击击退朝向: 'KnockbackDirectionType',
   受击等级: 'HitLevel',
   // character_control_skill 填值样本编码 3111 = SkillSlot_1E（服务器 Skill_Slot 段）
-  技能槽位: 'CharacterSkillSlot'
+  技能槽位: 'CharacterSkillSlot',
+  // 造物状态图的射线检测发起者是目标实体下拉框（仇恨目标 / 自己 / 关卡实体）
+  检测发起者实体: 'TargetEntity'
 }
 
 /**

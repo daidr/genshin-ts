@@ -299,6 +299,48 @@ function applyEditorStaticMetadata(records: NodeRecord[], modeData: ClientNodeMo
     ]
   ])
 
+  // Creation status graph nodes without editor samples: data pins come from the static metadata.
+  const staticOnlySeeds: Array<[number, string, string, number]> = [
+    [200301, 'get_ray_detection_result', '获取射线检测结果', 3014],
+    [200302, 'get_ray_filter_type_list', '获取射线筛选类型列表', 3015],
+    [200303, 'tactic_aerial_landing', '战术：空中降落', 4029],
+    [200307, 'whether_the_entity_has_the_specified_unit_status', '实体是否携带指定单位状态', 4227],
+    [200308, 'tactic_aerial_pursuit', '战术：空中追击', 4025],
+    [200309, 'tactic_aerial_escape', '战术：空中逃跑', 4026],
+    [200310, 'tactic_aerial_confrontation', '战术：空中对峙', 4027],
+    [200311, 'tactic_aerial_idling', '战术：空中闲逛', 4028],
+    [200312, 'get_entity_type_list', '获取实体类型列表', 1031]
+  ]
+  const staticNodes = new Map(
+    (
+      JSON.parse(
+        fs.readFileSync(CLIENT_NODE_STATIC_METADATA_PATH, 'utf8')
+      ) as ClientNodeStaticMetadata
+    ).nodes.map((node) => [node.genericId, node])
+  )
+  for (const [genericId, nodeType, displayName, concreteId] of staticOnlySeeds) {
+    const staticNode = staticNodes.get(genericId)
+    if (!staticNode) throw new Error(`[error] missing static metadata for genericId ${genericId}`)
+    const dataPins = (kind: 'input' | 'output') =>
+      staticNode.pins
+        .filter((pin) => pin.kind === kind)
+        .map((pin) => ({
+          index: pin.index,
+          kind,
+          type: CLIENT_VAR_TYPE_NAMES[pin.clientVarType!]!,
+          clientVarType: pin.clientVarType
+        }))
+    staticSeeds.set(genericId, {
+      nodeType,
+      displayName,
+      genericId,
+      concreteId,
+      inputs: dataPins('input'),
+      outputs: dataPins('output'),
+      sampleFile: `BeyondEditorStatic/${staticNode.sourceFile}`
+    })
+  }
+
   const reused: Array<{
     subType: ClientGraphSubType
     genericId: number
@@ -491,6 +533,23 @@ function applyStaticPinMetadata(records: NodeRecord[], aggregates: GidAggregate[
       })
     }
     flows.sort((a, b) => a.kind.localeCompare(b.kind) || a.index - b.index)
+
+    // Outputs added by newer editor builds (e.g. 战术持续时长) are absent from older samples.
+    // Filter graphs publish no node outputs, so they keep the sampled shape.
+    if (!record.subType.endsWith('_filter')) {
+      for (const staticPin of staticNode.pins) {
+        if (staticPin.kind !== 'output' || staticPin.variants?.length) continue
+        if (staticPin.clientVarType === undefined) continue
+        if (record.outputs.some((pin) => pin.index === staticPin.index)) continue
+        record.outputs.push({
+          index: staticPin.index,
+          kind: 'output',
+          type: CLIENT_VAR_TYPE_NAMES[staticPin.clientVarType]!,
+          clientVarType: staticPin.clientVarType
+        })
+        record.outputs.sort((a, b) => a.index - b.index)
+      }
+    }
 
     for (const pin of [...record.inputs, ...record.outputs, ...(record.flows ?? [])]) {
       const basePins = basePinsByGenericId.get(record.genericId) ?? new Set<string>()

@@ -18053,8 +18053,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         type: 'vec3',
         clientVarType: 11,
         defaultValue: [0, 0, 0],
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 10,
@@ -18491,8 +18490,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         clientVarType: 11,
         defaultValue: [0, 0, 0],
         i2Index: 9,
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 11,
@@ -18929,8 +18927,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         type: 'vec3',
         clientVarType: 11,
         defaultValue: [0, 0, 0],
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 10,
@@ -19367,8 +19364,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         clientVarType: 11,
         defaultValue: [0, 0, 0],
         i2Index: 9,
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 11,
@@ -31655,8 +31651,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         type: 'vec3',
         clientVarType: 11,
         defaultValue: [0, 0, 0],
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 10,
@@ -32093,8 +32088,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         clientVarType: 11,
         defaultValue: [0, 0, 0],
         i2Index: 9,
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 11,
@@ -32531,8 +32525,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         type: 'vec3',
         clientVarType: 11,
         defaultValue: [0, 0, 0],
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 10,
@@ -32969,8 +32962,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         clientVarType: 11,
         defaultValue: [0, 0, 0],
         i2Index: 9,
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 11,
@@ -44299,8 +44291,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         type: 'vec3',
         clientVarType: 11,
         defaultValue: [0, 0, 0],
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 10,
@@ -44737,8 +44728,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         clientVarType: 11,
         defaultValue: [0, 0, 0],
         i2Index: 9,
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 11,
@@ -45175,8 +45165,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         type: 'vec3',
         clientVarType: 11,
         defaultValue: [0, 0, 0],
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 10,
@@ -45613,8 +45602,7 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         clientVarType: 11,
         defaultValue: [0, 0, 0],
         i2Index: 9,
-        connectable: true,
-        connectionType: 11
+        connectable: false
       },
       {
         index: 11,
@@ -51977,6 +51965,116 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
   },
   {
     subType: 'creation_status',
+    nodeType: 'get_entity_type_list',
+    displayName: '获取实体类型列表',
+    graphType: 20007,
+    genericId: 200312,
+    concreteId: 1031,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'int',
+        clientVarType: 3,
+        connectable: true,
+        defaultValue: 1,
+        connectionType: 3
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 10,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      }
+    ],
+    outputs: [
+      {
+        index: 0,
+        kind: 'output',
+        type: 'enum_list',
+        clientVarType: 17,
+        connectionType: 17
+      }
+    ],
+    sampleFile: 'BeyondEditorStatic/Node/15004529561808324115.mihoyobin',
+    flows: []
+  },
+  {
+    subType: 'creation_status',
     nodeType: 'get_list_length',
     displayName: '获取列表长度',
     graphType: 20007,
@@ -52511,6 +52609,13 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         type: 'str',
         clientVarType: 9,
         connectionType: 9
+      },
+      {
+        index: 2,
+        kind: 'output',
+        type: 'float',
+        clientVarType: 7,
+        connectionType: 7
       }
     ],
     sampleFile: '造物状态节点图\\获取前一帧执行战术_连线.gia',
@@ -52615,6 +52720,188 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
       }
     ],
     specialKind: 'reflect',
+    flows: []
+  },
+  {
+    subType: 'creation_status',
+    nodeType: 'get_ray_detection_result',
+    displayName: '获取射线检测结果',
+    graphType: 20007,
+    genericId: 200301,
+    concreteId: 3014,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'vec3',
+        clientVarType: 11,
+        connectable: true,
+        connectionType: 11
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'vec3',
+        clientVarType: 11,
+        connectable: true,
+        connectionType: 11
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210026
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'enum_list',
+        clientVarType: 17,
+        connectable: true,
+        connectionType: 17
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'enum_list',
+        clientVarType: 17,
+        connectable: true,
+        connectionType: 17
+      }
+    ],
+    outputs: [
+      {
+        index: 0,
+        kind: 'output',
+        type: 'vec3',
+        clientVarType: 11,
+        connectionType: 11
+      },
+      {
+        index: 1,
+        kind: 'output',
+        type: 'bool',
+        clientVarType: 5,
+        connectionType: 5
+      }
+    ],
+    sampleFile: 'BeyondEditorStatic/Node/9706379154925295902.mihoyobin',
+    flows: []
+  },
+  {
+    subType: 'creation_status',
+    nodeType: 'get_ray_filter_type_list',
+    displayName: '获取射线筛选类型列表',
+    graphType: 20007,
+    genericId: 200302,
+    concreteId: 3015,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'int',
+        clientVarType: 3,
+        connectable: true,
+        connectionType: 3
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 10,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      }
+    ],
+    outputs: [
+      {
+        index: 0,
+        kind: 'output',
+        type: 'enum_list',
+        clientVarType: 17,
+        connectionType: 17
+      }
+    ],
+    sampleFile: 'BeyondEditorStatic/Node/16741171627840089547.mihoyobin',
     flows: []
   },
   {
@@ -54578,6 +54865,841 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
   },
   {
     subType: 'creation_status',
+    nodeType: 'tactic_aerial_confrontation',
+    displayName: '战术：空中对峙',
+    graphType: 20007,
+    genericId: 200310,
+    concreteId: 4027,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'str',
+        clientVarType: 9,
+        connectable: false
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: false,
+        connectionType: 5
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 10,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 11,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 12,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 13,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 14,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 15,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 16,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 17,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 18,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 19,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        defaultValue: 1.5,
+        connectionType: 7
+      },
+      {
+        index: 20,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        defaultValue: 3,
+        connectionType: 7
+      },
+      {
+        index: 21,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        defaultValue: 120,
+        connectionType: 7
+      },
+      {
+        index: 22,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 23,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 24,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 25,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        defaultValue: 3601,
+        connectionType: 210047
+      },
+      {
+        index: 26,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 27,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      }
+    ],
+    outputs: [],
+    sampleFile: 'BeyondEditorStatic/Node/10038672886572232414.mihoyobin',
+    flows: [
+      {
+        index: 0,
+        kind: 'in_flow',
+        type: 'flow'
+      },
+      {
+        index: 0,
+        kind: 'out_flow',
+        type: 'flow'
+      }
+    ]
+  },
+  {
+    subType: 'creation_status',
+    nodeType: 'tactic_aerial_escape',
+    displayName: '战术：空中逃跑',
+    graphType: 20007,
+    genericId: 200309,
+    concreteId: 4026,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'str',
+        clientVarType: 9,
+        connectable: false
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: false,
+        connectionType: 5
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        defaultValue: 3601,
+        connectionType: 210047
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 10,
+        kind: 'input',
+        type: 'int',
+        clientVarType: 3,
+        connectable: true,
+        connectionType: 3
+      },
+      {
+        index: 11,
+        kind: 'input',
+        type: 'int',
+        clientVarType: 3,
+        connectable: true,
+        connectionType: 3
+      },
+      {
+        index: 12,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 13,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 14,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 15,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 16,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 17,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 18,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        defaultValue: -1,
+        connectionType: 7
+      },
+      {
+        index: 19,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      }
+    ],
+    outputs: [],
+    sampleFile: 'BeyondEditorStatic/Node/5742394129487351022.mihoyobin',
+    flows: [
+      {
+        index: 0,
+        kind: 'in_flow',
+        type: 'flow'
+      },
+      {
+        index: 0,
+        kind: 'out_flow',
+        type: 'flow'
+      }
+    ]
+  },
+  {
+    subType: 'creation_status',
+    nodeType: 'tactic_aerial_idling',
+    displayName: '战术：空中闲逛',
+    graphType: 20007,
+    genericId: 200311,
+    concreteId: 4028,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'str',
+        clientVarType: 9,
+        connectable: false
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: false,
+        connectionType: 5
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        defaultValue: 3601,
+        connectionType: 210047
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 10,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 11,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 12,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 13,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      }
+    ],
+    outputs: [],
+    sampleFile: 'BeyondEditorStatic/Node/13153519696291963406.mihoyobin',
+    flows: [
+      {
+        index: 0,
+        kind: 'in_flow',
+        type: 'flow'
+      },
+      {
+        index: 0,
+        kind: 'out_flow',
+        type: 'flow'
+      }
+    ]
+  },
+  {
+    subType: 'creation_status',
+    nodeType: 'tactic_aerial_landing',
+    displayName: '战术：空中降落',
+    graphType: 20007,
+    genericId: 200303,
+    concreteId: 4029,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'str',
+        clientVarType: 9,
+        connectable: false
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: false,
+        connectionType: 5
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        defaultValue: 3601,
+        connectionType: 210047
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      }
+    ],
+    outputs: [],
+    sampleFile: 'BeyondEditorStatic/Node/1244314151563021145.mihoyobin',
+    flows: [
+      {
+        index: 0,
+        kind: 'in_flow',
+        type: 'flow'
+      },
+      {
+        index: 0,
+        kind: 'out_flow',
+        type: 'flow'
+      }
+    ]
+  },
+  {
+    subType: 'creation_status',
+    nodeType: 'tactic_aerial_pursuit',
+    displayName: '战术：空中追击',
+    graphType: 20007,
+    genericId: 200308,
+    concreteId: 4025,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'str',
+        clientVarType: 9,
+        connectable: false
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: false,
+        connectionType: 5
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'bool',
+        clientVarType: 5,
+        connectable: true,
+        defaultValue: true,
+        connectionType: 5
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 10,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        defaultValue: 3601,
+        connectionType: 210047
+      },
+      {
+        index: 11,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 12,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 13,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 14,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      }
+    ],
+    outputs: [],
+    sampleFile: 'BeyondEditorStatic/Node/3653558339455364828.mihoyobin',
+    flows: [
+      {
+        index: 0,
+        kind: 'in_flow',
+        type: 'flow'
+      },
+      {
+        index: 0,
+        kind: 'out_flow',
+        type: 'flow'
+      }
+    ]
+  },
+  {
+    subType: 'creation_status',
     nodeType: 'tactic_execute_patrol',
     displayName: '战术：执行巡逻',
     graphType: 20007,
@@ -55790,6 +56912,43 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
     sampleFile: '造物状态节点图\\正切函数_连线.gia',
     flows: [],
     argPins: [1]
+  },
+  {
+    subType: 'creation_status',
+    nodeType: 'whether_the_entity_has_the_specified_unit_status',
+    displayName: '实体是否携带指定单位状态',
+    graphType: 20007,
+    genericId: 200307,
+    concreteId: 4227,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'entity',
+        clientVarType: 1,
+        connectable: true,
+        connectionType: 1
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'config_id',
+        clientVarType: 18,
+        connectable: true,
+        connectionType: 18
+      }
+    ],
+    outputs: [
+      {
+        index: 0,
+        kind: 'output',
+        type: 'bool',
+        clientVarType: 5,
+        connectionType: 5
+      }
+    ],
+    sampleFile: 'BeyondEditorStatic/Node/15550020904630729637.mihoyobin',
+    flows: []
   },
   {
     subType: 'creation_status_decision',
@@ -59874,6 +61033,116 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
   },
   {
     subType: 'creation_status_decision',
+    nodeType: 'get_entity_type_list',
+    displayName: '获取实体类型列表',
+    graphType: 20007,
+    genericId: 200312,
+    concreteId: 1031,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'int',
+        clientVarType: 3,
+        connectable: true,
+        defaultValue: 1,
+        connectionType: 3
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      },
+      {
+        index: 10,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210015
+      }
+    ],
+    outputs: [
+      {
+        index: 0,
+        kind: 'output',
+        type: 'enum_list',
+        clientVarType: 17,
+        connectionType: 17
+      }
+    ],
+    sampleFile: 'BeyondEditorStatic/Node/15004529561808324115.mihoyobin',
+    flows: []
+  },
+  {
+    subType: 'creation_status_decision',
     nodeType: 'get_list_length',
     displayName: '获取列表长度',
     graphType: 20007,
@@ -60408,6 +61677,13 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
         type: 'str',
         clientVarType: 9,
         connectionType: 9
+      },
+      {
+        index: 2,
+        kind: 'output',
+        type: 'float',
+        clientVarType: 7,
+        connectionType: 7
       }
     ],
     sampleFile: '造物状态决策节点图\\获取前一帧执行战术_连线.gia',
@@ -60512,6 +61788,188 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
       }
     ],
     specialKind: 'reflect',
+    flows: []
+  },
+  {
+    subType: 'creation_status_decision',
+    nodeType: 'get_ray_detection_result',
+    displayName: '获取射线检测结果',
+    graphType: 20007,
+    genericId: 200301,
+    concreteId: 3014,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'vec3',
+        clientVarType: 11,
+        connectable: true,
+        connectionType: 11
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'vec3',
+        clientVarType: 11,
+        connectable: true,
+        connectionType: 11
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'float',
+        clientVarType: 7,
+        connectable: true,
+        connectionType: 7
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: true,
+        connectionType: 210026
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'enum_list',
+        clientVarType: 17,
+        connectable: true,
+        connectionType: 17
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'enum_list',
+        clientVarType: 17,
+        connectable: true,
+        connectionType: 17
+      }
+    ],
+    outputs: [
+      {
+        index: 0,
+        kind: 'output',
+        type: 'vec3',
+        clientVarType: 11,
+        connectionType: 11
+      },
+      {
+        index: 1,
+        kind: 'output',
+        type: 'bool',
+        clientVarType: 5,
+        connectionType: 5
+      }
+    ],
+    sampleFile: 'BeyondEditorStatic/Node/9706379154925295902.mihoyobin',
+    flows: []
+  },
+  {
+    subType: 'creation_status_decision',
+    nodeType: 'get_ray_filter_type_list',
+    displayName: '获取射线筛选类型列表',
+    graphType: 20007,
+    genericId: 200302,
+    concreteId: 3015,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'int',
+        clientVarType: 3,
+        connectable: true,
+        connectionType: 3
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 2,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 3,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 4,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 5,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 6,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 7,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 8,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 9,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      },
+      {
+        index: 10,
+        kind: 'input',
+        type: 'enum',
+        clientVarType: 13,
+        connectable: false
+      }
+    ],
+    outputs: [
+      {
+        index: 0,
+        kind: 'output',
+        type: 'enum_list',
+        clientVarType: 17,
+        connectionType: 17
+      }
+    ],
+    sampleFile: 'BeyondEditorStatic/Node/16741171627840089547.mihoyobin',
     flows: []
   },
   {
@@ -62564,6 +64022,43 @@ export const CLIENT_NODE_METADATA: readonly ClientNodeMetadata[] = [
     sampleFile: '造物状态决策节点图\\正切函数_连线.gia',
     flows: [],
     argPins: [1]
+  },
+  {
+    subType: 'creation_status_decision',
+    nodeType: 'whether_the_entity_has_the_specified_unit_status',
+    displayName: '实体是否携带指定单位状态',
+    graphType: 20007,
+    genericId: 200307,
+    concreteId: 4227,
+    inputs: [
+      {
+        index: 0,
+        kind: 'input',
+        type: 'entity',
+        clientVarType: 1,
+        connectable: true,
+        connectionType: 1
+      },
+      {
+        index: 1,
+        kind: 'input',
+        type: 'config_id',
+        clientVarType: 18,
+        connectable: true,
+        connectionType: 18
+      }
+    ],
+    outputs: [
+      {
+        index: 0,
+        kind: 'output',
+        type: 'bool',
+        clientVarType: 5,
+        connectionType: 5
+      }
+    ],
+    sampleFile: 'BeyondEditorStatic/Node/15550020904630729637.mihoyobin',
+    flows: []
   },
   {
     subType: 'int_filter',

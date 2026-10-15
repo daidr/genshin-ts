@@ -31,6 +31,7 @@ import {
 import { NODE_ID } from '../../src/thirdparty/Genshin-Impact-Miliastra-Wonderland-Code-Node-Editor-Pack/node_data/node_id.js'
 import { NODE_PIN_RECORDS } from '../../src/thirdparty/Genshin-Impact-Miliastra-Wonderland-Code-Node-Editor-Pack/node_data/node_pin_records.js'
 import { editorNameToMethodName, snakeToCamel } from '../client-nodegraph/client_nodes_codegen.js'
+import { HIDDEN_EDITOR_ENUM_VALUES } from '../client-nodegraph/hidden_editor_enum_values.js'
 
 type OfficialNode = {
   genericId: number
@@ -441,7 +442,10 @@ function main() {
   const officialClientEnumValues = new Set(
     names.enums
       .filter((enumRecord) => enumRecord.id >= 200000)
-      .flatMap((enumRecord) => enumRecord.values.map((value) => value.value))
+      .flatMap((enumRecord) => [
+        ...enumRecord.values.map((value) => value.value),
+        ...(HIDDEN_EDITOR_ENUM_VALUES[enumRecord.id] ?? [])
+      ])
   )
   const missingClientEnumValues = Object.entries(CLIENT_ENUM_VALUES).filter(
     ([, value]) => !officialClientEnumValues.has(value)
