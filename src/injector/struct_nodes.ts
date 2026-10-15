@@ -28,7 +28,9 @@ export type StructPatchGraph = {
     genericId?: NodeIdInfo
     concreteId?: NodeIdInfo
     pins?: PatchPin[]
+    usingStruct?: unknown[]
   }>
+  affiliations?: unknown[]
 }
 
 type StructNodeKind = 'assemble' | 'split' | 'modify'
@@ -100,7 +102,71 @@ function structNameOf(node: { pins?: PatchPin[] }): string | undefined {
 }
 
 export function hasStructNodePlaceholders(graph: StructPatchGraph): boolean {
-  return (graph.nodes ?? []).some((node) => placeholderKind(node) !== undefined)
+  return (graph.nodes ?? []).some(
+    (node) => placeholderKind(node) !== undefined || isStructTypedGenericNode(node)
+  )
+}
+
+// Generic nodes typed with a structure (custom variables, list nodes) carry a usingStruct entry,
+// a placeholder structure id and the structure name on a ClientExecNode pin.
+function isStructTypedGenericNode(node: { pins?: PatchPin[]; usingStruct?: unknown[] }): boolean {
+  return !!node.usingStruct?.length && structNameOf(node) !== undefined
+}
+
+function toNumber(v: unknown): number | undefined {
+  if (typeof v === 'number') return v
+  if (v && typeof v === 'object' && typeof (v as { toNumber?: unknown }).toNumber === 'function') {
+    return (v as { toNumber: () => number }).toNumber()
+  }
+  return undefined
+}
+
+/** Replaces every structId field whose value is a known placeholder. */
+function replaceStructIds(obj: unknown, ids: Map<number, number>, seen = new Set<object>()) {
+  if (!obj || typeof obj !== 'object' || seen.has(obj)) return
+  seen.add(obj)
+  const rec = obj as Record<string, unknown>
+  for (const key of Object.keys(rec)) {
+    const v = rec[key]
+    if (key === 'structId') {
+      const n = toNumber(v)
+      if (n !== undefined && ids.has(n)) {
+        rec[key] = ids.get(n)
+        continue
+      }
+    }
+    if (v && typeof v === 'object') replaceStructIds(v, ids, seen)
+  }
+}
+
+function patchStructTypedGenericNodes(graph: StructPatchGraph, map: StructNodeIdMap, t?: TFunc) {
+  const ids = new Map<number, number>()
+  const nodes = (graph.nodes ?? []).filter(isStructTypedGenericNode)
+  for (const node of nodes) {
+    const name = structNameOf(node)!
+    const structId = map.structIds.get(name)
+    if (structId === undefined) {
+      throw new Error(
+        t
+          ? t('injector_structMissing', { struct: name })
+          : `[error] structure "${name}" is not defined; injection failed`
+      )
+    }
+    const info = node.usingStruct![0] as { structId?: { structId?: unknown } }
+    const placeholder = toNumber(info?.structId?.structId)
+    if (placeholder === undefined) {
+      throw new Error(`[error] structure "${name}" node has no placeholder structure id`)
+    }
+    const bound = ids.get(placeholder)
+    if (bound !== undefined && bound !== structId) {
+      throw new Error(`[error] structure placeholder ${placeholder} bound to two structures`)
+    }
+    ids.set(placeholder, structId)
+    node.pins = (node.pins ?? []).filter((pin) => pin?.i1?.kind !== PIN_KIND_STRUCT_NAME)
+  }
+  if (ids.size === 0) return
+  for (const node of nodes) replaceStructIds(node, ids)
+  for (const entry of graph.affiliations ?? []) replaceStructIds(entry, ids)
 }
 
 function toNodeIdInfo(raw: unknown): NodeIdInfo {
@@ -178,6 +244,7 @@ export function patchStructNodeIdsFromMap(
   map: StructNodeIdMap,
   t?: TFunc
 ) {
+  patchStructTypedGenericNodes(graph, map, t)
   for (const node of graph.nodes ?? []) {
     const kind = placeholderKind(node)
     if (!kind) continue

@@ -59,6 +59,7 @@ import {
   RuntimeReturnValueTypeMap,
   str,
   struct,
+  StructValue,
   StrValue,
   value,
   ValueClassMap,
@@ -1061,6 +1062,7 @@ export class ServerExecutionFlowFunctions {
   assemblyList(_0to99: StrValue[], type: 'str'): string[]
   assemblyList(_0to99: Vec3Value[]): vec3[]
   assemblyList(_0to99: Vec3Value[], type: 'vec3'): vec3[]
+  assemblyList(_0to99: StructValue[], type: 'struct'): struct[]
   assemblyList<
     T extends
       | 'bool'
@@ -1073,6 +1075,7 @@ export class ServerExecutionFlowFunctions {
       | 'prefab_id'
       | 'str'
       | 'vec3'
+      | 'struct'
   >(_0to99: RuntimeParameterValueTypeMap[T][], type?: T): RuntimeReturnValueTypeMap[`${T}_list`] {
     // 支持无限嵌套, 以便预处理器处理
     if (_0to99 instanceof list) {
@@ -1107,7 +1110,8 @@ export class ServerExecutionFlowFunctions {
         'guid',
         'prefab_id',
         'str',
-        'vec3'
+        'vec3',
+        'struct'
       ],
       ..._0to99
     )
@@ -1634,6 +1638,8 @@ export class ServerExecutionFlowFunctions {
       | 'prefab_id_list'
       | 'str_list'
       | 'vec3_list'
+      | 'struct'
+      | 'struct_list'
       | 'dict'
   >(
     targetEntity: EntityValue,
@@ -1653,6 +1659,7 @@ export class ServerExecutionFlowFunctions {
         'prefab_id',
         'str',
         'vec3',
+        'struct',
         'dict'
       ],
       variableValue
@@ -12224,6 +12231,7 @@ export class ServerExecutionFlowFunctions {
   getCorrespondingValueFromList(list: PrefabIdValue[], id: IntValue): prefabId
   getCorrespondingValueFromList(list: StrValue[], id: IntValue): string
   getCorrespondingValueFromList(list: Vec3Value[], id: IntValue): vec3
+  getCorrespondingValueFromList(list: StructValue[], id: IntValue): struct
   getCorrespondingValueFromList<
     T extends
       | 'bool'
@@ -12236,6 +12244,7 @@ export class ServerExecutionFlowFunctions {
       | 'prefab_id'
       | 'str'
       | 'vec3'
+      | 'struct'
   >(list: RuntimeParameterValueTypeMap[T][], id: IntValue): RuntimeReturnValueTypeMap[T] {
     const genericType = matchTypes(
       [
@@ -12248,7 +12257,8 @@ export class ServerExecutionFlowFunctions {
         'guid',
         'prefab_id',
         'str',
-        'vec3'
+        'vec3',
+        'struct'
       ],
       list
     )
@@ -12288,6 +12298,7 @@ export class ServerExecutionFlowFunctions {
   getListLength(list: PrefabIdValue[]): bigint
   getListLength(list: StrValue[]): bigint
   getListLength(list: Vec3Value[]): bigint
+  getListLength(list: StructValue[]): bigint
   getListLength<
     T extends
       | 'bool'
@@ -12300,6 +12311,7 @@ export class ServerExecutionFlowFunctions {
       | 'prefab_id'
       | 'str'
       | 'vec3'
+      | 'struct'
   >(list: RuntimeParameterValueTypeMap[T][]): bigint {
     const genericType = matchTypes(
       [
@@ -12312,7 +12324,8 @@ export class ServerExecutionFlowFunctions {
         'guid',
         'prefab_id',
         'str',
-        'vec3'
+        'vec3',
+        'struct'
       ],
       list
     )

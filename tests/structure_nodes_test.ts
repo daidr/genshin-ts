@@ -30,6 +30,18 @@ g.server({ id: 1073741889 }).on('whenEntityIsCreated', (_evt, f) => {
   })
 })
 
+// Structure lists in custom variables and list nodes; the structure is inferred from the
+// assemble / split nodes the value flows through.
+g.server({ id: 1073741890 }).on('whenEntityIsCreated', (_evt, f) => {
+  const saves = f.getCustomVariable(f.getSelfEntity(), 'saves').asType('struct_list')
+  if (f.getListLength(saves) > 0n) {
+    const fields = f.splitStructure(Struct.TestStruct, f.getCorrespondingValueFromList(saves, 0n))
+    f.printString(fields['新增变量3-字符串'])
+  }
+  const value = f.assembleStructure(Struct.TestStruct, { '新增变量3-字符串': 'saved' })
+  f.setCustomVariable(f.getSelfEntity(), 'saves', f.assemblyList([value], 'struct'))
+})
+
 // Client graphs only assemble / split; ids match the sample map's creation graphs.
 g.creationSkill({ id: 1082130433, mode: 'beyond' }).on('start', (_evt, f) => {
   const value = f.assembleStructure(Struct.TestStruct, {

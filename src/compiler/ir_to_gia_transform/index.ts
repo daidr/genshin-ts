@@ -24,6 +24,11 @@ import { buildConnTypeIndex, resolveGiaNodeId, type ConnTypeInfo } from './node_
 import { optimizeTimerDispatchAggregate } from './optimize_timer_dispatch.js'
 import { setClientExecLiteralArgValue, setEnumArgValue, setLiteralArgValue } from './pins.js'
 import { expandListLiterals } from './preprocess.js'
+import {
+  isStructGenericInput,
+  postprocessStructGenericNodes,
+  prepareStructGenericNodes
+} from './struct_generic.js'
 import type { IRNode, NodeId } from './types.js'
 
 const STRUCT_NODE_TYPES = new Set(['assemble_structure', 'split_structure', 'modify_structure'])
@@ -280,6 +285,7 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
     opts.optimize?.timerDispatchAggregate ?? process.env.GSTS_OPT_TIMER_DISPATCH === '1'
   const optimizeStart = profiling ? performance.now() : 0
   ir = optimizeTimerDispatchAggregate(ir, timerDispatchAggregate)
+  const structGeneric = prepareStructGenericNodes(ir)
   const optimizeMs = profiling ? performance.now() - optimizeStart : 0
 
   const buildExecutionGraphStart = profiling ? performance.now() : 0
@@ -437,7 +443,7 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
           const arg = args[i]
           if (!arg) continue
           if (arg.type === 'conn') {
-            const connType = (arg as ConnectionArgument).value.type
+            const connType = arg.value.type
             const pinType = valueTypeToNodeType(connType)
             if (pinType) {
               const p = new Pin(giaNode.ConcreteId!, 3, i - 1)
@@ -586,6 +592,7 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
 
   const structNodeTypes = new Map<NodeId, string>()
   const structInputConnects = new Map<NodeId, { fromId: NodeId; fromIndex: number }>()
+  const structGenericInputs = new Map<NodeId, Map<number, { fromId: NodeId; fromIndex: number }>>()
   const irNodeTypeById = new Map<NodeId, string>()
   const assemblyDictMeta = new Map<NodeId, { keyConn: boolean[] }>()
   const buildNodesStart = profiling ? performance.now() : 0
@@ -666,6 +673,14 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
     }
     const mappedFromIndex = remapOutputIndexForHiddenPin(fromType, fromIndex)
     const mappedToIndex = remapInputIndexForHiddenPin(toType, toIndex)
+    if (isStructGenericInput(structGeneric, toType, toId, mappedToIndex)) {
+      // structure-typed input: written in postprocess
+      const inputs =
+        structGenericInputs.get(toId) ?? new Map<number, { fromId: NodeId; fromIndex: number }>()
+      inputs.set(mappedToIndex, { fromId, fromIndex: mappedFromIndex })
+      structGenericInputs.set(toId, inputs)
+      continue
+    }
     graph.connect(from, to, mappedFromIndex, mappedToIndex)
   }
   const connectMs = profiling ? performance.now() - connectStart : 0
@@ -774,6 +789,12 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
       }
     }
   }
+  postprocessStructGenericNodes(
+    root.graph?.graph?.inner?.graph,
+    structGeneric,
+    irNodeTypeById,
+    structGenericInputs
+  )
   const postprocessMs = profiling ? performance.now() - postprocessStart : 0
 
   const protoPath = opts.protoPath
