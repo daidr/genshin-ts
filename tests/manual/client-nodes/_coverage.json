@@ -8,7 +8,7 @@
       "registerMethod": "characterSkill",
       "id": 1082130435,
       "name": "AllClientNodesCharacterSkillBeyond",
-      "methodCount": 164,
+      "methodCount": 166,
       "expectedNodeTypeCount": 167,
       "literalArgs": 361,
       "wiredArgs": 157,
@@ -20,7 +20,7 @@
       "registerMethod": "characterControlSkill",
       "id": 1082130436,
       "name": "AllClientNodesCharacterControlSkillBeyond",
-      "methodCount": 175,
+      "methodCount": 177,
       "expectedNodeTypeCount": 178,
       "literalArgs": 373,
       "wiredArgs": 168,
@@ -32,7 +32,7 @@
       "registerMethod": "creationSkill",
       "id": 1082130437,
       "name": "AllClientNodesCreationSkillBeyond",
-      "methodCount": 133,
+      "methodCount": 135,
       "expectedNodeTypeCount": 136,
       "literalArgs": 351,
       "wiredArgs": 147,
@@ -44,7 +44,7 @@
       "registerMethod": "creationStatus",
       "id": 1082130438,
       "name": "AllClientNodesCreationStatusBeyond",
-      "methodCount": 106,
+      "methodCount": 108,
       "expectedNodeTypeCount": 109,
       "literalArgs": 172,
       "wiredArgs": 128,
@@ -56,7 +56,7 @@
       "registerMethod": "creationStatusDecision",
       "id": 1082130439,
       "name": "AllClientNodesCreationStatusDecisionBeyond",
-      "methodCount": 88,
+      "methodCount": 90,
       "expectedNodeTypeCount": 91,
       "literalArgs": 48,
       "wiredArgs": 67,
@@ -68,7 +68,7 @@
       "registerMethod": "boolFilter",
       "id": 1082130440,
       "name": "AllClientNodesBoolFilterBeyond",
-      "methodCount": 112,
+      "methodCount": 114,
       "expectedNodeTypeCount": 115,
       "literalArgs": 63,
       "wiredArgs": 90,
@@ -80,7 +80,7 @@
       "registerMethod": "intFilter",
       "id": 1082130441,
       "name": "AllClientNodesIntFilterBeyond",
-      "methodCount": 112,
+      "methodCount": 114,
       "expectedNodeTypeCount": 115,
       "literalArgs": 90,
       "wiredArgs": 63,
@@ -92,7 +92,7 @@
       "registerMethod": "creationSkill",
       "id": 1082130444,
       "name": "AllClientNodesCreationSkillClassic",
-      "methodCount": 117,
+      "methodCount": 119,
       "expectedNodeTypeCount": 120,
       "literalArgs": 347,
       "wiredArgs": 122,
@@ -104,7 +104,7 @@
       "registerMethod": "creationStatus",
       "id": 1082130445,
       "name": "AllClientNodesCreationStatusClassic",
-      "methodCount": 106,
+      "methodCount": 108,
       "expectedNodeTypeCount": 109,
       "literalArgs": 163,
       "wiredArgs": 137,
@@ -116,7 +116,7 @@
       "registerMethod": "creationStatusDecision",
       "id": 1082130446,
       "name": "AllClientNodesCreationStatusDecisionClassic",
-      "methodCount": 88,
+      "methodCount": 90,
       "expectedNodeTypeCount": 91,
       "literalArgs": 72,
       "wiredArgs": 43,
@@ -128,7 +128,7 @@
       "registerMethod": "boolFilter",
       "id": 1082130449,
       "name": "AllClientNodesBoolFilterClassic",
-      "methodCount": 86,
+      "methodCount": 88,
       "expectedNodeTypeCount": 89,
       "literalArgs": 75,
       "wiredArgs": 58,
@@ -140,7 +140,7 @@
       "registerMethod": "intFilter",
       "id": 1082130448,
       "name": "AllClientNodesIntFilterClassic",
-      "methodCount": 86,
+      "methodCount": 88,
       "expectedNodeTypeCount": 89,
       "literalArgs": 55,
       "wiredArgs": 78,
@@ -152,99 +152,99 @@
       "subType": "bool_filter",
       "nodeType": "assemble_structure",
       "displayName": "拼装结构体",
-      "reason": "unsupported_return_type",
-      "detail": "Structure: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "bool_filter",
       "nodeType": "split_structure",
       "displayName": "拆分结构体",
-      "reason": "doc_param_alignment_failed",
-      "detail": "unbound doc params: Structure [T]; pins: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "character_control_skill",
       "nodeType": "assemble_structure",
       "displayName": "拼装结构体",
-      "reason": "unsupported_return_type",
-      "detail": "Structure: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "character_control_skill",
       "nodeType": "split_structure",
       "displayName": "拆分结构体",
-      "reason": "doc_param_alignment_failed",
-      "detail": "unbound doc params: Structure [T]; pins: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "character_skill",
       "nodeType": "assemble_structure",
       "displayName": "拼装结构体",
-      "reason": "unsupported_return_type",
-      "detail": "Structure: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "character_skill",
       "nodeType": "split_structure",
       "displayName": "拆分结构体",
-      "reason": "doc_param_alignment_failed",
-      "detail": "unbound doc params: Structure [T]; pins: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "creation_skill",
       "nodeType": "assemble_structure",
       "displayName": "拼装结构体",
-      "reason": "unsupported_return_type",
-      "detail": "Structure: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "creation_skill",
       "nodeType": "split_structure",
       "displayName": "拆分结构体",
-      "reason": "doc_param_alignment_failed",
-      "detail": "unbound doc params: Structure [T]; pins: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "creation_status",
       "nodeType": "assemble_structure",
       "displayName": "拼装结构体",
-      "reason": "unsupported_return_type",
-      "detail": "Structure: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "creation_status",
       "nodeType": "split_structure",
       "displayName": "拆分结构体",
-      "reason": "doc_param_alignment_failed",
-      "detail": "unbound doc params: Structure [T]; pins: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "creation_status_decision",
       "nodeType": "assemble_structure",
       "displayName": "拼装结构体",
-      "reason": "unsupported_return_type",
-      "detail": "Structure: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "creation_status_decision",
       "nodeType": "split_structure",
       "displayName": "拆分结构体",
-      "reason": "doc_param_alignment_failed",
-      "detail": "unbound doc params: Structure [T]; pins: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "int_filter",
       "nodeType": "assemble_structure",
       "displayName": "拼装结构体",
-      "reason": "unsupported_return_type",
-      "detail": "Structure: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     },
     {
       "subType": "int_filter",
       "nodeType": "split_structure",
       "displayName": "拆分结构体",
-      "reason": "doc_param_alignment_failed",
-      "detail": "unbound doc params: Structure [T]; pins: structure"
+      "reason": "requires_map_structure",
+      "detail": "bound to a structure defined in the map at injection"
     }
   ]
 }

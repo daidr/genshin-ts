@@ -1,10 +1,14 @@
 import { t } from '../i18n/index.js'
 import {
   isSignalDefinition,
+  isStructDefinition,
   type ExecutionFlowRegistry,
   type MetaCallRegistry,
   type SignalDefinition,
-  type SignalParamValues
+  type SignalParamValues,
+  type StructDefinition,
+  type StructFieldObject,
+  type StructFieldValues
 } from '../runtime/core.js'
 import {
   CommonLiteralValueListTypeMap,
@@ -17,6 +21,7 @@ import {
   Variable,
   type ServerGraphMode
 } from '../runtime/IR.js'
+import type { MetaCallRecordRef } from '../runtime/meta_call_types.js'
 import { getRuntimeOptions } from '../runtime/runtime_config.js'
 import {
   assertServerLiteralValue,
@@ -385,6 +390,66 @@ export function parseValue(v: any, type: ValueType) {
     throw new Error(t('err_invalidValueType', { type: 'enumeration' }))
   if (parsed !== invalidValue && parsed !== matchedValue) return parsed
   throw new Error(t('err_invalidValueType', { type }))
+}
+
+export function assertStructDefinition(def: unknown, argName: string): StructDefinition {
+  if (!isStructDefinition(def)) {
+    throw new Error(
+      `[error] ${argName} must be a structure definition (Struct.xxx from defineStruct / gsts structs)`
+    )
+  }
+  for (const [name, type] of def.fields) {
+    if (type === 'unknown') {
+      throw new Error(`[error] structure "${def.name}" field "${name}" has an unsupported type`)
+    }
+  }
+  return def
+}
+
+/**
+ * Leading args of every structure node: structure name + field type signature (JSON str_list
+ * encoded as a string). Both are compile-time literals consumed by the .gia writers / injector.
+ */
+export function structHeaderArgs(def: StructDefinition): value[] {
+  return [
+    ensureLiteralStr(def.name, 'structName'),
+    ensureLiteralStr(JSON.stringify(def.fields.map(([, type]) => type)), 'structFields')
+  ]
+}
+
+/** One arg per field, in definition order; omitted fields become an empty (null) arg. */
+export function structFieldArgs(
+  def: StructDefinition,
+  values: Record<string, unknown> | undefined
+): value[] {
+  const known = new Set(def.fields.map(([name]) => name))
+  for (const key of Object.keys(values ?? {})) {
+    if (!known.has(key)) {
+      throw new Error(`[error] structure "${def.name}" has no field "${key}"`)
+    }
+  }
+  return def.fields.map(([name, type]) => {
+    const v = values?.[name]
+    if (v === undefined) {
+      const hole = new bool()
+      hole.markLiteral()
+      return hole
+    }
+    return parseValue(v, type as ValueType as 'int')
+  })
+}
+
+export function structSplitOutputs(
+  def: StructDefinition,
+  ref: MetaCallRecordRef
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {}
+  def.fields.forEach(([name, type], index) => {
+    const g = new generic()
+    g.markPin(ref, name, index)
+    out[name] = g.asType(type as LiteralValueType)
+  })
+  return out
 }
 
 const noListType: Set<string> = new Set([
@@ -7960,13 +8025,33 @@ export class ServerExecutionFlowFunctions {
    * After selecting a Structure, you can edit each parameter of that Structure
    *
    * 修改结构体: 在选定结构体后，可以修改该结构体的每个参数
+   *
+   * GSTS Note: Only the fields present in `values` are modified. The structure must already exist in the map (structure manager); the node definition is resolved when injecting
+   *
+   * GSTS 注: 只修改 `values` 中给出的字段; 结构体需已在地图的结构体管理中定义, 注入时才能解析出节点定义
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param target Structure value to modify
+   *
+   * 要修改的结构体
+   * @param values Field values keyed by field name
+   *
+   * 按字段名给出的新值
    */
-  modifyStructure(): void {
+  modifyStructure<S extends StructDefinition>(
+    structure: S,
+    target: struct,
+    values: StructFieldValues<S>
+  ): void {
+    const def = assertStructDefinition(structure, 'structure')
+    const targetObj = parseValue(target, 'struct')
     this.registry.registerNode({
       id: 0,
       type: 'exec',
       nodeType: 'modify_structure',
-      args: []
+      args: [...structHeaderArgs(def), targetObj, ...structFieldArgs(def, values)]
     })
   }
 
@@ -11634,28 +11719,55 @@ export class ServerExecutionFlowFunctions {
    * Returns all parameters of the specified Structure
    *
    * 拆分结构体: 获取指定结构体的所有参数
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param value Structure value to split
+   *
+   * 要拆分的结构体
+   * @returns Field values keyed by field name
+   *
+   * 按字段名返回的各参数
    */
-  splitStructure(): void {
-    this.registry.registerNode({
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
       id: 0,
       type: 'data',
       nodeType: 'split_structure',
-      args: []
+      args: [...structHeaderArgs(def), valueObj]
     })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
   }
 
   /**
    * Combines multiple parameters into a single Structure-type value
    *
    * 拼装结构体: 将多个参数拼合为一个结构体类型的值
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param values Field values keyed by field name; omitted fields keep the editor default
+   *
+   * 按字段名给出的参数，省略的字段保持编辑器默认值
    */
-  assembleStructure(): void {
-    this.registry.registerNode({
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
       id: 0,
       type: 'data',
       nodeType: 'assemble_structure',
-      args: []
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
     })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
   }
 
   /**
@@ -17222,9 +17334,10 @@ type MethodAllowedByMode<
 > = K extends keyof NodeTypeByMethod ? (NodeTypeByMethod[K] extends M ? K : never) : K
 
 export type ServerExecutionFlowFunctionsByMode<M extends ServerGraphMode> = {
-  [
-    K in keyof ServerExecutionFlowFunctions as MethodAllowedByMode<M, K>
-  ]: ServerExecutionFlowFunctions[K]
+  [K in keyof ServerExecutionFlowFunctions as MethodAllowedByMode<
+    M,
+    K
+  >]: ServerExecutionFlowFunctions[K]
 }
 
 // Client execution flow classes live in ./client_nodes.js (generated with

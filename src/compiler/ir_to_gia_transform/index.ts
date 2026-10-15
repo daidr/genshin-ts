@@ -26,6 +26,10 @@ import { setClientExecLiteralArgValue, setEnumArgValue, setLiteralArgValue } fro
 import { expandListLiterals } from './preprocess.js'
 import type { IRNode, NodeId } from './types.js'
 
+const STRUCT_NODE_TYPES = new Set(['assemble_structure', 'split_structure', 'modify_structure'])
+/** Server VarType of a structure value. */
+const SERVER_STRUCT_VAR_TYPE = 25
+
 type IrToGiaOptimizeOptions = {
   timerDispatchAggregate?: boolean
 }
@@ -456,6 +460,36 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
       return true
     }
 
+    if (STRUCT_NODE_TYPES.has(nodeType)) {
+      const args = irNode.args ?? []
+      const nameArg = args[0]
+      if (!isValueArg(nameArg) || nameArg.type !== 'str') {
+        throw new Error(`[error] ${nodeType} expects a literal structure name`)
+      }
+      giaNode.pins = []
+      setClientExecLiteralArgValue(giaNode, 0, 0, nodeType, 'str', nameArg.value)
+      const fieldStart = nodeType === 'assemble_structure' ? 2 : 3
+      for (let i = fieldStart; i < args.length; i++) {
+        const arg = args[i]
+        if (!arg) continue
+        const pinIndex = remapInputIndexForHiddenPin(nodeType, i)
+        if (arg.type === 'conn') {
+          const pinType = valueTypeToNodeType(arg.value.type)
+          const p = new Pin(giaNode.ConcreteId!, 3, pinIndex)
+          p.setType(pinType)
+          giaNode.pins.push(p)
+        } else if (isValueArg(arg)) {
+          setArgValue(giaNode, pinIndex, i, nodeType, arg)
+        }
+        if (nodeType === 'modify_structure') {
+          // every modified field carries a hidden "is set" flag right after its value pin
+          setLiteralArgValue(giaNode, pinIndex + 1, i, nodeType, 'bool', true)
+        }
+      }
+      structNodeTypes.set(irNode.id, nodeType)
+      return true
+    }
+
     if (nodeType === 'assembly_list' || nodeType === 'assembly_dictionary') {
       // GIA: pin0 为元素数量；IR: args 为元素列表
       giaNode.setVal(0, irNode.args?.length ?? 0)
@@ -528,6 +562,14 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
       case 'send_signal':
       case 'send_client_script_signal':
         return idx > 0 ? idx - 1 : idx // signal name is exec literal, data pins shift by -1
+      // structure nodes: args = [name, signature, ...]; name/signature are not data pins
+      case 'assemble_structure':
+        return idx - 2
+      case 'split_structure':
+        return 0
+      case 'modify_structure':
+        // struct at pin 0, hidden target at 1, then (value, is-set flag) pairs
+        return idx <= 2 ? 0 : 2 * (idx - 3) + 2
       default:
         return idx
     }
@@ -542,6 +584,8 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
     }
   }
 
+  const structNodeTypes = new Map<NodeId, string>()
+  const structInputConnects = new Map<NodeId, { fromId: NodeId; fromIndex: number }>()
   const irNodeTypeById = new Map<NodeId, string>()
   const assemblyDictMeta = new Map<NodeId, { keyConn: boolean[] }>()
   const buildNodesStart = profiling ? performance.now() : 0
@@ -612,6 +656,14 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
           'the editor exposes no connection socket'
       )
     }
+    if ((toType === 'split_structure' || toType === 'modify_structure') && toIndex === 2) {
+      // struct-typed input: the vendor pin model has no struct type, written in postprocess
+      structInputConnects.set(toId, {
+        fromId,
+        fromIndex: remapOutputIndexForHiddenPin(fromType, fromIndex)
+      })
+      continue
+    }
     const mappedFromIndex = remapOutputIndexForHiddenPin(fromType, fromIndex)
     const mappedToIndex = remapInputIndexForHiddenPin(toType, toIndex)
     graph.connect(from, to, mappedFromIndex, mappedToIndex)
@@ -680,6 +732,45 @@ export function irToGia(ir: IRDocument, opts: IrToGiaOptions): Uint8Array {
         }
         if (!isConnected) continue
         setNestedAlreadySetValFalse(pin)
+      }
+    }
+  }
+  if (structNodeTypes.size > 0) {
+    const nodes = root.graph?.graph?.inner?.graph?.nodes ?? []
+    for (const node of nodes) {
+      const nodeType = structNodeTypes.get(node.nodeIndex)
+      if (!nodeType) continue
+      for (const pin of node.pins ?? []) {
+        // editor samples store wired composite inputs with type + connects only
+        if (pin?.i1?.kind === 3 && pin.connects?.length) delete (pin as { value?: unknown }).value
+      }
+      if (nodeType === 'modify_structure') {
+        // the definition has no pin for the hidden target, so concrete indexes are shifted by one
+        for (const pin of node.pins ?? []) {
+          if (pin?.i1?.kind === 3 && (pin.i1.index ?? 0) >= 2) {
+            pin.i2 = { ...pin.i2, kind: 3, index: (pin.i1.index ?? 0) - 1 }
+          }
+        }
+      }
+      const input = structInputConnects.get(node.nodeIndex)
+      if (input) {
+        const structPin = {
+          i1: { kind: 3, index: 0 },
+          i2: { kind: 3, index: 0 },
+          type: SERVER_STRUCT_VAR_TYPE,
+          connects: [
+            {
+              id: input.fromId,
+              connect: { kind: 4, index: input.fromIndex },
+              connect2: { kind: 4, index: input.fromIndex }
+            }
+          ]
+        }
+        node.pins = [structPin as (typeof node.pins)[number], ...(node.pins ?? [])]
+      } else if (nodeType !== 'assemble_structure') {
+        throw new Error(
+          `[error] ${nodeType} (id=${node.nodeIndex}) needs a connected structure input`
+        )
       }
     }
   }

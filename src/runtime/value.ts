@@ -556,7 +556,8 @@ export class generic extends value {
         ret = new faction()
         break
       case 'struct':
-        throw new Error('struct is not supported yet')
+        ret = new struct()
+        break
       case 'dict':
         throw new Error('use asDict() instead')
       case 'bool_list':

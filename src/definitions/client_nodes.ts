@@ -6,7 +6,10 @@ import {
   isSignalDefinition,
   type ExecutionFlowRegistry,
   type SignalDefinition,
-  type SignalParamValues
+  type SignalParamValues,
+  type StructDefinition,
+  type StructFieldObject,
+  type StructFieldValues
 } from '../runtime/core.js'
 import type {
   ClientGraphMode,
@@ -33,6 +36,7 @@ import {
   listLiteral,
   prefabId,
   str,
+  struct,
   ValueClassMap,
   vec3,
   type BoolValue,
@@ -112,7 +116,15 @@ import type {
   UnitStatusRemovalReason,
   UnitStatusRemovalStrategy
 } from './enum.js'
-import { matchTypes, parseValue, type DataTypeConversionMap } from './nodes.js'
+import {
+  assertStructDefinition,
+  matchTypes,
+  parseValue,
+  structFieldArgs,
+  structHeaderArgs,
+  structSplitOutputs,
+  type DataTypeConversionMap
+} from './nodes.js'
 
 /** supported conversion pairs; IR encodes data_type_conversion_<out> like the server */
 const DATA_TYPE_CONVERSIONS = new Set([
@@ -830,6 +842,38 @@ export class ClientCharacterSkillExecutionFlowFunctions<
     const ret = new float()
     ret.markPin(ref, 'radian', 0)
     return ret as unknown as number
+  }
+
+  /**
+   * Combine multiple parameters into a value of the structure type.
+   *
+   * 拼装结构体: 将多个参数拼合为一个结构体类型的值
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param values Field values keyed by field name; omitted fields keep the editor default
+   *
+   * 按字段名给出的参数，省略的字段保持编辑器默认值
+   *
+   * @returns
+   *
+   * 结构体
+   */
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'assemble_structure',
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
+    })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
   }
 
   /**
@@ -6078,6 +6122,34 @@ export class ClientCharacterSkillExecutionFlowFunctions<
   }
 
   /**
+   * Get all parameters of the specified structure.
+   *
+   * 拆分结构体: 获取指定结构体的所有参数
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param value Structure value to split
+   *
+   * 要拆分的结构体
+   *
+   * @returns
+   *
+   * 按字段名返回的各参数
+   */
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'split_structure',
+      args: [...structHeaderArgs(def), valueObj]
+    })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
+  }
+
+  /**
    * Outputs the x, y, and z components of a 3D Vector as three Floating Point Numbers
    *
    * 拆分三维向量: 将三维向量的x、y、z分量输出为三个浮点数
@@ -10035,6 +10107,38 @@ export class ClientCharacterControlSkillExecutionFlowFunctions<
     const ret = new float()
     ret.markPin(ref, 'radian', 0)
     return ret as unknown as number
+  }
+
+  /**
+   * Combine multiple parameters into a value of the structure type.
+   *
+   * 拼装结构体: 将多个参数拼合为一个结构体类型的值
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param values Field values keyed by field name; omitted fields keep the editor default
+   *
+   * 按字段名给出的参数，省略的字段保持编辑器默认值
+   *
+   * @returns
+   *
+   * 结构体
+   */
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'assemble_structure',
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
+    })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
   }
 
   /**
@@ -15607,6 +15711,34 @@ export class ClientCharacterControlSkillExecutionFlowFunctions<
   }
 
   /**
+   * Get all parameters of the specified structure.
+   *
+   * 拆分结构体: 获取指定结构体的所有参数
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param value Structure value to split
+   *
+   * 要拆分的结构体
+   *
+   * @returns
+   *
+   * 按字段名返回的各参数
+   */
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'split_structure',
+      args: [...structHeaderArgs(def), valueObj]
+    })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
+  }
+
+  /**
    * Outputs the x, y, and z components of a 3D Vector as three Floating Point Numbers
    *
    * 拆分三维向量: 将三维向量的x、y、z分量输出为三个浮点数
@@ -19391,6 +19523,38 @@ export class ClientCreationSkillExecutionFlowFunctions<
     const ret = new float()
     ret.markPin(ref, 'radian', 0)
     return ret as unknown as number
+  }
+
+  /**
+   * Combine multiple parameters into a value of the structure type.
+   *
+   * 拼装结构体: 将多个参数拼合为一个结构体类型的值
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param values Field values keyed by field name; omitted fields keep the editor default
+   *
+   * 按字段名给出的参数，省略的字段保持编辑器默认值
+   *
+   * @returns
+   *
+   * 结构体
+   */
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'assemble_structure',
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
+    })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
   }
 
   /**
@@ -23659,6 +23823,34 @@ export class ClientCreationSkillExecutionFlowFunctions<
   }
 
   /**
+   * Get all parameters of the specified structure.
+   *
+   * 拆分结构体: 获取指定结构体的所有参数
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param value Structure value to split
+   *
+   * 要拆分的结构体
+   *
+   * @returns
+   *
+   * 按字段名返回的各参数
+   */
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'split_structure',
+      args: [...structHeaderArgs(def), valueObj]
+    })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
+  }
+
+  /**
    * Outputs the x, y, and z components of a 3D Vector as three Floating Point Numbers
    *
    * 拆分三维向量: 将三维向量的x、y、z分量输出为三个浮点数
@@ -27409,6 +27601,38 @@ export class ClientCreationStatusExecutionFlowFunctions<
   }
 
   /**
+   * Combine multiple parameters into a value of the structure type.
+   *
+   * 拼装结构体: 将多个参数拼合为一个结构体类型的值
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param values Field values keyed by field name; omitted fields keep the editor default
+   *
+   * 按字段名给出的参数，省略的字段保持编辑器默认值
+   *
+   * @returns
+   *
+   * 结构体
+   */
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'assemble_structure',
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
+    })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
+  }
+
+  /**
    * Combine up to 50 key-value pairs into a dictionary.
    *
    * 拼装字典: 将至多50个键值对拼合为一个字典
@@ -30687,6 +30911,34 @@ export class ClientCreationStatusExecutionFlowFunctions<
   }
 
   /**
+   * Get all parameters of the specified structure.
+   *
+   * 拆分结构体: 获取指定结构体的所有参数
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param value Structure value to split
+   *
+   * 要拆分的结构体
+   *
+   * @returns
+   *
+   * 按字段名返回的各参数
+   */
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'split_structure',
+      args: [...structHeaderArgs(def), valueObj]
+    })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
+  }
+
+  /**
    * Outputs the x, y, and z components of a 3D Vector as three Floating Point Numbers
    *
    * 拆分三维向量: 将三维向量的x、y、z分量输出为三个浮点数
@@ -33199,6 +33451,38 @@ export class ClientCreationStatusDecisionExecutionFlowFunctions<
     const ret = new float()
     ret.markPin(ref, 'radian', 0)
     return ret as unknown as number
+  }
+
+  /**
+   * Combine multiple parameters into a value of the structure type.
+   *
+   * 拼装结构体: 将多个参数拼合为一个结构体类型的值
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param values Field values keyed by field name; omitted fields keep the editor default
+   *
+   * 按字段名给出的参数，省略的字段保持编辑器默认值
+   *
+   * @returns
+   *
+   * 结构体
+   */
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'assemble_structure',
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
+    })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
   }
 
   /**
@@ -36441,6 +36725,34 @@ export class ClientCreationStatusDecisionExecutionFlowFunctions<
   }
 
   /**
+   * Get all parameters of the specified structure.
+   *
+   * 拆分结构体: 获取指定结构体的所有参数
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param value Structure value to split
+   *
+   * 要拆分的结构体
+   *
+   * @returns
+   *
+   * 按字段名返回的各参数
+   */
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'split_structure',
+      args: [...structHeaderArgs(def), valueObj]
+    })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
+  }
+
+  /**
    * Outputs the x, y, and z components of a 3D Vector as three Floating Point Numbers
    *
    * 拆分三维向量: 将三维向量的x、y、z分量输出为三个浮点数
@@ -37066,6 +37378,38 @@ export class ClientBoolFilterExecutionFlowFunctions<
     const ret = new float()
     ret.markPin(ref, 'radian', 0)
     return ret as unknown as number
+  }
+
+  /**
+   * Combine multiple parameters into a value of the structure type.
+   *
+   * 拼装结构体: 将多个参数拼合为一个结构体类型的值
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param values Field values keyed by field name; omitted fields keep the editor default
+   *
+   * 按字段名给出的参数，省略的字段保持编辑器默认值
+   *
+   * @returns
+   *
+   * 结构体
+   */
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'assemble_structure',
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
+    })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
   }
 
   /**
@@ -41017,6 +41361,34 @@ export class ClientBoolFilterExecutionFlowFunctions<
   }
 
   /**
+   * Get all parameters of the specified structure.
+   *
+   * 拆分结构体: 获取指定结构体的所有参数
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param value Structure value to split
+   *
+   * 要拆分的结构体
+   *
+   * @returns
+   *
+   * 按字段名返回的各参数
+   */
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'split_structure',
+      args: [...structHeaderArgs(def), valueObj]
+    })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
+  }
+
+  /**
    * Outputs the x, y, and z components of a 3D Vector as three Floating Point Numbers
    *
    * 拆分三维向量: 将三维向量的x、y、z分量输出为三个浮点数
@@ -41678,6 +42050,38 @@ export class ClientIntFilterExecutionFlowFunctions<
     const ret = new float()
     ret.markPin(ref, 'radian', 0)
     return ret as unknown as number
+  }
+
+  /**
+   * Combine multiple parameters into a value of the structure type.
+   *
+   * 拼装结构体: 将多个参数拼合为一个结构体类型的值
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param values Field values keyed by field name; omitted fields keep the editor default
+   *
+   * 按字段名给出的参数，省略的字段保持编辑器默认值
+   *
+   * @returns
+   *
+   * 结构体
+   */
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'assemble_structure',
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
+    })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
   }
 
   /**
@@ -45622,6 +46026,34 @@ export class ClientIntFilterExecutionFlowFunctions<
     const ret = new float()
     ret.markPin(ref, 'result', 0)
     return ret as unknown as number
+  }
+
+  /**
+   * Get all parameters of the specified structure.
+   *
+   * 拆分结构体: 获取指定结构体的所有参数
+   *
+   * @param structure Structure definition (Struct.xxx)
+   *
+   * 结构体定义
+   * @param value Structure value to split
+   *
+   * 要拆分的结构体
+   *
+   * @returns
+   *
+   * 按字段名返回的各参数
+   */
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'split_structure',
+      args: [...structHeaderArgs(def), valueObj]
+    })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
   }
 
   /**

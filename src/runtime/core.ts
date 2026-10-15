@@ -175,6 +175,51 @@ export function isSignalDefinition(value: unknown): value is SignalDefinition {
   )
 }
 
+/** Field types of a map structure definition (same type codes as signal parameters). */
+export type StructFieldType = SignalParamType
+export type StructFieldEntry = readonly [name: string, type: StructFieldType]
+export type StructFieldEntries = readonly StructFieldEntry[]
+
+export type StructDefinition<
+  Name extends string = string,
+  Fields extends StructFieldEntries = StructFieldEntries
+> = {
+  readonly __gstsStruct: true
+  readonly name: Name
+  readonly fields: Fields
+}
+
+/** Field values accepted by assemble / modify structure nodes, keyed by field name. */
+export type StructFieldValues<S extends StructDefinition> = {
+  [P in S['fields'][number] as P[0]]?: SignalParamValue<P[1]>
+}
+
+/** Field values returned by the split structure node, keyed by field name. */
+export type StructFieldObject<S extends StructDefinition> = {
+  [P in S['fields'][number] as P[0]]: SignalParamReturnValue<P[1]>
+}
+
+export function defineStruct<const Name extends string, const Fields extends StructFieldEntries>(
+  name: Name,
+  fields: Fields
+): StructDefinition<Name, Fields> {
+  return {
+    __gstsStruct: true,
+    name,
+    fields
+  }
+}
+
+export function isStructDefinition(value: unknown): value is StructDefinition {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    (value as { __gstsStruct?: unknown }).__gstsStruct === true &&
+    typeof (value as { name?: unknown }).name === 'string' &&
+    Array.isArray((value as { fields?: unknown }).fields)
+  )
+}
+
 function resolveSignalInput(signal: string | SignalDefinition): {
   name: string
   params: SignalParamEntries

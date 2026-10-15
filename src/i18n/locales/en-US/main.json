@@ -50,6 +50,8 @@
   "injector_incomingTypeMismatch": "[warn] Incoming NodeGraph type differs from target category: id={{id}}, current={{current}}, expected={{expected}}; auto-corrected",
   "injector_clientTypeMismatch": "[error] Client NodeGraph type mismatch: id={{id}}, incoming={{current}}, target={{expected}}; client graph types cannot be auto-corrected",
   "injector_signalMissing": "[error] Signal \"{{signal}}\" is not defined; injection failed. Define it in the editor and try again.",
+  "injector_structMissing": "[error] Structure \"{{struct}}\" is not defined; injection failed. Define it in the editor structure manager and try again.",
+  "injector_structNodeMissing": "[error] Structure \"{{struct}}\" has no {{kind}} node for graph family {{family}}; injection failed. Re-save the structure in the editor and try again.",
   "injector_signalConflict": "[error] Signal \"{{signal}}\" has multiple node ids for {{kind}}: {{first}} vs {{second}}",
   "err_invalidValueType": "Invalid value type: {{type}}",
   "err_intListLikelyFloatList": "Expected int_list, but got {{actual}}. Did you pass a normal number[] and it was inferred as a float list? Use bigint literals to force an int list, e.g. [123n, 456, 789, ...], or explicitly specify the list type with the `list` helper function.",

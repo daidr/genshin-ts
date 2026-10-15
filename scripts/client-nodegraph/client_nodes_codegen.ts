@@ -140,6 +140,9 @@ const HAND_NODE_TYPES = new Set([
   'data_type_conversion',
   'get_custom_variable',
   'send_signal_to_server_node_graph',
+  // 结构体节点：字段引脚由地图的结构体定义决定，节点 gid 注入期按结构体定义回填
+  'assemble_structure',
+  'split_structure',
   // 局部变量节点：cid 恒定（2000/1036），变量类型只体现在值引脚 type/ioc 上，
   // 用服务器对齐模板（客户端以变量名定位，值走泛型匹配）
   'get_local_variable',
@@ -2646,6 +2649,64 @@ function emitSendSignalToServer(doc: AlignedDocNode | undefined): string {
   }`
 }
 
+/**
+ * 拼装 / 拆分结构体：服务器同款签名（StructDefinition + 按字段名的对象）。
+ * 字段引脚按结构体定义逐个排列；节点 gid 注入期按结构体定义回填。
+ */
+function emitAssembleStructure(doc: AlignedDocNode | undefined): string {
+  return `${controlFlowJsdoc(
+    doc,
+    '拼装结构体',
+    [
+      { ident: 'structure', en: 'Structure definition (Struct.xxx)', zh: '结构体定义' },
+      {
+        ident: 'values',
+        en: 'Field values keyed by field name; omitted fields keep the editor default',
+        zh: '按字段名给出的参数，省略的字段保持编辑器默认值'
+      }
+    ],
+    docReturnText(doc, '结构体')
+  )}
+  assembleStructure<S extends StructDefinition>(
+    structure: S,
+    values: StructFieldValues<S> = {}
+  ): struct {
+    const def = assertStructDefinition(structure, 'structure')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'assemble_structure',
+      args: [...structHeaderArgs(def), ...structFieldArgs(def, values)]
+    })
+    const ret = new struct()
+    ret.markPin(ref, 'structure', 0)
+    return ret
+  }`
+}
+
+function emitSplitStructure(doc: AlignedDocNode | undefined): string {
+  return `${controlFlowJsdoc(
+    doc,
+    '拆分结构体',
+    [
+      { ident: 'structure', en: 'Structure definition (Struct.xxx)', zh: '结构体定义' },
+      { ident: 'value', en: 'Structure value to split', zh: '要拆分的结构体' }
+    ],
+    docReturnText(doc, '按字段名返回的各参数')
+  )}
+  splitStructure<S extends StructDefinition>(structure: S, value: struct): StructFieldObject<S> {
+    const def = assertStructDefinition(structure, 'structure')
+    const valueObj = parseValue(value, 'struct')
+    const ref = this.registry.registerNode({
+      id: 0,
+      type: 'data',
+      nodeType: 'split_structure',
+      args: [...structHeaderArgs(def), valueObj]
+    })
+    return structSplitOutputs(def, ref) as StructFieldObject<S>
+  }`
+}
+
 // ---------------------------------------------------------------------------
 // Main entry
 // ---------------------------------------------------------------------------
@@ -2776,6 +2837,14 @@ export function generateClientNodes(
           ;(literalArgumentIndexesBySubType[record.subType] ??= {}).sendSignalToServerNodeGraph = [
             0
           ]
+          break
+        case 'assemble_structure':
+          texts.push(emitAssembleStructure(doc))
+          names.push('assembleStructure')
+          break
+        case 'split_structure':
+          texts.push(emitSplitStructure(doc))
+          names.push('splitStructure')
           break
         case 'get_local_variable':
           texts.push(emitGetLocalVariable(doc))
@@ -3253,6 +3322,7 @@ class ClientExecutionFlowFunctionsBase<
     'listLiteral',
     'prefabId',
     'str',
+    'struct',
     'vec3',
     'ValueClassMap'
   ].filter(usesIdent)
@@ -3280,7 +3350,14 @@ class ClientExecutionFlowFunctionsBase<
     'CommonLiteralValueListTypeMap',
     'CommonLiteralValueTypeMap'
   ].filter((name) => name === 'ClientGraphSubType' || usesIdent(name))
-  const nodesImports = ['matchTypes', 'parseValue'].filter(usesIdent)
+  const nodesImports = [
+    'assertStructDefinition',
+    'matchTypes',
+    'parseValue',
+    'structFieldArgs',
+    'structHeaderArgs',
+    'structSplitOutputs'
+  ].filter(usesIdent)
   const serverEnumImports = [
     ...enumBinding.serverClasses,
     'EnumerationType',
@@ -3301,7 +3378,13 @@ class ClientExecutionFlowFunctionsBase<
   const coreValueImports = ['isSignalDefinition'].filter(usesIdent)
   const coreTypeImports = [
     'ExecutionFlowRegistry',
-    ...['SignalDefinition', 'SignalParamValues'].filter(usesIdent)
+    ...[
+      'SignalDefinition',
+      'SignalParamValues',
+      'StructDefinition',
+      'StructFieldObject',
+      'StructFieldValues'
+    ].filter(usesIdent)
   ]
   const coreImportLine = coreValueImports.length
     ? `import { ${[...coreValueImports, ...coreTypeImports.map((t) => `type ${t}`)].join(', ')} } from '../runtime/core.js'`

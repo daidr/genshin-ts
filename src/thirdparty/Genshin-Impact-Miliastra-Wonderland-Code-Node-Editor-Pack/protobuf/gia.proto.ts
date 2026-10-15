@@ -592,7 +592,9 @@ export interface VarBase_ItemType_ClientContainerBinding {
   /** Index = 5 */
   valueType?: ClientVarType
 }
-export interface VarBase_ItemType_ClientMarker {}
+export interface VarBase_ItemType_ClientMarker {
+  structId?: number
+}
 export interface VarBase_ItemType_ClientType {
   /** Index = 2 */
   type: ClientVarType

@@ -222,6 +222,9 @@ export function resolveClientConcreteVariant(
   if (metadata.nodeType === 'data_type_conversion') {
     return 130
   }
+  // structure nodes share one system node per kind; the composite def is bound at injection
+  if (metadata.nodeType === 'assemble_structure') return 1060
+  if (metadata.nodeType === 'split_structure') return 1061
   if (metadata.nodeType === 'assembly_list') {
     return resolveClientReflectVariant(metadata, node)!.concreteId
   }

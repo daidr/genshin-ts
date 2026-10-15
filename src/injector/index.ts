@@ -30,6 +30,13 @@ import {
   type SignalNodeIdMap,
   type SignalPatchGraph
 } from './signal_nodes.js'
+import {
+  buildStructNodeIdMap,
+  hasStructNodePlaceholders,
+  patchStructNodeIdsFromMap,
+  type StructNodeIdMap,
+  type StructPatchGraph
+} from './struct_nodes.js'
 import type {
   InjectGilBatchInput,
   InjectGilBatchItemTimings,
@@ -172,6 +179,7 @@ export function createInjector(options?: { protoPath?: string; lang?: string }):
     let signalMapError: unknown
     let signalMapFailed = false
     let buildSignalMapMs = 0
+    let structMap: StructNodeIdMap | undefined
 
     const getTargetState = (targetId: number): TargetState => {
       const cached = targetStates.get(targetId)
@@ -288,6 +296,12 @@ export function createInjector(options?: { protoPath?: string; lang?: string }):
           const patchSignalStart = performance.now()
           patchSignalNodeIdsFromMap(signalGraph, signalMap!, t)
           timings.patchSignalIdsMs = performance.now() - patchSignalStart
+        }
+
+        const structGraph = newGraph as StructPatchGraph
+        if (hasStructNodePlaceholders(structGraph)) {
+          structMap ??= buildStructNodeIdMap(payload, proto.root)
+          patchStructNodeIdsFromMap(structGraph, structMap, t)
         }
 
         const validateStart = performance.now()

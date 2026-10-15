@@ -508,7 +508,8 @@ function main(): void {
     `[ok] all ${report.graphs.length} manual client graphs cover every generated node and output pin`
   )
   console.log(
-    `[note] ${report.knownGenerationGaps.length} schema-dependent structure nodes remain explicit generation gaps`
+    `[note] ${report.knownGenerationGaps.length} structure nodes need a map-defined structure ` +
+      'and are covered by tests/structure_nodes_test.ts instead'
   )
 }
 

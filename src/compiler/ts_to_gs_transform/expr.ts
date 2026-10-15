@@ -2010,6 +2010,21 @@ export function transformExpression(
   // element access: list[id] -> getCorrespondingValueFromList(list, id)
   if (ts.isElementAccessExpression(expr)) {
     const obj = transformExpression(env, context, expr.expression)
+    // obj['key'] on a plain object (e.g. split structure fields with non-identifier names)
+    // is a property read, not a list lookup
+    const arg = expr.argumentExpression
+    if (arg && ts.isStringLiteralLike(arg)) {
+      const objType = env.checker.getTypeAtLocation(expr.expression)
+      if (
+        !env.checker.isArrayLikeType(objType) &&
+        env.checker.getPropertyOfType(objType, arg.text)
+      ) {
+        return withSameRange(
+          ts.factory.createElementAccessExpression(obj, ts.factory.createStringLiteral(arg.text)),
+          expr
+        )
+      }
+    }
     let idx: ts.Expression
     if (expr.argumentExpression) idx = transformExpression(env, context, expr.argumentExpression)
     else fail(env, expr, 'index is required')

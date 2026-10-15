@@ -38,6 +38,7 @@ type MethodInfo = {
 type MetadataRecord = {
   subType: ClientGraphSubType
   nodeType: string
+  displayName: string
   genericId: number
   inputs?: Array<{ index: number; connectable?: boolean }>
   outputs?: Array<{ index: number }>
@@ -51,6 +52,8 @@ type GapRecord = {
   reason: string
   detail: string
 }
+
+const MAP_STRUCTURE_METHODS = new Set(['assembleStructure', 'splitStructure'])
 
 type EnumPick = {
   namespace: 'E' | 'CE'
@@ -810,6 +813,8 @@ function emitGraph(
   const coveredNodeTypes = new Set<string>()
 
   for (const methodName of methodNames) {
+    // bound to a structure defined in the map at injection; see tests/structure_nodes_test.ts
+    if (MAP_STRUCTURE_METHODS.has(methodName)) continue
     const method = methods.get(methodName)
     if (!method) throw new Error(`missing method implementation ${graph.subType}.${methodName}`)
     const metadata = metadataByMethodKey.get(`${graph.subType}.${methodName}`)
@@ -946,6 +951,16 @@ function main(): void {
   const gaps = JSON.parse(
     fs.readFileSync('tests/client_generated/_generation_gaps.json', 'utf8')
   ) as GapRecord[]
+  for (const record of metadata) {
+    if (!MAP_STRUCTURE_METHODS.has(snakeToCamel(record.nodeType))) continue
+    gaps.push({
+      subType: record.subType,
+      nodeType: record.nodeType,
+      displayName: record.displayName,
+      reason: 'requires_map_structure',
+      detail: 'bound to a structure defined in the map at injection'
+    })
+  }
 
   fs.mkdirSync(OUT_DIR, { recursive: true })
 

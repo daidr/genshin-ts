@@ -50,6 +50,8 @@
   "injector_incomingTypeMismatch": "[warn] 输入节点图类型与目标分类不一致: id={{id}}, 当前={{current}}, 期望={{expected}}; 已自动修正",
   "injector_clientTypeMismatch": "[error] 客户端节点图类型不一致: id={{id}}, 输入={{current}}, 目标={{expected}}; 客户端节点图禁止自动修改类型",
   "injector_signalMissing": "[error] 信号“{{signal}}”未定义，注入失败，请先在编辑器内定义信号再进行注入",
+  "injector_structMissing": "[error] 结构体“{{struct}}”未定义，注入失败，请先在编辑器的结构体管理中定义结构体再进行注入",
+  "injector_structNodeMissing": "[error] 结构体“{{struct}}”没有节点图类型 {{family}} 的 {{kind}} 节点，注入失败，请在编辑器内重新保存该结构体后再试",
   "injector_signalConflict": "[error] 信号“{{signal}}”在 {{kind}} 上存在多个节点 id：{{first}} vs {{second}}",
   "err_invalidValueType": "无效的值类型: {{type}}",
   "err_intListLikelyFloatList": "期望的类型是 int_list，但实际得到的是 {{actual}}。你是否使用了常规的 number 数组作为参数，导致被识别为了 float 列表？你可以使用 bigint 字面量来强制将其处理为 int 列表，例如 [123n, 456, 789, ...]，或使用 `list` 辅助函数显式指定类型。",

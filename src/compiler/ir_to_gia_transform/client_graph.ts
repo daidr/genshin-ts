@@ -111,6 +111,11 @@ function remapClientInputIndex(metadata: ClientNodeMetadata, argIndex: number): 
       return argIndex + 1
     case 'send_signal_to_server_node_graph':
       return argIndex - 1
+    // args[0..1] are the structure name and field signature (no pins)
+    case 'assemble_structure':
+      return argIndex - 2
+    case 'split_structure':
+      return 0
     default:
       return argPinIndex(metadata, argIndex)
   }
@@ -1051,6 +1056,89 @@ function applySendSignalToServer(
   node.pins.unshift(...paramPins)
 }
 
+const CLIENT_VAR_TYPE_STRUCT = 22
+const PIN_KIND_OUT_PARAM = NodePin_Index_Kind.OutParam
+
+function clientStructValue() {
+  // corpus: Structure_ with implKind 1 and a marker the injector fills with the structure id
+  return {
+    class: VarBase_Class.StructBase,
+    itemType: {
+      classBase: 2,
+      type_client: { type: CLIENT_VAR_TYPE_STRUCT, implKind: 1, marker: {} }
+    },
+    bStruct: {}
+  } as unknown as ClientGiaNode['pins'][number]['value']
+}
+
+/**
+ * 拼装 / 拆分结构体：节点定义由编辑器按结构体生成（.gil 10.2），编译时只写占位
+ * genericId 和 kind5 结构体名引脚，注入时换成存档里的节点定义并补 compositePinIndex。
+ * args[0]=结构体名，args[1]=字段类型签名（JSON），拼装字段从 args[2] 起，拆分的结构体在 args[2]。
+ */
+function applyStructureNode(node: ClientGiaNode, irNode: IRNode, metadata: ClientNodeMetadata) {
+  const args = irNode.args ?? []
+  const nameArg = args[0]
+  const sigArg = args[1]
+  if (!isValueArg(nameArg) || !isValueArg(sigArg)) {
+    throw clientNodegraphError(
+      CLIENT_ERROR_CODES.VALUE_TYPE_UNAVAILABLE,
+      `${metadata.subType}.${metadata.nodeType} expects a literal structure definition`
+    )
+  }
+  const fieldTypes = JSON.parse(String(sigArg.value)) as string[]
+  const assemble = metadata.nodeType === 'assemble_structure'
+  const pins: ClientGiaNode['pins'] = []
+  const structPin = {
+    i1: { kind: assemble ? PIN_KIND_OUT_PARAM : PIN_KIND_IN_PARAM, index: 0 },
+    i2: { kind: assemble ? PIN_KIND_OUT_PARAM : PIN_KIND_IN_PARAM, index: 0 },
+    type: CLIENT_VAR_TYPE_STRUCT,
+    value: clientStructValue(),
+    connects: []
+  } as unknown as ClientGiaNode['pins'][number]
+  if (!assemble) pins.push(structPin)
+  for (const [k, irType] of fieldTypes.entries()) {
+    const clientVarType = CLIENT_VAR_TYPE_BY_IR_TYPE[irType]
+    if (clientVarType === undefined) {
+      throw clientNodegraphError(
+        CLIENT_ERROR_CODES.VALUE_TYPE_UNAVAILABLE,
+        `${metadata.subType}.${metadata.nodeType} field #${k}: unsupported type "${irType}"`
+      )
+    }
+    const arg = assemble ? args[k + 2] : undefined
+    const value = isValueArg(arg)
+      ? Array.isArray(arg.value) && irType.endsWith('_list')
+        ? arg.value.length === 0
+          ? client_value_base(clientVarType)
+          : client_list_literal_value(
+              clientVarType,
+              arg.value.map((v) => toPinLiteral(clientVarType, v, k + 2, irNode.type))
+            )
+        : client_literal_value(
+            clientVarType,
+            toPinLiteral(clientVarType, arg.value, k + 2, irNode.type)
+          )
+      : client_value_base(clientVarType)
+    const kind = assemble ? PIN_KIND_IN_PARAM : PIN_KIND_OUT_PARAM
+    pins.push({
+      i1: { kind, index: k },
+      i2: { kind, index: k },
+      type: clientVarType,
+      value,
+      connects: []
+    })
+  }
+  if (assemble) pins.push(structPin)
+  pins.push({
+    i1: { kind: PIN_KIND_CLIENT_EXEC, index: 0 },
+    i2: { kind: PIN_KIND_CLIENT_EXEC, index: 0 },
+    type: 9,
+    value: client_signal_name_value(String(nameArg.value)),
+    connects: []
+  })
+  node.pins = pins
+}
+
 function applySpecialArgs(
   node: ClientGiaNode,
   irNode: IRNode,
@@ -1104,6 +1192,10 @@ function applySpecialArgs(
   }
   if (irNode.type === 'send_signal_to_server_node_graph') {
     applySendSignalToServer(node, irNode, metadata)
+    return true
+  }
+  if (metadata.nodeType === 'assemble_structure' || metadata.nodeType === 'split_structure') {
+    applyStructureNode(node, irNode, metadata)
     return true
   }
   return false
