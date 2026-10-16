@@ -420,9 +420,14 @@ export class faction extends value {
   }
 }
 
+/** Anything carrying a structure name, e.g. a `defineStruct` result. */
+export type StructRef = { readonly name: string }
+
 export type StructValue = struct
 export class struct extends value {
   declare private readonly __brandStruct: 'struct'
+  /** structure name, when the value's structure is declared in code */
+  structName?: string
   constructor() {
     super()
   }
@@ -502,7 +507,8 @@ export class generic extends value {
   asType(type: 'prefab_id'): prefabId
   asType(type: 'config_id'): configId
   asType(type: 'faction'): faction
-  asType(type: 'struct'): struct
+  /** Structure values name their structure so typed generic nodes can be bound to it. */
+  asType(type: 'struct', struct: StructRef): struct
   asType(type: 'dict'): dict
   asType(type: 'bool_list'): boolean[]
   asType(type: 'int_list'): bigint[]
@@ -514,9 +520,14 @@ export class generic extends value {
   asType(type: 'prefab_id_list'): prefabId[]
   asType(type: 'config_id_list'): configId[]
   asType(type: 'faction_list'): faction[]
-  asType(type: 'struct_list'): struct[]
-  asType<T extends LiteralValueType>(type: T): RuntimeReturnValueTypeMap[T]
-  asType(type: LiteralValueType): RuntimeReturnValueTypeMap[LiteralValueType] {
+  asType(type: 'struct_list', struct: StructRef): struct[]
+  asType<T extends Exclude<LiteralValueType, 'struct' | 'struct_list'>>(
+    type: T
+  ): RuntimeReturnValueTypeMap[T]
+  asType(
+    type: LiteralValueType,
+    structRef?: StructRef
+  ): RuntimeReturnValueTypeMap[LiteralValueType] {
     if (this.typeSet) {
       throw new Error('Generic type has already been set and cannot be changed')
     }
@@ -557,6 +568,7 @@ export class generic extends value {
         break
       case 'struct':
         ret = new struct()
+        ;(ret as struct).structName = structRef?.name
         break
       case 'dict':
         throw new Error('use asDict() instead')
@@ -592,6 +604,7 @@ export class generic extends value {
         break
       case 'struct_list':
         ret = new list('struct')
+        ;(ret as list).structName = structRef?.name
         break
     }
     if (this.metadata && this.metadata.kind === 'pin')
@@ -662,6 +675,8 @@ export class list<K extends ListConcreteType = ListConcreteType> extends value {
    * 预处理自动包裹列表可能误将三维向量处理为列表, 此处保留原值以便还原
    */
   private vec3Value?: [number, number, number]
+  /** structure name of a structure list, when declared in code */
+  structName?: string
 
   constructor(type: K) {
     super()

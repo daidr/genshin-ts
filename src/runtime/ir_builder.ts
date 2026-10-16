@@ -41,6 +41,7 @@ function buildConnValueType(arg: value): {
   type: ValueType
   enum?: string
   dict?: { k: DictKeyType; v: DictValueType }
+  struct?: string
 } {
   if (arg instanceof bool) return { type: 'bool' }
   if (arg instanceof int) return { type: 'int' }
@@ -52,14 +53,14 @@ function buildConnValueType(arg: value): {
   if (arg instanceof prefabId) return { type: 'prefab_id' }
   if (arg instanceof configId) return { type: 'config_id' }
   if (arg instanceof faction) return { type: 'faction' }
-  if (arg instanceof struct) return { type: 'struct' }
+  if (arg instanceof struct) return { type: 'struct', struct: arg.structName }
   if (arg instanceof localVariable) return { type: 'local_variable' }
   if (arg instanceof customVariableSnapshot) return { type: 'custom_variable_snapshot' }
   if (arg instanceof enumeration) return { type: 'enum', enum: camelToSnake(arg.getClassName()) }
 
   if (arg instanceof list) {
     const t = `${arg.getConcreteType()}_list` as ValueType
-    return { type: t }
+    return { type: t, struct: arg.structName }
   }
 
   if (arg instanceof dict) {
@@ -97,7 +98,7 @@ function buildConnValueType(arg: value): {
 
 function buildConnectionArgument(meta: ValueMetadata, arg: value): ConnectionArgument | null {
   if (meta.kind !== 'pin') return null
-  const { type, dict, enum: enumName } = buildConnValueType(arg)
+  const { type, dict, enum: enumName, struct: structName } = buildConnValueType(arg)
   return {
     type: 'conn',
     value: {
@@ -105,7 +106,8 @@ function buildConnectionArgument(meta: ValueMetadata, arg: value): ConnectionArg
       index: meta.pinIndex,
       type,
       enum: enumName,
-      dict
+      dict,
+      ...(structName ? { struct: structName } : {})
     }
   }
 }
@@ -122,7 +124,11 @@ function buildArgument(record: MetaCallRecord, arg: value): Argument {
   return arg.toIRLiteral()
 }
 
-type NodeBuilder = (record: MetaCallRecord, next?: NextConnection[], isClient?: boolean) => ServerNode
+type NodeBuilder = (
+  record: MetaCallRecord,
+  next?: NextConnection[],
+  isClient?: boolean
+) => ServerNode
 
 const buildDefaultNode: NodeBuilder = (record, next) => {
   const node: ServerNode = {

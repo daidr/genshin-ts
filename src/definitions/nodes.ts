@@ -448,7 +448,7 @@ export function structSplitOutputs(
   def.fields.forEach(([name, type], index) => {
     const g = new generic()
     g.markPin(ref, name, index)
-    out[name] = g.asType(type as LiteralValueType)
+    out[name] = g.asType(type as Exclude<LiteralValueType, 'struct' | 'struct_list'>)
   })
   return out
 }

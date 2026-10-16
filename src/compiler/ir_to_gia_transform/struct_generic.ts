@@ -6,8 +6,8 @@ import type { NodeId } from './types.js'
 // structure id, a usingStruct entry on the node and a matching entry in the graph affiliations.
 // Structure ids are map specific, so compiled graphs carry a placeholder id plus the structure
 // name on a ClientExecNode pin; the injector binds them by name (see injector/struct_nodes.ts).
-// The structure name is inferred from the assemble / split / modify structure nodes that the
-// value flows through.
+// The structure name comes from `asType('struct' | 'struct_list', MyStruct)` on the connection
+// or from the assemble / split / modify structure nodes that the value flows through.
 
 /** Server VarType of a structure / structure list value. */
 const VAR_TYPE_STRUCT = 25
@@ -165,18 +165,24 @@ export function prepareStructGenericNodes(ir: IRDocument): StructGenericInfo {
   }
 
   const nameByRoot = new Map<NodeId, string>()
+  const bindName = (id: NodeId, name: string) => {
+    const root = find(id)
+    const existing = nameByRoot.get(root)
+    if (existing !== undefined && existing !== name) {
+      throw new Error(`[error] structures "${existing}" and "${name}" flow into the same value`)
+    }
+    nameByRoot.set(root, name)
+  }
   for (const node of nodes) {
+    for (const arg of node.args ?? []) {
+      if (arg?.type === 'conn' && isStructType(arg.value.type) && arg.value.struct) {
+        bindName(node.id, arg.value.struct)
+      }
+    }
     if (!STRUCT_NODE_TYPES.has(node.type)) continue
     const nameArg = node.args?.[0]
     if (nameArg?.type !== 'str' || typeof nameArg.value !== 'string') continue
-    const root = find(node.id)
-    const existing = nameByRoot.get(root)
-    if (existing !== undefined && existing !== nameArg.value) {
-      throw new Error(
-        `[error] structures "${existing}" and "${nameArg.value}" flow into the same value`
-      )
-    }
-    nameByRoot.set(root, nameArg.value)
+    bindName(node.id, nameArg.value)
   }
 
   const info: StructGenericInfo = {
@@ -194,7 +200,7 @@ export function prepareStructGenericNodes(ir: IRDocument): StructGenericInfo {
     if (name === undefined) {
       throw new Error(
         `[error] cannot tell which structure ${type} (id=${id}) uses; ` +
-          'connect the value to an assemble / split / modify structure node'
+          "name it with asType('struct_list', MyStruct) / asType('struct', MyStruct)"
       )
     }
     info.nodes.set(id, name)

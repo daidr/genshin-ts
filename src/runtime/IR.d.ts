@@ -140,6 +140,11 @@ export interface ConnectionArgumentValue {
     v: DictValueType
   }
   sub_index?: number
+  /**
+   * Structure name for struct / struct_list connections whose structure is declared in code
+   * (`asType('struct_list', MyStruct)`).
+   */
+  struct?: string
 }
 
 export type NextConnection = number | NextConnectionDetailed
