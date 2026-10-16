@@ -106,10 +106,15 @@ export function emitValueLiteral(spec: TypeSpec, ctx: Ctx): string {
     }
     case 'dict': {
       // 用 assemblyDictionary 构造 dict（带 pin metadata，更接近真实连线）
+      // 字典值的 [x, y, z] 会匹配到 float_list 重载，vec3 值要用 vec3() 写明
+      const dictValue = () => {
+        const v = emitValueLiteral(spec.value, ctx)
+        return spec.value.kind === 'primitive' && spec.value.name === 'vec3' ? `vec3(${v})` : v
+      }
       const k1 = emitValueLiteral(spec.key, ctx)
-      const v1 = emitValueLiteral(spec.value, ctx)
+      const v1 = dictValue()
       const k2 = emitValueLiteral(spec.key, ctx)
-      const v2 = emitValueLiteral(spec.value, ctx)
+      const v2 = dictValue()
       return `f.assemblyDictionary([{ k: ${k1}, v: ${v1} }, { k: ${k2}, v: ${v2} }])`
     }
     case 'enumConcrete': {

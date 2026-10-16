@@ -30,6 +30,14 @@ const CLASSIC_ADDITIONAL_METHODS = new Set([
   'queryWhetherPlayerIsSubscribed'
 ])
 
+// Methods that cannot be called standalone with placeholder arguments
+const MANUAL_ONLY_METHODS: Record<string, string> = {
+  assembleStructure: 'needs a defineStruct definition; covered by tests/structure_nodes_test.ts',
+  splitStructure: 'needs a defineStruct definition; covered by tests/structure_nodes_test.ts',
+  modifyStructure: 'needs a defineStruct definition; covered by tests/structure_nodes_test.ts',
+  breakLoop: 'needs the ids of enclosing loop nodes; only valid inside a loop body'
+}
+
 function main() {
   const repoRoot = process.cwd()
   const nodesTsPath = path.join(repoRoot, 'src/definitions/nodes.ts')
@@ -50,6 +58,13 @@ function main() {
   const BASE_GRAPH_ID = 1073741830
   let outFileIndex = 0
   const allocGraphId = () => BASE_GRAPH_ID + Math.floor(outFileIndex++ / 2)
+  // 单独成图的文件（classic / events）占满一对，避免和下一个文件共用 id 而合并出错
+  const allocSoloGraphId = () => {
+    outFileIndex += outFileIndex % 2
+    const id = allocGraphId()
+    outFileIndex++
+    return id
+  }
 
   const skipped: SkipRow[] = []
   const included: Record<string, { cases: number }> = {}
@@ -82,6 +97,12 @@ function main() {
         nodeType: m.nodeType,
         why: 'no stable CustomVariableSnapshotValue producer'
       })
+      continue
+    }
+    // 过滤：没法用占位参数单独调用的节点（结构体节点、跳出循环）
+    const manualOnly = MANUAL_ONLY_METHODS[m.name]
+    if (manualOnly) {
+      skipped.push({ name: m.name, nodeType: m.nodeType, why: manualOnly })
       continue
     }
     const ginfo = genericsMap.get(m.name)
@@ -194,7 +215,7 @@ function main() {
   if (classic.literal.length) {
     writeText(
       path.join(outDir, `classic.literal.ts`),
-      emitFile('literal', 'classic', allocGraphId(), null, classic.literal, {
+      emitFile('literal', 'classic', allocSoloGraphId(), null, classic.literal, {
         serverMode: 'classic'
       })
     )
@@ -205,8 +226,8 @@ function main() {
     const events = Object.keys(ServerEventMetadata).sort()
     const lines: string[] = []
     const classicLines: string[] = []
-    const graphId = allocGraphId()
-    const classicGraphId = allocGraphId()
+    const graphId = allocSoloGraphId()
+    const classicGraphId = allocSoloGraphId()
     lines.push(`import { g } from 'genshin-ts/runtime/core'`)
     lines.push(``)
     lines.push(`// AUTO-GENERATED: server events`)

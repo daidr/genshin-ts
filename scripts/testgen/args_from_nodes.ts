@@ -189,6 +189,13 @@ export function emitArgFromNodesTypeText(
   ) {
     return 'E.RankSettlementStatus.Escape'
   }
+  // cursorClickableLayerFilterId must be an integer literal in 0..15, even in wire mode.
+  if (
+    m.name === 'setPlayerSCursorClickSelectableTargets' &&
+    m.params[paramIndex]?.name === 'cursorClickableLayerFilterId'
+  ) {
+    return '1n'
+  }
 
   const t = trim(typeText)
 
@@ -196,9 +203,14 @@ export function emitArgFromNodesTypeText(
   const kv = tryParseKvObjectArray(typeText)
   if (kv) {
     const k1 = emitArgFromNodesTypeText(mode, m, paramIndex, kv.kType, ctx, enumPick, assign)
-    const v1 = emitArgFromNodesTypeText(mode, m, paramIndex, kv.vType, ctx, enumPick, assign)
+    // 字典值的 [x, y, z] 会匹配到 float_list 重载，vec3 值要用 vec3() 写明
+    const value = () => {
+      const v = emitArgFromNodesTypeText(mode, m, paramIndex, kv.vType, ctx, enumPick, assign)
+      return /^\[[^[\]]*\]$/.test(v) ? `vec3(${v})` : v
+    }
+    const v1 = value()
     const k2 = emitArgFromNodesTypeText(mode, m, paramIndex, kv.kType, ctx, enumPick, assign)
-    const v2 = emitArgFromNodesTypeText(mode, m, paramIndex, kv.vType, ctx, enumPick, assign)
+    const v2 = value()
     return `[{ k: ${k1}, v: ${v1} }, { k: ${k2}, v: ${v2} }]`
   }
 
